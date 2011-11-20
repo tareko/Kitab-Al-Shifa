@@ -1,0 +1,126 @@
+table {
+	width: 820px;
+	padding: 0 0 0 1px;
+	margin: 0;
+	font-size: 18px;
+}
+h1 {
+	text-align: center;
+	font-size: 3em;
+	font-weight: bold;
+}
+
+.Calendar {
+	width: 100%;
+	min-width: 1000px;
+}
+.CalendarDateColumn {
+	width: 3%;
+	float: left;
+}
+
+.CalendarLocationColumn {
+	float: left;
+	padding: 5px;
+}
+.CalendarShiftType {
+	float: left;
+	width: 45px;
+	padding-right: 1px;
+	line-height: 80%;
+	text-align: center;
+}
+
+.shifts.index {
+	clear: both;
+}
+
+.locationColour1 {
+	background-color: #b9cde5;
+}
+
+.locationColour2 {
+	background-color: #f2dcdb;
+}
+
+.locationColour3 {
+	background-color: #e46c0a;
+}
+
+.shiftTimes {
+	font-size: 20px;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+}
+
+.locations {
+	text-align: center;
+	font-size: 28px;
+	font-weight: bold;
+	height: 20px;
+	vertical-align: middle;
+	padding: 0;
+	margin: 0;
+	text-overflow: clip;
+	overflow: hidden;
+}
+
+
+/* Colouring for even and odd rows, divided into columns */
+
+/*.even {
+	background-color: #eee;
+}
+.even .column-3, .even .column-5, .even .column-7, .even .column-9, .even .column-11, .even .column-13, .even .column-15, .even .column-17, .even .column-19, .even .column-21, .even .column-23, .even .column-25, .even .column-26, .even .column-27, .even .column-29, .even .column-31, .even .column-33, .even .column-35, .even .column-37, .even .column-39, .even .column-41, .even .column-43, .even .column-45, .even .column-47, .even .column-49, .even .column-51 {
+	background-color: #ddd;
+}
+
+.odd .column-3, .odd .column-5, .odd .column-7, .odd .column-9, .odd .column-11, .odd .column-13, .odd .column-15, .odd .column-17, .odd .column-19, .odd .column-21, .odd .column-23, .odd .column-25, .odd .column-27, .odd .column-29, .odd .column-31, .odd .column-33, .odd .column-35, .odd .column-37, .odd .column-39, .odd .column-41, .odd .column-43, .odd .column-45, .odd .column-47, .odd .column-49, .odd .column-51 {
+	background-color: #eee;
+}
+*/
+
+.shiftTimes .column-1 {
+	background-color: #eee;
+}
+
+/* Weekend colouring. No distinction is made here between odd/even weekend days */
+
+.weekend{
+	background-color: #bbb;
+}
+
+/*.weekend .column-3, .weekend .column-5, .weekend .column-7, .weekend .column-9, .weekend .column-11, .weekend .column-13, .weekend .column-15, .weekend .column-17, .weekend .column-19, .weekend .column-21, .weekend .column-23, .weekend .column-25, .weekend .column-27, .weekend .column-29, .weekend .column-31, .weekend .column-33, .weekend .column-35, .weekend .column-37, .weekend .column-39, .weekend .column-41, .weekend .column-43, .weekend .column-45, .weekend .column-47, .weekend .column-49, .weekend .column-51 {
+	border-left: 1px solid #444;
+}
+.weekend .column-4, .weekend .column-6, .weekend .column-8, .weekend .column-10, .weekend .column-12, .weekend .column-14, .weekend .column-16, .weekend .column-18, .weekend .column-20, .weekend .column-22, .weekend .column-24, .weekend .column-26, .weekend .column-28, .weekend .column-30, .weekend .column-32, .weekend .column-34, .weekend .column-36, .weekend .column-38, .weekend .column-40, .weekend .column-42, .weekend .column-44, .weekend .column-46, .weekend .column-48, .weekend .column-50 {
+	border-left: 1px solid #444;
+}
+
+*/
+
+.shiftTimes .column-1, .shiftTimes .column-2, .column-3, .column-5, .column-7, .column-9, .column-11, .column-13, .column-15, .column-17, .column-19, .column-21, .column-23, .column-25, .column-27, .column-29, .column-31, .column-33, .column-35, .column-37, .column-39, .column-41, .column-43, .column-45, .column-47, .column-49, .column-51 {
+	border-left: 1px dotted #999;
+	padding-left: 2px;
+	margin-left: 10px;
+}
+.column-4, .column-6, .column-8, .column-10, .column-12, .column-14, .column-16, .column-18, .column-20, .column-22, .column-24, .column-26, .column-28, .column-30, .column-32, .column-34, .column-36, .column-38, .column-40, .column-42, .column-44, .column-46, .column-48, .column-50 {
+	border-left: 1px dotted #999;
+	padding-left: 2px;
+	margin-left: 10px;
+}
+
+
+/* Dark*/
+.dark {
+	background-color: #ddd;
+	border: 1px solid #000;
+}
+/*
+.dark .column-3, .dark .column-5, .dark .column-7, .dark .column-9, .dark .column-11, .dark .column-13, .dark .column-15, .dark .column-17, .dark .column-19, .dark .column-21, .dark .column-23, .dark .column-25, .dark .column-26, .dark .column-27, .dark .column-29, .dark .column-31, .dark .column-33, .dark .column-35, .dark .column-37, .dark .column-39, .dark .column-41, .dark .column-43, .dark .column-45, .dark .column-47, .dark .column-49, .dark .column-51 {
+	background-color: #ddd;
+}
+*/

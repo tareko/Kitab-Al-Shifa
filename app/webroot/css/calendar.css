@@ -1,0 +1,52 @@
+html {
+	font-size: 0.5em;
+}
+.Calendar {
+	width: 100%;
+	min-width: 1000px;
+}
+.CalendarDateColumn {
+	width: 5%;
+	float: left;
+}
+
+.CalendarLocationColumn {
+	float: left;
+	padding: 5px;
+}
+.CalendarShiftType {
+	float: left;
+	width: 45px;
+	padding-right: 1px;
+	line-height: 80%;
+	text-align: center;
+}
+
+.shifts.index {
+	clear: both;
+}
+
+.locationColour1 {
+	background-color: #b9cde5;
+}
+
+.locationColour2 {
+	background-color: #f2dcdb;
+}
+
+.locationColour3 {
+	background-color: #e46c0a;
+}
+.locations {
+	text-align: center;
+	font-size: 2em;	
+}
+
+h1 {
+	text-align: center;
+	font-size: 4em;
+	font-weight: bold;
+}
+td{
+	padding:1px;
+}
