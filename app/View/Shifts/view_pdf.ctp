@@ -25,6 +25,7 @@ $tcpdf->Cell(0,30,"" , 0,1,'L');
 
 $output = $this->Calendar->makeCalendarPdf($masterSet);
 $tcpdf->writeHTML($output, true, false, true, false, '');
+$tcpdf->setFontSubsetting(false);
 
 // set style for barcode
 $style = array(
@@ -35,8 +36,8 @@ $style = array(
     'module_width' => 1, // width of a single module in points
     'module_height' => 1 // height of a single module in points
 );
-$url = $base_url . "/shifts/viewPdf/month[month]:" . $masterSet['month'] . "/year[year]:" . $masterSet['year'];
+$url = $base_url . "/shifts/viewPdf/calendar[calendar]:" . $masterSet['calendar']['id'];
 $tcpdf->write2DBarcode($url, 'QRCODE,H', 251, 5, 35, 35, $style, 'N');
 
-echo $tcpdf->Output("EMA_Schedule-".$masterSet['year']."-".$masterSet['month'].".pdf", 'D');
+echo $tcpdf->Output("EMA_Schedule-".$masterSet['calendar']['Calendar']['start_date'].".pdf", 'D');
 ?> 

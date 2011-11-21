@@ -1,4 +1,4 @@
 <?php
-class CalendarsController extends AppController {
+class LocationsController extends AppController {
 	var $scaffold;
 }

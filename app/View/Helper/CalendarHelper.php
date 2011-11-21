@@ -99,24 +99,24 @@ class CalendarHelper extends AppHelper {
 	
 	function makeCalendarPdf($masterSet) {
 		//Create variables
-		$k = 1;
 		$i = 1;
 		$header = null;
 		$output = null;
 		$previousLocation = null;
 		$colspan = 1;
-		$month = $masterSet['month'];
-		$year = $masterSet['year'] ;
-		$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+		$calendar = $masterSet['calendar'];
+		$startDate = $calendar['Calendar']['start_date'];
+		$endDate = $calendar['Calendar']['end_date'];
+		$k = $startDate;
 		$lastOrder = null;
 
 
 		$output .= $this->Html->css('http://tarek.org/cakephp/css/calendarPdf.css');
 
 		//Create headers
-		$output .= "<h1>".date('F Y', mktime(0, 0, 0, $month, 1, $year))."</h1>";
+		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
 		$output .= "<table>";
-		$output .= "<tr><td rowspan=\"2\" colspan=\"2\" class=\"locations\" style=\"width: 40px;\">Date</td>";
+		$output .= "<tr><td rowspan=\"2\" class=\"locations\" style=\"width: 40px;\">Date</td>";
 
 		//Roll out locations
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
@@ -162,10 +162,10 @@ class CalendarHelper extends AppHelper {
 		$output .= $this->Html->tableCells($output1, array('class' => 'shiftTimes odd'), array('class' => 'shiftTimes even'), true);
 
 		//Output Days of the month
-		while ($k <= $daysInMonth) {
+//print_r($masterSet);
+		while ($k <= $calendar['Calendar']['end_date']) {
 			$output1 = null;
-			$output1[] = date('D', mktime(0, 0, 0, $month, $k, $year));
-			$output1[] = $k;
+			$output1[] = date('D, M j', strtotime($k));
 			if (isset($masterSet[$k])) {
 				foreach ($masterSet['ShiftsType'] as $shiftCount => $shiftsType) {
 					if (isset($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']])) {
@@ -182,16 +182,16 @@ class CalendarHelper extends AppHelper {
 			}
 			// Enter physician names into record, spaced with comma.
 			// Highlight differently if it's a weekend
-			if (date('N', mktime(0, 0, 0, $month, $k, $year)) >= 6 ) {
+			if (date('N', strtotime($k)) >= 6 ) {
 				$output .= $this->Html->tableCells($output1, array('class' => 'weekend odd'), array('class' => 'weekend even'), true);
 			}
-			elseif (date('N', mktime(0, 0, 0, $month, $k, $year)) == 1 || date('N', mktime(0, 0, 0, $month, $k, $year)) == 3 || date('N', mktime(0, 0, 0, $month, $k, $year)) == 5 ) {
+			elseif (date('N', strtotime($k)) == 1 || date('N', strtotime($k)) == 3 || date('N', strtotime($k)) == 5 ) {
 				$output .= $this->Html->tableCells($output1, array('class' => 'light'), array('class' => 'light'), true);
 			}
-			elseif (date('N', mktime(0, 0, 0, $month, $k, $year)) == 2 || date('N', mktime(0, 0, 0, $month, $k, $year)) == 4 ) {
+			elseif (date('N', strtotime($k)) == 2 || date('N', strtotime($k)) == 4 ) {
 				$output .= $this->Html->tableCells($output1, array('class' => 'dark'), array('class' => 'dark'), true);
 			}
-			$k++;
+			$k = date('Y-m-d', strtotime("$k + 1 day"));
 		}
 
 		$output .= "</table>";

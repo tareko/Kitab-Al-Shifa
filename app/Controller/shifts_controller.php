@@ -60,26 +60,27 @@ class ShiftsController extends AppController {
 	}
 
 	function viewPdf() {
-		//Figure out month and year of calendar to display
-		if (isset($this->request->named['month']['month'])) {
-			$masterSet['month'] = $this->request->named['month']['month'];
+		$this->loadModel('Calendar');
+		if (isset($this->request->named['calendar']['calendar'])) {
+			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
+			$masterSet['calendar']['id'] = $this->request->named['calendar']['calendar'];
 		}
 		else {
-			$masterSet['month'] = date('m');
+			//$calendar = $this->Shift->Calendar->findById('1');
+			$masterSet['calendar'] = $this->Calendar->findById('1');
+			$masterSet['calendar']['id'] = 1;
 		}
-		if (isset($this->request->named['year']['year'])) {
-			$masterSet['year'] = $this->request->named['year']['year'];
-		}
-		else {
-			$masterSet['year'] = date('Y');
-		}
-
+		$this->set('calendars', $this->Calendar->find('list'));
+		
 		$shiftList = $this->Shift->find('all', array(
 			'fields' => array('Shift.id', 'Shift.physician_id', 'Shift.shifts_type_id', 'Shift.date', 'Shift.day', 'Physician.physician_name', 'ShiftsType.id', 'ShiftsType.location_id', 'ShiftsType.shift_start'),
+//			'order' => array('ShiftsType.location_id ASC', 'ShiftsType.shift_start ASC'),
 			'conditions' => array(
-				'Shift.date >=' => date('Y-m-d', strtotime($masterSet['year'] ."-". $masterSet['month'] ."-01")),
-				'Shift.date <' => date('Y-m-d', strtotime($masterSet['year'] ."-". ($masterSet['month'] + 1) ."-01"))),
+				'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
+				'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+			),
 			'recursive' => '2'));
+
 		$locations_raw = $this->Shift->ShiftsType->Location->find('all', array(
 			'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
 			'recursive' => '0'
@@ -91,8 +92,8 @@ class ShiftsController extends AppController {
 		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
 			'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
 			'conditions' => array(
-				'ShiftsType.start_date <=' => date('Y-m-d', strtotime($masterSet['year'] ."-". $masterSet['month'] ."-01")),
-				'ShiftsType.expiry_date >=' => date('Y-m-d', strtotime($masterSet['year'] ."-". $masterSet['month'] ."-01"))
+				'ShiftsType.start_date <=' => $masterSet['calendar']['Calendar']['start_date'],
+				'ShiftsType.expiry_date >=' => $masterSet['calendar']['Calendar']['start_date'],
 				),
 			'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
 				));
@@ -107,9 +108,11 @@ class ShiftsController extends AppController {
 		}
 		$masterSet[0] = $locationArray;
 */
+
 		foreach ($shiftList as $shift) {
-			$masterSet[date('j', strtotime($shift['Shift']['date']))][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['Physician']['physician_name'], 'id' => $shift['Shift']['id']);
+			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['Physician']['physician_name'], 'id' => $shift['Shift']['id']);
 		}
+		
 		$this->set('masterSet', $masterSet);
 		$this->layout = 'pdf'; //this will use the pdf.ctp layout 
 		$this->header("Content-Type: application/pdf");
@@ -177,7 +180,6 @@ class ShiftsController extends AppController {
 	}
 
 	public function delete($id = null) {
-$this->loadModel('ShiftsType');
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}
