@@ -4,7 +4,8 @@ class ShiftsController extends AppController {
 	var $name = 'Shifts';
 	
 	var $components = array('RequestHandler', 'Search.Prg');
-	var $helpers = array('Js', 'Calendar');
+	var $helpers = array('Js', 'Calendar', 'Cache');
+//	public $cacheAction = "1 hour";
 
 	var $paginate = array(
 		'recursive' => '2',
@@ -59,7 +60,7 @@ class ShiftsController extends AppController {
 			'recursive' => '2')));
 	}
 
-	function viewPdf() {
+	function createPdf() {
 		$this->loadModel('Calendar');
 		if (isset($this->request->named['calendar']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
@@ -114,8 +115,8 @@ class ShiftsController extends AppController {
 		}
 		
 		$this->set('masterSet', $masterSet);
-		$this->layout = 'pdf'; //this will use the pdf.ctp layout 
-		$this->header("Content-Type: application/pdf");
+//		$this->layout = 'pdf'; //this will use the pdf.ctp layout 
+//		$this->header("Content-Type: application/pdf");
 		$this->render();
 	}
 
@@ -177,6 +178,14 @@ class ShiftsController extends AppController {
 		
 		
 		$this->set('masterSet', $masterSet);
+	}
+
+	function viewPdf() {
+		$this->loadModel('Calendar');
+		$this->set('calendars', $this->Calendar->find('list', array(
+			'fields' => array('Calendar.start_date', 'Calendar.name', 'Calendar.id'),
+			'order'=>array('Calendar.start_date ASC'))));
+		$this->render();
 	}
 
 	public function delete($id = null) {

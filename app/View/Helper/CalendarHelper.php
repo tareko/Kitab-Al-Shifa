@@ -111,7 +111,7 @@ class CalendarHelper extends AppHelper {
 		$lastOrder = null;
 
 
-		$output .= $this->Html->css('http://tarek.org/cakephp/css/calendarPdf.css');
+		$output .= $this->Html->css('http://tarek.org/cakephp/app/webroot/css/calendarPdf.css');
 
 		//Create headers
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";

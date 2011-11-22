@@ -107,7 +107,7 @@ h1 {
 	padding-left: 2px;
 	margin-left: 10px;
 }
-.column-4, .column-6, .column-8, .column-10, .column-12, .column-14, .column-16, .column-18, .column-20, .column-22, .column-24, .column-26, .column-28, .column-30, .column-32, .column-34, .column-36, .column-38, .column-40, .column-42, .column-44, .column-46, .column-48, .column-50 {
+.column-2, .column-4, .column-6, .column-8, .column-10, .column-12, .column-14, .column-16, .column-18, .column-20, .column-22, .column-24, .column-26, .column-28, .column-30, .column-32, .column-34, .column-36, .column-38, .column-40, .column-42, .column-44, .column-46, .column-48, .column-50 {
 	border-left: 1px dotted #999;
 	padding-left: 2px;
 	margin-left: 10px;
