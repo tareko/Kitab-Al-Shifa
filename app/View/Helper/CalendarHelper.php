@@ -25,27 +25,27 @@ class CalendarHelper extends AppHelper {
 		// Create headers
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
 		$output .= "<table>";
-		$output .= "<tr><td rowspan=\"2\">Date</td>";
+		$output .= "<thead><tr><th rowspan=\"2\">Date</th>";
 
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
 			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
 				$colspan++;
 				if ($j == count($masterSet['ShiftsType']) - 1) {
 					if ($colspan == 1) {
-						$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</td>";
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 					}
 					else {
-						$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</td>";
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
 					}
 				}
 			}
 			else {
 				if (isset($firstLocation)) {
 					if ($colspan == 1) {
-						$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</td>";
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 					}
 					else {
-						$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</td>";
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
 					}
 				}
 				$colspan = 1;
@@ -54,13 +54,14 @@ class CalendarHelper extends AppHelper {
 			}
 		}
 		$output .= "</tr>";
-
+		
 
 		foreach ($masterSet['ShiftsType'] as $shiftsType) {
 			$output1[] = $shiftsType['ShiftsType']['times'];
 		}
 		$output .= $this->Html->tableCells($output1, array ('class' => 'calendarHeaderTimes'));
-
+		$output .= "</thead>";
+		
 
 		//Output Days of the month
 		while ($k <= $calendar['Calendar']['end_date']) {
