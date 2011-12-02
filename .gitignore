@@ -1,7 +1,5 @@
 /app/Config
 /app/tmp
 /app/webroot/pdf
-/plugins
-/vendors
 .DS_Store
 tags
