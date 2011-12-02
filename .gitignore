@@ -1,4 +1,5 @@
-/app/Config
+/app/Config/core.php
+/app/Config/database.php
 /app/tmp
 /app/webroot/pdf
 .DS_Store

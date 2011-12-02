@@ -8,4 +8,12 @@ To install:
 	a. chown www-data.www-data app/webroot/pdf   # or
 	b. chmod 777 app/webroot/pdf
 
-6. Config directory - not yet in repository
+6. As above, can either use chown or chmod technique to make the 
+following directories, which have to be writable by your webserver:
+	a. app/tmp
+	b. app/tmp/cache
+	c. app/tmp/logs
+	d. app/tmp/sessions
+	e. app/tmp/tests
+
+7. Config directory - not yet in repository
