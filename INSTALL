@@ -1,0 +1,11 @@
+To install:
+
+1. Go into the directory you wish
+2. git init
+3. git pull git://github.com/tareko/Kitab-Al-Shifa.git
+4. mkdir app/webroot/pdf
+5. Either
+	a. chown www-data.www-data app/webroot/pdf   # or
+	b. chmod 777 app/webroot/pdf
+
+6. Config directory - not yet in repository
