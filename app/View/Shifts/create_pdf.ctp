@@ -2,8 +2,6 @@
 
 App::import('Vendor','xtcpdf'); 
 
-$base_url = "http://tarek.org/cakephp";
-
 $tcpdf = new XTCPDF();
 $textfont = 'freesans'; // looks better, finer, and more condensed than 'dejavusans'
 
@@ -36,10 +34,10 @@ $style = array(
     'module_width' => 1, // width of a single module in points
     'module_height' => 1 // height of a single module in points
 );
-$url = $base_url . "/app/webroot/pdf/EMA_Schedule-".$masterSet['calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf";
-$tcpdf->write2DBarcode($url, 'QRCODE,H', 251, 5, 35, 35, $style, 'N');
+$tcpdf->write2DBarcode($this->Html->url("/app/webroot/pdf/EMA_Schedule-".$masterSet['calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf", true), 'QRCODE,H', 251, 5, 35, 35, $style, 'N');
 
-if ($tcpdf->Output("/home/web/tarek/cakephp/app/webroot/pdf/EMA_Schedule-".$masterSet['calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf", 'F')) {
+if ($tcpdf->Output(WWW_ROOT ."pdf/EMA_Schedule-".$masterSet['calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf", 'F')) {
 echo "success";
 }
+
 ?> 
