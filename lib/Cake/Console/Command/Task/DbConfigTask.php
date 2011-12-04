@@ -16,12 +16,14 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+App::uses('AppShell', 'Console/Command');
+
 /**
  * Task class for creating and updating the database configuration file.
  *
  * @package       Cake.Console.Command.Task
  */
-class DbConfigTask extends Shell {
+class DbConfigTask extends AppShell {
 
 /**
  * path to CONFIG directory
@@ -104,7 +106,7 @@ class DbConfigTask extends Shell {
 				}
 			}
 
-			$driver = $this->in(__d('cake_console', 'Driver:'), array('Mysql', 'Postgres', 'Sqlite', 'Sqlserver'), 'Mysql');
+			$datasource = $this->in(__d('cake_console', 'Datasource:'), array('Mysql', 'Postgres', 'Sqlite', 'Sqlserver'), 'Mysql');
 
 			$persistent = $this->in(__d('cake_console', 'Persistent Connection?'), array('y', 'n'), 'n');
 			if (strtolower($persistent) == 'n') {
@@ -167,7 +169,7 @@ class DbConfigTask extends Shell {
 			}
 
 			$schema = '';
-			if ($driver == 'postgres') {
+			if ($datasource == 'postgres') {
 				while ($schema == '') {
 					$schema = $this->in(__d('cake_console', 'Table schema?'), null, 'n');
 				}
@@ -176,7 +178,7 @@ class DbConfigTask extends Shell {
 				$schema = null;
 			}
 
-			$config = compact('name', 'driver', 'persistent', 'host', 'login', 'password', 'database', 'prefix', 'encoding', 'port', 'schema');
+			$config = compact('name', 'datasource', 'persistent', 'host', 'login', 'password', 'database', 'prefix', 'encoding', 'port', 'schema');
 
 			while ($this->_verify($config) == false) {
 				$this->_interactive();
@@ -209,7 +211,7 @@ class DbConfigTask extends Shell {
 		$this->out(__d('cake_console', 'The following database configuration will be created:'));
 		$this->hr();
 		$this->out(__d('cake_console', "Name:         %s", $name));
-		$this->out(__d('cake_console', "Driver:       %s", $driver));
+		$this->out(__d('cake_console', "Datasource:       %s", $datasource));
 		$this->out(__d('cake_console', "Persistent:   %s", $persistent));
 		$this->out(__d('cake_console', "Host:         %s", $host));
 
@@ -283,7 +285,7 @@ class DbConfigTask extends Shell {
 
 				$oldConfigs[] = array(
 					'name' => $configName,
-					'driver' => $info['driver'],
+					'datasource' => $info['datasource'],
 					'persistent' => $info['persistent'],
 					'host' => $info['host'],
 					'port' => $info['port'],
@@ -314,7 +316,7 @@ class DbConfigTask extends Shell {
 			extract($config);
 
 			$out .= "\tpublic \${$name} = array(\n";
-			$out .= "\t\t'datasource' => 'Database/{$driver}',\n";
+			$out .= "\t\t'datasource' => 'Database/{$datasource}',\n";
 			$out .= "\t\t'persistent' => {$persistent},\n";
 			$out .= "\t\t'host' => '{$host}',\n";
 
@@ -353,16 +355,16 @@ class DbConfigTask extends Shell {
  */
 	public function getConfig() {
 		App::uses('ConnectionManager', 'Model');
+		$configs = ConnectionManager::enumConnectionObjects();
 
-		$useDbConfig = 'default';
-		$configs = get_class_vars($this->databaseClassName);
-		if (!is_array($configs)) {
+		$useDbConfig = key($configs);
+		if (!is_array($configs) || empty($configs)) {
 			return $this->execute();
 		}
-
 		$connections = array_keys($configs);
+
 		if (count($connections) > 1) {
-			$useDbConfig = $this->in(__d('cake_console', 'Use Database Config') .':', $connections, 'default');
+			$useDbConfig = $this->in(__d('cake_console', 'Use Database Config') .':', $connections, $useDbConfig);
 		}
 		return $useDbConfig;
 	}

@@ -12,19 +12,15 @@
  *
  * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
- * @package       Cake.TestSuite.Reporter
  * @since         CakePHP(tm) v 1.2.0.4433
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 App::uses('CakeBaseReporter', 'TestSuite/Reporter');
 
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'DEFAULT');
-
 /**
  * CakeHtmlReporter Reports Results of TestSuites and Test Cases
  * in an HTML format / context.
  *
- * @package       Cake.TestSuite.Reporter
  * @package       Cake.TestSuite.Reporter
  */
 class CakeHtmlReporter extends CakeBaseReporter {
@@ -145,8 +141,15 @@ class CakeHtmlReporter extends CakeBaseReporter {
 		echo $this->_paintLinks();
 		echo '</div>';
 		if (isset($this->params['codeCoverage']) && $this->params['codeCoverage']) {
-			$coverage = $result->getCodeCoverage()->getSummary();
-			echo $this->paintCoverage($coverage);
+			$coverage = $result->getCodeCoverage();
+			if (method_exists($coverage, 'getSummary')) {
+				$report = $coverage->getSummary();
+				echo $this->paintCoverage($report);
+			}
+			if (method_exists($coverage, 'getData')) {
+				$report = $coverage->getData();
+				echo $this->paintCoverage($report);
+			}
 		}
 		$this->paintDocumentEnd();
 	}
@@ -158,6 +161,7 @@ class CakeHtmlReporter extends CakeBaseReporter {
  */
 	public function paintCoverage(array $coverage) {
 		App::uses('HtmlCoverageReport', 'TestSuite/Coverage');
+
 		$reporter = new HtmlCoverageReport($coverage, $this);
 		echo $reporter->report();
 	}

@@ -1,5 +1,8 @@
 <?php
 /**
+ * FormAuthenticateTest file
+ *
+ * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
@@ -160,6 +163,7 @@ class FormAuthenticateTest extends CakeTestCase {
 		), true);
 		CakePlugin::load('TestPlugin');
 
+		$ts = date('Y-m-d H:i:s');
 		$PluginModel = ClassRegistry::init('TestPlugin.TestPluginAuthUser');
 		$user['id'] = 1;
 		$user['username'] = 'gwoo';
@@ -179,9 +183,10 @@ class FormAuthenticateTest extends CakeTestCase {
 		$expected = array(
 			'id' => 1,
 			'username' => 'gwoo',
-			'created' => '2007-03-17 01:16:23',
-			'updated' => date('Y-m-d H:i:s')
+			'created' => '2007-03-17 01:16:23'
 		);
+		$this->assertTrue($result['updated'] >= $ts);
+		unset($result['updated']);
 		$this->assertEquals($expected, $result);
 		CakePlugin::unload();
 	}

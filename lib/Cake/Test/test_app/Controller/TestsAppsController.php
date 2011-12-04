@@ -1,6 +1,6 @@
 <?php
 /**
- * Short description for file.
+ * TestsAppsController file
  *
  * PHP 5
  *
@@ -21,6 +21,11 @@ class TestsAppsController extends AppController {
 	public $uses = array();
 
 	public function index() {
+		$var = '';
+		if (isset($this->request->query['var'])) {
+			$var = $this->request->query['var'];
+		}
+		$this->set('var', $var);
 	}
 
 	public function some_method() {

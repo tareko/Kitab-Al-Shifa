@@ -15,12 +15,15 @@
  * @since         CakePHP(tm) v 1.3
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
+App::uses('AppShell', 'Console/Command');
+
 /**
  * Base class for Bake Tasks.
  *
  * @package       Cake.Console.Command.Task
  */
-class BakeTask extends Shell {
+class BakeTask extends AppShell {
 
 /**
  * Name of plugin
@@ -44,12 +47,13 @@ class BakeTask extends Shell {
 	public $interactive = false;
 
 /**
- * Disable caching for baking.
+ * Disable caching and enable debug for baking.
  * This forces the most current database schema to be used.
  *
  * @return void
  */
 	function startup() {
+		Configure::write('debug', 2);
 		Configure::write('Cache.disable', 1);
 		parent::startup();
 	}

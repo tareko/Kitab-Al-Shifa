@@ -1,6 +1,6 @@
 <?php
 /**
- * BasicMethodTest file
+ * BasicAuthenticationTest file
  *
  * PHP 5
  *
@@ -25,7 +25,7 @@ App::uses('BasicAuthentication', 'Network/Http');
  *
  * @package       Cake.Test.Case.Network.Http
  */
-class BasicMethodTest extends CakeTestCase {
+class BasicAuthenticationTest extends CakeTestCase {
 
 /**
  * testAuthentication method
@@ -41,7 +41,7 @@ class BasicMethodTest extends CakeTestCase {
 		);
 
 		BasicAuthentication::authentication($http, $auth);
-		$this->assertEqual($http->request['header']['Authorization'], 'Basic bWFyazpzZWNyZXQ=');
+		$this->assertEquals($http->request['header']['Authorization'], 'Basic bWFyazpzZWNyZXQ=');
 	}
 
 /**
@@ -58,7 +58,7 @@ class BasicMethodTest extends CakeTestCase {
 		);
 
 		BasicAuthentication::proxyAuthentication($http, $proxy);
-		$this->assertEqual($http->request['header']['Proxy-Authorization'], 'Basic bWFyazpzZWNyZXQ=');
+		$this->assertEquals($http->request['header']['Proxy-Authorization'], 'Basic bWFyazpzZWNyZXQ=');
 	}
 
 }

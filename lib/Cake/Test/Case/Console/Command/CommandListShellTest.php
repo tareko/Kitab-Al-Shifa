@@ -1,6 +1,6 @@
 <?php
 /**
- * CommandList file
+ * CommandListShellTest file
  *
  * PHP 5
  *
@@ -31,7 +31,7 @@ class TestStringOutput extends ConsoleOutput {
 	}
 }
 
-class CommandListTest extends CakeTestCase {
+class CommandListShellTest extends CakeTestCase {
 /**
  * setUp method
  *
@@ -80,35 +80,35 @@ class CommandListTest extends CakeTestCase {
 		$output = $this->Shell->stdout->output;
 
 		$expected = "/example \[.*TestPlugin, TestPluginTwo.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/welcome \[.*TestPluginTwo.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 
 		$expected = "/acl \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/api \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/bake \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/console \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/i18n \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/schema \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/testsuite \[.*CORE.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/sample \[.*app.*\]/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 	}
 
 /**
@@ -123,16 +123,16 @@ class CommandListTest extends CakeTestCase {
 		$output = $this->Shell->stdout->output;
 
 		$expected = "/\[.*App.*\]\\v*[ ]+sample/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/\[.*TestPluginTwo.*\]\\v*[ ]+example, welcome/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/\[.*TestPlugin.*\]\\v*[ ]+example/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 
 		$expected = "/\[.*Core.*\]\\v*[ ]+acl, api, bake, command_list, console, i18n, schema, testsuite/";
-		$this->assertPattern($expected, $output);
+		$this->assertRegExp($expected, $output);
 	}
 
 /**
@@ -146,7 +146,7 @@ class CommandListTest extends CakeTestCase {
 
 		$output = $this->Shell->stdout->output;
 
-		$find = '<shell name="sample" call_as="sample" provider="app" help="sample -h"/>';	
+		$find = '<shell name="sample" call_as="sample" provider="app" help="sample -h"/>';
 		$this->assertContains($find, $output);
 
 		$find = '<shell name="bake" call_as="bake" provider="CORE" help="bake -h"/>';

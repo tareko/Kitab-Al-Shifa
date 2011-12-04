@@ -16,8 +16,6 @@
  * @since         CakePHP(tm) v 2.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'DEFAULT');
-
 App::uses('ConnectionManager', 'Model');
 App::uses('ClassRegistry', 'Utility');
 
@@ -84,6 +82,7 @@ class CakeFixtureManager {
 			return;
 		}
 		$db = ConnectionManager::getDataSource('test');
+		$db->cacheSources = false;
 		$this->_db = $db;
 		ClassRegistry::config(array('ds' => 'test'));
 		$this->_initialized = true;
@@ -141,7 +140,7 @@ class CakeFixtureManager {
 	}
 
 /**
- * Runs the drop and create commands on the fixtures if necessary
+ * Runs the drop and create commands on the fixtures if necessary.
  *
  * @param CakeTestFixture $fixture the fixture object to create
  * @param DataSource $db the datasource instance to use
@@ -156,10 +155,7 @@ class CakeFixtureManager {
 			return;
 		}
 
-		$cacheSources = $db->cacheSources;
-		$db->cacheSources = false;
 		$sources = $db->listSources();
-		$db->cacheSources = $cacheSources;
 		$table = $db->config['prefix'] . $fixture->table;
 
 		if ($drop && in_array($table, $sources)) {

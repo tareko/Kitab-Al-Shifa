@@ -135,8 +135,9 @@ class ShellDispatcher {
 			App::build();
 		}
 		require_once CAKE . 'Console' . DS . 'ConsoleErrorHandler.php';
-		set_exception_handler(array('ConsoleErrorHandler', 'handleException'));
-		set_error_handler(array('ConsoleErrorHandler', 'handleError'), Configure::read('Error.level'));
+		$ErrorHandler = new ConsoleErrorHandler();
+		set_exception_handler(array($ErrorHandler, 'handleException'));
+		set_error_handler(array($ErrorHandler, 'handleError'), Configure::read('Error.level'));
 
 		if (!defined('FULL_BASE_URL')) {
 			define('FULL_BASE_URL', 'http://localhost');
@@ -200,20 +201,22 @@ class ShellDispatcher {
  *
  * @param string $shell Optionally the name of a plugin
  * @return mixed An object
- * @throws MissingShellFileException when errors are encountered.
+ * @throws MissingShellException when errors are encountered.
  */
 	protected function _getShell($shell) {
 		list($plugin, $shell) = pluginSplit($shell, true);
 
-
+		$plugin = Inflector::camelize($plugin);
 		$class = Inflector::camelize($shell) . 'Shell';
 
 		App::uses('Shell', 'Console');
-		App::uses('AppShell', 'Console');
+		App::uses('AppShell', 'Console/Command');
 		App::uses($class, $plugin . 'Console/Command');
 
 		if (!class_exists($class)) {
-			throw new MissingShellFileException(array('shell' => $shell));
+			throw new MissingShellException(array(
+				'class' => $class
+			));
 		}
 		$Shell = new $class();
 		return $Shell;
@@ -285,8 +288,7 @@ class ShellDispatcher {
 		$parsed = array();
 		$keys = array('-working', '--working', '-app', '--app', '-root', '--root');
 		foreach ($keys as $key) {
-			$index = array_search($key, $args);
-			if ($index !== false) {
+			while (($index = array_search($key, $args)) !== false) {
 				$keyname = str_replace('-', '', $key);
 				$valueIndex = $index + 1;
 				$parsed[$keyname] = $args[$valueIndex];

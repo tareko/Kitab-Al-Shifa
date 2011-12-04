@@ -16,6 +16,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+App::uses('AppShell', 'Console/Command');
 App::uses('BakeTask', 'Console/Command/Task');
 App::uses('AppModel', 'Model');
 
@@ -219,7 +220,7 @@ class ControllerTask extends BakeTask {
 		$this->out(__d('cake_console', "Controller Name:\n\t%s", $controllerName));
 
 		if (strtolower($useDynamicScaffold) == 'y') {
-			$this->out("var \$scaffold;");
+			$this->out("public \$scaffold;");
 		}
 
 		$properties = array(
@@ -290,7 +291,8 @@ class ControllerTask extends BakeTask {
 		$displayField = $modelObj->displayField;
 		$primaryKey = $modelObj->primaryKey;
 
-		$this->Template->set(compact('plugin', 'admin', 'controllerPath', 'pluralName', 'singularName',
+		$this->Template->set(compact(
+			'plugin', 'admin', 'controllerPath', 'pluralName', 'singularName',
 			'singularHumanName', 'pluralHumanName', 'modelObj', 'wannaUseSession', 'currentModelName',
 			'displayField', 'primaryKey'
 		));
@@ -301,7 +303,7 @@ class ControllerTask extends BakeTask {
 /**
  * Assembles and writes a Controller file
  *
- * @param string $controllerName Controller name
+ * @param string $controllerName Controller name already pluralized and correctly cased.
  * @param string $actions Actions to add, or set the whole controller to use $scaffold (set $actions to 'scaffold')
  * @param array $helpers Helpers to use in controller
  * @param array $components Components to use in controller
@@ -312,12 +314,15 @@ class ControllerTask extends BakeTask {
 
 		$isScaffold = ($actions === 'scaffold') ? true : false;
 
-		$this->Template->set('plugin', $this->plugin);
+		$this->Template->set(array(
+			'plugin' => $this->plugin,
+			'pluginPath' => empty($this->plugin) ? '' : $this->plugin . '.'
+		));
 		$this->Template->set(compact('controllerName', 'actions', 'helpers', 'components', 'isScaffold'));
 		$contents = $this->Template->generate('classes', 'controller');
 
 		$path = $this->getPath();
-		$filename = $path . $this->_controllerName($controllerName) . 'Controller.php';
+		$filename = $path . $controllerName . 'Controller.php';
 		if ($this->createFile($filename, $contents)) {
 			return $contents;
 		}

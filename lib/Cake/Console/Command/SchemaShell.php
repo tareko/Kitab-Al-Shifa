@@ -18,6 +18,8 @@
  * @since         CakePHP(tm) v 1.2.0.5550
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
+App::uses('AppShell', 'Console/Command');
 App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
 App::uses('CakeSchema', 'Model');
@@ -26,9 +28,9 @@ App::uses('CakeSchema', 'Model');
  * Schema is a command-line database management utility for automating programmer chores.
  *
  * @package       Cake.Console.Command
- * @link          http://book.cakephp.org/view/1523/Schema-management-and-migrations
+ * @link          http://book.cakephp.org/2.0/en/console-and-shells/schema-management-and-migrations.html
  */
-class SchemaShell extends Shell {
+class SchemaShell extends AppShell {
 
 /**
  * Schema class being used.
@@ -64,7 +66,7 @@ class SchemaShell extends Shell {
 		$name = $path = $connection = $plugin = null;
 		if (!empty($this->params['name'])) {
 			$name = $this->params['name'];
-		} elseif (!empty($this->args[0])) {
+		} elseif (!empty($this->args[0]) && $this->args[0] !== 'snapshot') {
 			$name = $this->params['name'] = $this->args[0];
 		}
 
@@ -158,6 +160,7 @@ class SchemaShell extends Shell {
 		Configure::write('Cache.disable', $cacheDisable);
 
 		if ($snapshot === true) {
+			$fileName = rtrim($this->params['file'], '.php');
 			$Folder = new Folder($this->Schema->path);
 			$result = $Folder->read();
 
@@ -169,7 +172,7 @@ class SchemaShell extends Shell {
 			$count = 0;
 			if (!empty($result[1])) {
 				foreach ($result[1] as $file) {
-					if (preg_match('/schema(?:[_\d]*)?\.php$/', $file)) {
+					if (preg_match('/'.preg_quote($fileName).'(?:[_\d]*)?\.php$/', $file)) {
 						$count++;
 					}
 				}
@@ -181,7 +184,6 @@ class SchemaShell extends Shell {
 				}
 			}
 
-			$fileName = rtrim($this->params['file'], '.php');
 			$content['file'] = $fileName . '_' . $count . '.php';
 		}
 
@@ -428,7 +430,7 @@ class SchemaShell extends Shell {
 					$Schema->after(array($event => $table, 'errors' => $error));
 
 					if (!empty($error)) {
-						$this->out($error);
+						$this->err($error);
 					} else {
 						$this->out(__d('cake_console', '%s updated.', $table));
 					}
@@ -498,7 +500,7 @@ class SchemaShell extends Shell {
 		))->addSubcommand('dump', array(
 			'help' => __d('cake_console', 'Dump database SQL based on a schema file to stdout.'),
 			'parser' => array(
-				'options' => compact('plugin', 'path', 'file', 'name', 'connection'),
+				'options' => compact('plugin', 'path', 'file', 'name', 'connection', 'write'),
 				'arguments' => compact('name')
 			)
 		))->addSubcommand('create', array(

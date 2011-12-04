@@ -65,7 +65,7 @@
  * - `handler` - callback - The callback to handle exceptions. You can set this to any callback type,
  *   including anonymous functions.
  * - `renderer` - string - The class responsible for rendering uncaught exceptions.  If you choose a custom class you
- *   should place the file for that class in app/Error. This class needs to implement a render method.
+ *   should place the file for that class in app/Lib/Error. This class needs to implement a render method.
  * - `log` - boolean - Should Exceptions be logged?
  *
  * @see ErrorHandler for more information on exception handling and configuration.
@@ -196,8 +196,8 @@
  * Will append a querystring parameter containing the time the file was modified. This is
  * useful for invalidating browser caches.
  *
- * Set to `true` to apply timestamps, when debug = 0, or set to 'force' to always enable
- * timestamping.
+ * Set to `true` to apply timestamps when debug > 0. Set to 'force' to always enable
+ * timestamping regardless of debug value.
  */
 	//Configure::write('Asset.timestamp', true);
 /**
@@ -225,8 +225,8 @@
 	Configure::write('Acl.database', 'default');
 
 /**
- * If you are on PHP 5.3 uncomment this line and correct your server timezone
- * to fix the date & time related errors.
+ * Uncomment this line and correct your server timezone to fix 
+ * any date & time related errors.
  */
 	//date_default_timezone_set('UTC');
 
@@ -297,7 +297,7 @@
  *
  */
 $engine = 'File';
-if (extension_loaded('apc') && (php_sapi_name() !== 'cli' || ini_get('apc.enable_cli'))) {
+if (extension_loaded('apc') && function_exists('apc_dec') && (php_sapi_name() !== 'cli' || ini_get('apc.enable_cli'))) {
 	$engine = 'Apc';
 }
 

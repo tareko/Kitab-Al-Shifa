@@ -16,6 +16,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+App::uses('AppShell', 'Console/Command');
 App::uses('BakeTask', 'Console/Command/Task');
 App::uses('ClassRegistry', 'Utility');
 
@@ -116,18 +117,22 @@ class TestTask extends BakeTask {
  * @return string|boolean
  */
 	public function bake($type, $className) {
-		if ($this->typeCanDetectFixtures($type) && $this->isLoadableClass($type, $className)) {
+		$plugin = null;
+		if ($this->plugin) {
+			$plugin = $this->plugin . '.';
+		}
+
+		$realType = $this->mapType($type, $plugin);
+		$fullClassName = $this->getRealClassName($type, $className);
+
+		if ($this->typeCanDetectFixtures($type) && $this->isLoadableClass($realType, $fullClassName)) {
 			$this->out(__d('cake_console', 'Bake is detecting possible fixtures...'));
 			$testSubject = $this->buildTestSubject($type, $className);
 			$this->generateFixtureList($testSubject);
 		} elseif ($this->interactive) {
 			$this->getUserFixtures();
 		}
-		$fullClassName = $className;
-
-		if (!$this->interactive) {
-			$fullClassName = $this->getRealClassName($type, $className);
-		}
+		App::uses($fullClassName, $realType);
 
 		$methods = array();
 		if (class_exists($fullClassName)) {
@@ -136,15 +141,14 @@ class TestTask extends BakeTask {
 		$mock = $this->hasMockClass($type, $fullClassName);
 		$construction = $this->generateConstructor($type, $fullClassName);
 
-		$plugin = null;
-		if ($this->plugin) {
-			$plugin = $this->plugin . '.';
-		}
 		$this->out("\n" . __d('cake_console', 'Baking test case for %s %s ...', $className, $type), 1, Shell::QUIET);
 
 		$this->Template->set('fixtures', $this->_fixtures);
 		$this->Template->set('plugin', $plugin);
-		$this->Template->set(compact('className', 'methods', 'type', 'fullClassName', 'mock', 'construction'));
+		$this->Template->set(compact(
+			'className', 'methods', 'type', 'fullClassName', 'mock',
+			'construction', 'realType'
+		));
 		$out = $this->Template->generate('classes', 'test');
 
 		$filename = $this->testCaseFileName($type, $className);
@@ -187,15 +191,10 @@ class TestTask extends BakeTask {
  * @return string Class name the user chose.
  */
 	public function getClassName($objectType) {
-		$type = strtolower($objectType);
+		$type = ucfirst(strtolower($objectType));
+		$typeLength = strlen($type);
+		$type = $this->classTypes[$type];
 		if ($this->plugin) {
-			if ($type === 'helper') {
-				$type = 'View/Helper';
-			} elseif ($type === 'component') {
-				$type = 'Controller/Component';
-			} elseif ($type === 'behavior') {
-				$type = 'Model/Behavior';
-			}
 			$plugin = $this->plugin . '.';
 			$options = App::objects($plugin . $type);
 		} else {
@@ -207,9 +206,14 @@ class TestTask extends BakeTask {
 			$this->out(++$key . '. ' . $option);
 			$keys[] = $key;
 		}
-		$selection = $this->in(__d('cake_console', 'Choose an existing class, or enter the name of a class that does not exist'));
-		if (isset($options[$selection - 1])) {
-			return $options[$selection - 1];
+		while (empty($selection)) {
+			$selection = $this->in(__d('cake_console', 'Choose an existing class, or enter the name of a class that does not exist'));
+			if (is_numeric($selection) && isset($options[$selection - 1])) {
+				$selection = $options[$selection - 1];
+			}
+			if ($type !== 'Model') {
+				$selection = substr($selection, 0, $typeLength * - 1);
+			}
 		}
 		return $selection;
 	}
@@ -223,18 +227,19 @@ class TestTask extends BakeTask {
  */
 	public function typeCanDetectFixtures($type) {
 		$type = strtolower($type);
-		return ($type == 'controller' || $type == 'model');
+		return in_array($type, array('controller', 'model'));
 	}
 
 /**
- * Check if a class with the given type is loaded or can be loaded.
+ * Check if a class with the given package is loaded or can be loaded.
  *
- * @param string $type The Type of object you are generating tests for eg. controller
+ * @param string $package The package of object you are generating tests for eg. controller
  * @param string $class the Classname of the class the test is being generated for.
  * @return boolean
  */
-	public function isLoadableClass($type, $class) {
-		return App::import($type, $class);
+	public function isLoadableClass($package, $class) {
+		App::uses($class, $package);
+		return class_exists($class);
 	}
 
 /**
@@ -258,7 +263,8 @@ class TestTask extends BakeTask {
 	}
 
 /**
- * Gets the real class name from the cake short form.
+ * Gets the real class name from the cake short form. If the class name is already
+ * suffixed with the type, the type will not be duplicated.
  *
  * @param string $type The Type of object you are generating tests for eg. controller
  * @param string $class the Classname of the class the test is being generated for.
@@ -268,7 +274,29 @@ class TestTask extends BakeTask {
 		if (strtolower($type) == 'model' || empty($this->classTypes[$type])) {
 			return $class;
 		}
+		if (strlen($class) - strpos($class, $type) == strlen($type)) {
+			return $class;
+		}
 		return $class . $type;
+	}
+
+/**
+ * Map the types that TestTask uses to concrete types that App::uses can use.
+ *
+ * @param string $type The type of thing having a test generated.
+ * @param string $plugin The plugin name.
+ * @return string
+ */
+	public function mapType($type, $plugin) {
+		$type = ucfirst($type);
+		if (empty($this->classTypes[$type])) {
+			throw new CakeException(__d('cake_dev', 'Invalid object type.'));
+		}
+		$real = $this->classTypes[$type];
+		if ($plugin) {
+			$real = trim($plugin, '.') . '.' . $real;
+		}
+		return $real;
 	}
 
 /**
@@ -426,12 +454,11 @@ class TestTask extends BakeTask {
  */
 	public function testCaseFileName($type, $className) {
 		$path = $this->getPath() . 'Case' . DS;
+		$type = Inflector::camelize($type);
 		if (isset($this->classTypes[$type])) {
 			$path .= $this->classTypes[$type] . DS;
 		}
-		if (!$this->interactive) {
-			$className = $this->getRealClassName($type, $className);
-		}
+		$className = $this->getRealClassName($type, $className);
 		return str_replace('/', DS, $path) . Inflector::camelize($className) . 'Test.php';
 	}
 
@@ -445,7 +472,13 @@ class TestTask extends BakeTask {
 		return $parser->description(__d('cake_console', 'Bake test case skeletons for classes.'))
 			->addArgument('type', array(
 				'help' => __d('cake_console', 'Type of class to bake, can be any of the following: controller, model, helper, component or behavior.'),
-				'choices' => array('controller', 'model', 'helper', 'component', 'behavior')
+				'choices' => array(
+					'Controller', 'controller',
+					'Model', 'model',
+					'Helper', 'helper',
+					'Component', 'component',
+					'Behavior', 'behavior'
+				)
 			))->addArgument('name', array(
 				'help' => __d('cake_console', 'An existing class to bake tests for.')
 			))->addOption('plugin', array(

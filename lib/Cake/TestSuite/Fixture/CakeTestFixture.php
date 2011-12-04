@@ -16,9 +16,6 @@
  * @since         CakePHP(tm) v 1.2.0.4667
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'DEFAULT');
-
 App::uses('CakeSchema', 'Model');
 
 /**
@@ -188,7 +185,7 @@ class CakeTestFixture {
 		}
 		$this->Schema->build(array($this->table => $this->fields));
 		try {
-			
+
 			$db->execute($db->dropSchema($this->Schema), array('log' => false));
 		} catch (Exception $e) {
 			return false;

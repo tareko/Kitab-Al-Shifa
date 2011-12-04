@@ -104,6 +104,7 @@ class Contact extends CakeTestModel {
 		'non_existing' => array(),
 		'idontexist' => array(),
 		'imrequired' => array('rule' => array('between', 5, 30), 'allowEmpty' => false),
+		'string_required' => 'notEmpty',
 		'imalsorequired' => array('rule' => 'alphaNumeric', 'allowEmpty' => false),
 		'imrequiredtoo' => array('rule' => 'notEmpty'),
 		'required_one' => array('required' => array('rule' => array('notEmpty'))),
@@ -711,7 +712,7 @@ class FormHelperTest extends CakeTestCase {
 	public function testCreateClearingFields() {
 		$this->Form->fields = array('model_id');
 		$this->Form->create('Contact');
-		$this->assertEqual($this->Form->fields, array());
+		$this->assertEquals($this->Form->fields, array());
 	}
 
 /**
@@ -722,7 +723,7 @@ class FormHelperTest extends CakeTestCase {
 	public function testValidateHashNoModel() {
 		$this->Form->request['_Token'] = array('key' => 'foo');
 		$result = $this->Form->secure(array('anything'));
-		$this->assertPattern('/540ac9c60d323c22bafe997b72c0790f39a8bdef/', $result);
+		$this->assertRegExp('/540ac9c60d323c22bafe997b72c0790f39a8bdef/', $result);
 	}
 
 /**
@@ -732,25 +733,25 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testDuplicateFieldNameResolution() {
 		$result = $this->Form->create('ValidateUser');
-		$this->assertEqual($this->Form->entity(), array('ValidateUser'));
+		$this->assertEquals($this->Form->entity(), array('ValidateUser'));
 
 		$result = $this->Form->input('ValidateItem.name');
-		$this->assertEqual($this->Form->entity(), array('ValidateItem', 'name'));
+		$this->assertEquals($this->Form->entity(), array('ValidateItem', 'name'));
 
 		$result = $this->Form->input('ValidateUser.name');
-		$this->assertEqual($this->Form->entity(), array('ValidateUser', 'name'));
-		$this->assertPattern('/name="data\[ValidateUser\]\[name\]"/', $result);
-		$this->assertPattern('/type="text"/', $result);
+		$this->assertEquals($this->Form->entity(), array('ValidateUser', 'name'));
+		$this->assertRegExp('/name="data\[ValidateUser\]\[name\]"/', $result);
+		$this->assertRegExp('/type="text"/', $result);
 
 		$result = $this->Form->input('ValidateItem.name');
-		$this->assertEqual($this->Form->entity(), array('ValidateItem', 'name'));
-		$this->assertPattern('/name="data\[ValidateItem\]\[name\]"/', $result);
-		$this->assertPattern('/<textarea/', $result);
+		$this->assertEquals($this->Form->entity(), array('ValidateItem', 'name'));
+		$this->assertRegExp('/name="data\[ValidateItem\]\[name\]"/', $result);
+		$this->assertRegExp('/<textarea/', $result);
 
 		$result = $this->Form->input('name');
-		$this->assertEqual($this->Form->entity(), array('ValidateUser', 'name'));
-		$this->assertPattern('/name="data\[ValidateUser\]\[name\]"/', $result);
-		$this->assertPattern('/type="text"/', $result);
+		$this->assertEquals($this->Form->entity(), array('ValidateUser', 'name'));
+		$this->assertRegExp('/name="data\[ValidateUser\]\[name\]"/', $result);
+		$this->assertRegExp('/type="text"/', $result);
 	}
 
 /**
@@ -760,10 +761,10 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testNoCheckboxLocking() {
 		$this->Form->request['_Token'] = array('key' => 'foo');
-		$this->assertIdentical($this->Form->fields, array());
+		$this->assertSame($this->Form->fields, array());
 
 		$this->Form->checkbox('check', array('value' => '1'));
-		$this->assertIdentical($this->Form->fields, array('check'));
+		$this->assertSame($this->Form->fields, array('check'));
 	}
 
 /**
@@ -845,7 +846,7 @@ class FormHelperTest extends CakeTestCase {
 		);
 		$this->assertTags($result, $expected);
 	}
-	
+
 /**
  * Tests correct generation of number fields for integer fields
  *
@@ -960,6 +961,75 @@ class FormHelperTest extends CakeTestCase {
 	}
 
 /**
+ * Test that buttons created with foo[bar] name attributes are unlocked correctly.
+ *
+ * @return void
+ */
+	public function testSecurityButtonNestedNamed() {
+		$key = 'testKey';
+		$this->Form->request['_Token'] = array('key' => $key);
+
+		$this->Form->create('Addresses');
+		$this->Form->button('Test', array('type' => 'submit', 'name' => 'Address[button]'));
+		$result = $this->Form->unlockField();
+		$this->assertEquals(array('Address.button'), $result);
+	}
+
+
+/**
+ * Test that submit inputs created with foo[bar] name attributes are unlocked correctly.
+ *
+ * @return void
+ */
+	public function testSecuritySubmitNestedNamed() {
+		$key = 'testKey';
+		$this->Form->request['_Token'] = array('key' => $key);
+
+		$this->Form->create('Addresses');
+		$this->Form->submit('Test', array('type' => 'submit', 'name' => 'Address[button]'));
+		$result = $this->Form->unlockField();
+		$this->assertEquals(array('Address.button'), $result);
+	}
+/**
+ * Test that the correct fields are unlocked for image submits with no names.
+ *
+ * @return void
+ */
+	public function testSecuritySubmitImageNoName() {
+		$key = 'testKey';
+		$this->Form->request['_Token'] = array('key' => $key);
+
+		$this->Form->create('User');
+		$result = $this->Form->submit('save.png');
+		$expected = array(
+			'div' => array('class' => 'submit'),
+			'input' => array('type' => 'image', 'src' => 'img/save.png'),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+		$this->assertEquals(array('x', 'y'), $this->Form->unlockField());
+	}
+
+/**
+ * Test that the correct fields are unlocked for image submits with names.
+ *
+ * @return void
+ */
+	public function testSecuritySubmitImageName() {
+		$key = 'testKey';
+		$this->Form->request['_Token'] = array('key' => $key);
+
+		$this->Form->create('User');
+		$result = $this->Form->submit('save.png', array('name' => 'test'));
+		$expected = array(
+			'div' => array('class' => 'submit'),
+			'input' => array('type' => 'image', 'name' => 'test', 'src' => 'img/save.png'),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+		$this->assertEquals(array('test', 'test_x', 'test_y'), $this->Form->unlockField());
+	}
+/**
  * testFormSecurityMultipleInputFields method
  *
  * Test secure form creation with multiple row creation.  Checks hidden, text, checkbox field types
@@ -1007,6 +1077,20 @@ class FormHelperTest extends CakeTestCase {
 			'/div'
 		);
 		$this->assertTags($result, $expected);
+	}
+
+/**
+ * Test form security with Model.field.0 style inputs
+ *
+ * @return void
+ */
+	function testFormSecurityArrayFields() {
+		$key = 'testKey';
+
+		$this->Form->request->params['_Token']['key'] = $key;
+		$this->Form->create('Address');
+		$this->Form->input('Address.primary.1');
+		$this->assertEquals('Address.primary', $this->Form->fields[0]);
 	}
 
 /**
@@ -1086,7 +1170,7 @@ class FormHelperTest extends CakeTestCase {
 			'Addresses.id' => '123456', 'Addresses.title', 'Addresses.last_name',
 			'Addresses.city', 'Addresses.phone'
 		);
-		$this->assertEqual($expected, $result);
+		$this->assertEquals($expected, $result);
 
 		$result = $this->Form->secure($expected);
 
@@ -1115,10 +1199,10 @@ class FormHelperTest extends CakeTestCase {
 		$this->Form->request->params['_Token']['key'] = 'testKey';
 
 		$this->Form->text('UserForm.published', array('name' => 'data[User][custom]'));
-		$this->assertEqual('User.custom', $this->Form->fields[0]);
+		$this->assertEquals('User.custom', $this->Form->fields[0]);
 
 		$this->Form->text('UserForm.published', array('name' => 'data[User][custom][another][value]'));
-		$this->assertEqual('User.custom.another.value', $this->Form->fields[1]);
+		$this->assertEquals('User.custom.another.value', $this->Form->fields[1]);
 	}
 
 /**
@@ -1210,7 +1294,7 @@ class FormHelperTest extends CakeTestCase {
 			'UserForm.published', 'UserForm.other', 'UserForm.stuff' => '',
 			'UserForm.hidden' => '0', 'UserForm.something'
 		);
-		$this->assertEqual($expected, $result);
+		$this->assertEquals($expected, $result);
 
 		$hash = 'bd7c4a654e5361f9a433a43f488ff9a1065d0aaf%3AUserForm.hidden%7CUserForm.stuff';
 
@@ -1237,14 +1321,14 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testFormSecuredFileInput() {
 		$this->Form->request['_Token'] = array('key' => 'testKey');
-		$this->assertEqual($this->Form->fields, array());
+		$this->assertEquals($this->Form->fields, array());
 
 		$result = $this->Form->file('Attachment.file');
 		$expected = array (
 			'Attachment.file.name', 'Attachment.file.type', 'Attachment.file.tmp_name',
 			'Attachment.file.error', 'Attachment.file.size'
 		);
-		$this->assertEqual($this->Form->fields, $expected);
+		$this->assertEquals($this->Form->fields, $expected);
 	}
 
 /**
@@ -1254,16 +1338,16 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testFormSecuredMultipleSelect() {
 		$this->Form->request['_Token'] = array('key' => 'testKey');
-		$this->assertEqual($this->Form->fields, array());
+		$this->assertEquals($this->Form->fields, array());
 		$options = array('1' => 'one', '2' => 'two');
 
 		$this->Form->select('Model.select', $options);
 		$expected = array('Model.select');
-		$this->assertEqual($this->Form->fields, $expected);
+		$this->assertEquals($this->Form->fields, $expected);
 
 		$this->Form->fields = array();
 		$this->Form->select('Model.select', $options, array('multiple' => true));
-		$this->assertEqual($this->Form->fields, $expected);
+		$this->assertEquals($this->Form->fields, $expected);
 	}
 
 /**
@@ -1273,12 +1357,12 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testFormSecuredRadio() {
 		$this->Form->request['_Token'] = array('key' => 'testKey');
-		$this->assertEqual($this->Form->fields, array());
+		$this->assertEquals($this->Form->fields, array());
 		$options = array('1' => 'option1', '2' => 'option2');
 
 		$this->Form->radio('Test.test', $options);
 		$expected = array('Test.test');
-		$this->assertEqual($this->Form->fields, $expected);
+		$this->assertEquals($this->Form->fields, $expected);
 	}
 
 /**
@@ -1305,7 +1389,7 @@ class FormHelperTest extends CakeTestCase {
 		$expected = array(
 			'Addresses.id' => '123456', 'Addresses.title',
 		);
-		$this->assertEqual($expected, $result);
+		$this->assertEquals($expected, $result);
 	}
 
 /**
@@ -1378,6 +1462,62 @@ class FormHelperTest extends CakeTestCase {
 	}
 
 /**
+ * testEmptyErrorValidation method
+ *
+ * test validation error div when validation message is an empty string
+ *
+ * @access public
+ * @return void
+ */
+	function testEmptyErrorValidation() {
+		$this->Form->validationErrors['Contact']['password'] = '';
+		$result = $this->Form->input('Contact.password');
+		$expected = array(
+			'div' => array('class' => 'input password error'),
+			'label' => array('for' => 'ContactPassword'),
+			'Password',
+			'/label',
+			'input' => array(
+				'type' => 'password', 'name' => 'data[Contact][password]',
+				'id' => 'ContactPassword', 'class' => 'form-error'
+			),
+			array('div' => array('class' => 'error-message')),
+			array(),
+			'/div',
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
+ * testEmptyInputErrorValidation method
+ *
+ * test validation error div when validation message is overriden by an empty string when calling input()
+ *
+ * @access public
+ * @return void
+ */
+	function testEmptyInputErrorValidation() {
+		$this->Form->validationErrors['Contact']['password'] = 'Please provide a password';
+		$result = $this->Form->input('Contact.password', array('error' => ''));
+		$expected = array(
+			'div' => array('class' => 'input password error'),
+			'label' => array('for' => 'ContactPassword'),
+			'Password',
+			'/label',
+			'input' => array(
+				'type' => 'password', 'name' => 'data[Contact][password]',
+				'id' => 'ContactPassword', 'class' => 'form-error'
+			),
+			array('div' => array('class' => 'error-message')),
+			array(),
+			'/div',
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
  * testFormValidationAssociated method
  *
  * test display of form errors in conjunction with model::validates.
@@ -1413,7 +1553,7 @@ class FormHelperTest extends CakeTestCase {
 		$result = $this->Form->error(
 			'OpenidUrl.openid_not_registered', 'Error, not registered', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Error, not registered');
+		$this->assertEquals($result, 'Error, not registered');
 
 		unset($this->UserForm->OpenidUrl, $this->UserForm);
 	}
@@ -1452,17 +1592,17 @@ class FormHelperTest extends CakeTestCase {
 		$result = $this->Form->error(
 			'ValidateUser.email', 'Invalid email', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Invalid email');
+		$this->assertEquals($result, 'Invalid email');
 
 		$result = $this->Form->error(
 			'ValidateProfile.full_name', 'Invalid name', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Invalid name');
+		$this->assertEquals($result, 'Invalid name');
 
 		$result = $this->Form->error(
 			'ValidateProfile.city', 'Invalid city', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Invalid city');
+		$this->assertEquals($result, 'Invalid city');
 
 		unset($this->ValidateUser->ValidateProfile);
 		unset($this->ValidateUser);
@@ -1501,16 +1641,16 @@ class FormHelperTest extends CakeTestCase {
 			'/div'
 		);
 		$this->assertTags($result, $expected);
-		
+
 		$result = $this->Form->error(
 			'ValidateUser.email', 'Invalid email', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Invalid email');
+		$this->assertEquals($result, 'Invalid email');
 
 		$result = $this->Form->error(
 			'ValidateProfile.full_name', 'Invalid name', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Invalid name');
+		$this->assertEquals($result, 'Invalid name');
 
 		$result = $this->Form->error(
 			'ValidateProfile.city', 'Invalid city', array('wrap' => false)
@@ -1519,7 +1659,7 @@ class FormHelperTest extends CakeTestCase {
 		$result = $this->Form->error(
 			'ValidateItem.description', 'Invalid description', array('wrap' => false)
 		);
-		$this->assertEqual($result, 'Invalid description');
+		$this->assertEquals($result, 'Invalid description');
 
 		unset($this->ValidateUser->ValidateProfile->ValidateItem);
 		unset($this->ValidateUser->ValidateProfile);
@@ -1815,6 +1955,24 @@ class FormHelperTest extends CakeTestCase {
 		$this->assertTags($result, $expected);
 
 		$result = $this->Form->input('Contact.field', array(
+			'type' => 'text', 'error' => array('attributes' => array('class' => 'error'))
+		));
+		$expected = array(
+			'div' => array('class' => 'input text error'),
+			'label' => array('for' => 'ContactField'),
+			'Field',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][field]',
+				'id' => 'ContactField', 'class' => 'form-error'
+			),
+			array('div' => array('class' => 'error')),
+			'Badness!',
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.field', array(
 			'div' => array('tag' => 'span'), 'error' => array('attributes' => array('wrap' => false))
 		));
 		$expected = array(
@@ -1961,47 +2119,47 @@ class FormHelperTest extends CakeTestCase {
 		extract($this->dateRegex);
 		$result = $this->Form->input('Contact.created', array('type' => 'time', 'timeFormat' => 24));
 		$result = explode(':', $result);
-		$this->assertPattern('/option value="23"/', $result[0]);
-		$this->assertNoPattern('/option value="24"/', $result[0]);
+		$this->assertRegExp('/option value="23"/', $result[0]);
+		$this->assertNotRegExp('/option value="24"/', $result[0]);
 
 		$result = $this->Form->input('Contact.created', array('type' => 'time', 'timeFormat' => 24));
 		$result = explode(':', $result);
-		$this->assertPattern('/option value="23"/', $result[0]);
-		$this->assertNoPattern('/option value="24"/', $result[0]);
+		$this->assertRegExp('/option value="23"/', $result[0]);
+		$this->assertNotRegExp('/option value="24"/', $result[0]);
 
 		$result = $this->Form->input('Model.field', array(
 			'type' => 'time', 'timeFormat' => 24, 'interval' => 15
 		));
 		$result = explode(':', $result);
-		$this->assertNoPattern('#<option value="12"[^>]*>12</option>#', $result[1]);
-		$this->assertNoPattern('#<option value="50"[^>]*>50</option>#', $result[1]);
-		$this->assertPattern('#<option value="15"[^>]*>15</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="12"[^>]*>12</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="50"[^>]*>50</option>#', $result[1]);
+		$this->assertRegExp('#<option value="15"[^>]*>15</option>#', $result[1]);
 
 		$result = $this->Form->input('Model.field', array(
 			'type' => 'time', 'timeFormat' => 12, 'interval' => 15
 		));
 		$result = explode(':', $result);
-		$this->assertNoPattern('#<option value="12"[^>]*>12</option>#', $result[1]);
-		$this->assertNoPattern('#<option value="50"[^>]*>50</option>#', $result[1]);
-		$this->assertPattern('#<option value="15"[^>]*>15</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="12"[^>]*>12</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="50"[^>]*>50</option>#', $result[1]);
+		$this->assertRegExp('#<option value="15"[^>]*>15</option>#', $result[1]);
 
 		$result = $this->Form->input('prueba', array(
 			'type' => 'time', 'timeFormat'=> 24 , 'dateFormat'=>'DMY' , 'minYear' => 2008,
 			'maxYear' => date('Y') + 1 ,'interval' => 15
 		));
 		$result = explode(':', $result);
-		$this->assertNoPattern('#<option value="12"[^>]*>12</option>#', $result[1]);
-		$this->assertNoPattern('#<option value="50"[^>]*>50</option>#', $result[1]);
-		$this->assertPattern('#<option value="15"[^>]*>15</option>#', $result[1]);
-		$this->assertPattern('#<option value="30"[^>]*>30</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="12"[^>]*>12</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="50"[^>]*>50</option>#', $result[1]);
+		$this->assertRegExp('#<option value="15"[^>]*>15</option>#', $result[1]);
+		$this->assertRegExp('#<option value="30"[^>]*>30</option>#', $result[1]);
 
 		$result = $this->Form->input('Random.start_time', array(
 			'type' => 'time',
 			'selected' => '18:15'
 		));
-		$this->assertPattern('#<option value="06"[^>]*>6</option>#', $result);
-		$this->assertPattern('#<option value="15"[^>]*>15</option>#', $result);
-		$this->assertPattern('#<option value="pm"[^>]*>pm</option>#', $result);
+		$this->assertRegExp('#<option value="06"[^>]*>6</option>#', $result);
+		$this->assertRegExp('#<option value="15"[^>]*>15</option>#', $result);
+		$this->assertRegExp('#<option value="pm"[^>]*>pm</option>#', $result);
 	}
 
 /**
@@ -2016,42 +2174,42 @@ class FormHelperTest extends CakeTestCase {
 			'maxYear' => date('Y') + 1 ,'interval' => 15
 		));
 		$result = explode(':', $result);
-		$this->assertNoPattern('#<option value="12"[^>]*>12</option>#', $result[1]);
-		$this->assertNoPattern('#<option value="50"[^>]*>50</option>#', $result[1]);
-		$this->assertPattern('#<option value="15"[^>]*>15</option>#', $result[1]);
-		$this->assertPattern('#<option value="30"[^>]*>30</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="12"[^>]*>12</option>#', $result[1]);
+		$this->assertNotRegExp('#<option value="50"[^>]*>50</option>#', $result[1]);
+		$this->assertRegExp('#<option value="15"[^>]*>15</option>#', $result[1]);
+		$this->assertRegExp('#<option value="30"[^>]*>30</option>#', $result[1]);
 
 		//related to ticket #5013
 		$result = $this->Form->input('Contact.date', array(
 			'type' => 'date', 'class' => 'customClass', 'onChange' => 'function(){}'
 		));
-		$this->assertPattern('/class="customClass"/', $result);
-		$this->assertPattern('/onChange="function\(\)\{\}"/', $result);
+		$this->assertRegExp('/class="customClass"/', $result);
+		$this->assertRegExp('/onChange="function\(\)\{\}"/', $result);
 
 		$result = $this->Form->input('Contact.date', array(
 			'type' => 'date', 'id' => 'customId', 'onChange' => 'function(){}'
 		));
-		$this->assertPattern('/id="customIdDay"/', $result);
-		$this->assertPattern('/id="customIdMonth"/', $result);
-		$this->assertPattern('/onChange="function\(\)\{\}"/', $result);
+		$this->assertRegExp('/id="customIdDay"/', $result);
+		$this->assertRegExp('/id="customIdMonth"/', $result);
+		$this->assertRegExp('/onChange="function\(\)\{\}"/', $result);
 
 		$result = $this->Form->input('Model.field', array(
 			'type' => 'datetime', 'timeFormat' => 24, 'id' => 'customID'
 		));
-		$this->assertPattern('/id="customIDDay"/', $result);
-		$this->assertPattern('/id="customIDHour"/', $result);
+		$this->assertRegExp('/id="customIDDay"/', $result);
+		$this->assertRegExp('/id="customIDHour"/', $result);
 		$result = explode('</select><select', $result);
 		$result = explode(':', $result[1]);
-		$this->assertPattern('/option value="23"/', $result[0]);
-		$this->assertNoPattern('/option value="24"/', $result[0]);
+		$this->assertRegExp('/option value="23"/', $result[0]);
+		$this->assertNotRegExp('/option value="24"/', $result[0]);
 
 		$result = $this->Form->input('Model.field', array(
 			'type' => 'datetime', 'timeFormat' => 12
 		));
 		$result = explode('</select><select', $result);
 		$result = explode(':', $result[1]);
-		$this->assertPattern('/option value="12"/', $result[0]);
-		$this->assertNoPattern('/option value="13"/', $result[0]);
+		$this->assertRegExp('/option value="12"/', $result[0]);
+		$this->assertNotRegExp('/option value="13"/', $result[0]);
 
 		$this->Form->request->data = array('Contact' => array('created' => null));
 		$result = $this->Form->input('Contact.created', array('empty' => 'Date Unknown'));
@@ -2078,18 +2236,18 @@ class FormHelperTest extends CakeTestCase {
 
 		$this->Form->request->data = array('Contact' => array('created' => null));
 		$result = $this->Form->input('Contact.created', array('type' => 'datetime', 'dateFormat' => 'NONE'));
-		$this->assertPattern('/for\="ContactCreatedHour"/', $result);
+		$this->assertRegExp('/for\="ContactCreatedHour"/', $result);
 
 		$this->Form->request->data = array('Contact' => array('created' => null));
 		$result = $this->Form->input('Contact.created', array('type' => 'datetime', 'timeFormat' => 'NONE'));
-		$this->assertPattern('/for\="ContactCreatedMonth"/', $result);
+		$this->assertRegExp('/for\="ContactCreatedMonth"/', $result);
 
 		$result = $this->Form->input('Contact.created', array(
 			'type' => 'date',
 			'id' => array('day' => 'created-day', 'month' => 'created-month', 'year' => 'created-year'),
 			'timeFormat' => 'NONE'
 		));
-		$this->assertPattern('/for\="created-month"/', $result);
+		$this->assertRegExp('/for\="created-month"/', $result);
 	}
 
 /**
@@ -2361,7 +2519,7 @@ class FormHelperTest extends CakeTestCase {
 	public function testInputMagicSelectChangeToRadio() {
 		$this->View->viewVars['users'] = array('value' => 'good', 'other' => 'bad');
 		$result = $this->Form->input('Model.user_id', array('type' => 'radio'));
-		$this->assertPattern('/input type="radio"/', $result);
+		$this->assertRegExp('/input type="radio"/', $result);
 	}
 
 /**
@@ -2767,11 +2925,11 @@ class FormHelperTest extends CakeTestCase {
 		$this->assertTags($result, array('div' => array('class' => 'error-message'), 'Error in field Field', '/div'));
 
 		$result = $this->Form->error('Contact.field', null, array('wrap' => false));
-		$this->assertEqual($result, 'Error in field Field');
+		$this->assertEquals($result, 'Error in field Field');
 
 		$Contact->validationErrors['field'] = array("This field contains invalid input");
 		$result = $this->Form->error('Contact.field', null, array('wrap' => false));
-		$this->assertEqual($result, 'This field contains invalid input');
+		$this->assertEquals($result, 'This field contains invalid input');
 
 		$Contact->validationErrors['field'] = array("This field contains invalid input");
 		$result = $this->Form->error('Contact.field', null, array('wrap' => 'span'));
@@ -2781,13 +2939,13 @@ class FormHelperTest extends CakeTestCase {
 		$this->assertTags($result, array('span' => array('class' => 'error-message'), 'There is an error fool!', '/span'));
 
 		$result = $this->Form->error('Contact.field', "<strong>Badness!</strong>", array('wrap' => false));
-		$this->assertEqual($result, '&lt;strong&gt;Badness!&lt;/strong&gt;');
+		$this->assertEquals($result, '&lt;strong&gt;Badness!&lt;/strong&gt;');
 
 		$result = $this->Form->error('Contact.field', "<strong>Badness!</strong>", array('wrap' => false, 'escape' => true));
-		$this->assertEqual($result, '&lt;strong&gt;Badness!&lt;/strong&gt;');
+		$this->assertEquals($result, '&lt;strong&gt;Badness!&lt;/strong&gt;');
 
 		$result = $this->Form->error('Contact.field', "<strong>Badness!</strong>", array('wrap' => false, 'escape' => false));
-		$this->assertEqual($result, '<strong>Badness!</strong>');
+		$this->assertEquals($result, '<strong>Badness!</strong>');
 
 		$Contact->validationErrors['field'] = array("email");
 		$result = $this->Form->error('Contact.field', array('attributes' => array('class' => 'field-error'), 'email' => 'No good!'));
@@ -2868,10 +3026,10 @@ class FormHelperTest extends CakeTestCase {
 		$ValidateProfile = ClassRegistry::getObject('ValidateProfile');
 		$ValidateProfile->validationErrors['city'] = array('required<br>');
 		$result = $this->Form->input('city',array('error' => array('attributes' => array('escape' => true))));
-		$this->assertPattern('/required&lt;br&gt;/', $result);
+		$this->assertRegExp('/required&lt;br&gt;/', $result);
 
 		$result = $this->Form->input('city',array('error' => array('attributes' => array('escape' => false))));
-		$this->assertPattern('/required<br>/', $result);
+		$this->assertRegExp('/required<br>/', $result);
 	}
 
 /**
@@ -3327,6 +3485,27 @@ class FormHelperTest extends CakeTestCase {
 			'/option',
 			array('option' => array('value' => 'second')),
 			'value',
+			'/option',
+			'/select'
+		);
+		$this->assertTags($result, $expected);
+
+		$options = array(
+			array('value' => 'first', 'name' => 'First'),
+			array('value' => 'first', 'name' => 'Another First'),
+		);
+		$result = $this->Form->select(
+			'Model.field',
+			$options,
+			array('escape' => false, 'empty' => false)
+		);
+		$expected = array(
+			'select' => array('name' => 'data[Model][field]', 'id' => 'ModelField'),
+			array('option' => array('value' => 'first')),
+			'First',
+			'/option',
+			array('option' => array('value' => 'first')),
+			'Another First',
 			'/option',
 			'/select'
 		);
@@ -3845,17 +4024,17 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testSelectMultipleCheckboxSecurity() {
 		$this->Form->request['_Token'] = array('key' => 'testKey');
-		$this->assertEqual($this->Form->fields, array());
+		$this->assertEquals($this->Form->fields, array());
 
 		$result = $this->Form->select(
 			'Model.multi_field', array('1' => 'first', '2' => 'second', '3' => 'third'),
 			array('multiple' => 'checkbox')
 		);
-		$this->assertEqual($this->Form->fields, array('Model.multi_field'));
+		$this->assertEquals($this->Form->fields, array('Model.multi_field'));
 
 		$result = $this->Form->secure($this->Form->fields);
 		$key = 'f7d573650a295b94e0938d32b323fde775e5f32b%3A';
-		$this->assertPattern('/"' . $key . '"/', $result);
+		$this->assertRegExp('/"' . $key . '"/', $result);
 	}
 
 /**
@@ -4377,7 +4556,7 @@ class FormHelperTest extends CakeTestCase {
 			'*/select'
 		);
 		$this->assertTags($result, $expected);
-		$this->assertNoPattern('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('value' => false));
 		$expected = array(
@@ -4417,7 +4596,7 @@ class FormHelperTest extends CakeTestCase {
 			'*/select'
 		);
 		$this->assertTags($result, $expected);
-		$this->assertNoPattern('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('value' => ''));
 		$expected = array(
@@ -4457,7 +4636,7 @@ class FormHelperTest extends CakeTestCase {
 			'*/select'
 		);
 		$this->assertTags($result, $expected);
-		$this->assertNoPattern('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('interval' => 5, 'value' => ''));
 		$expected = array(
@@ -4506,7 +4685,7 @@ class FormHelperTest extends CakeTestCase {
 			'*/select'
 		);
 		$this->assertTags($result, $expected);
-		$this->assertNoPattern('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('minuteInterval' => 5, 'value' => ''));
 		$expected = array(
@@ -4555,7 +4734,7 @@ class FormHelperTest extends CakeTestCase {
 			'*/select'
 		);
 		$this->assertTags($result, $expected);
-		$this->assertNoPattern('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$this->Form->request->data['Contact']['data'] = null;
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12');
@@ -4596,7 +4775,7 @@ class FormHelperTest extends CakeTestCase {
 			'*/select'
 		);
 		$this->assertTags($result, $expected);
-		$this->assertNoPattern('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$this->Form->request->data['Model']['field'] = date('Y') . '-01-01 00:00:00';
 		$now = strtotime($this->Form->data['Model']['field']);
@@ -4647,12 +4826,12 @@ class FormHelperTest extends CakeTestCase {
 
 		$selected = strtotime('2008-10-26 12:33:00');
 		$result = $this->Form->dateTime('Model.field', 'DMY', '12', array('value' => $selected));
-		$this->assertPattern('/<option[^<>]+value="2008"[^<>]+selected="selected"[^>]*>2008<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="10"[^<>]+selected="selected"[^>]*>October<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="26"[^<>]+selected="selected"[^>]*>26<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="12"[^<>]+selected="selected"[^>]*>12<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="33"[^<>]+selected="selected"[^>]*>33<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="pm"[^<>]+selected="selected"[^>]*>pm<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="2008"[^<>]+selected="selected"[^>]*>2008<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="10"[^<>]+selected="selected"[^>]*>October<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="26"[^<>]+selected="selected"[^>]*>26<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="12"[^<>]+selected="selected"[^>]*>12<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="33"[^<>]+selected="selected"[^>]*>33<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="pm"[^<>]+selected="selected"[^>]*>pm<\/option>/', $result);
 
 		$this->Form->create('Contact');
 		$result = $this->Form->input('published');
@@ -4772,11 +4951,11 @@ class FormHelperTest extends CakeTestCase {
 			'selected' => strtotime('2009-09-03 13:37:00'),
 			'type' => 'datetime'
 		));
-		$this->assertPattern('/<option[^<>]+value="2009"[^<>]+selected="selected"[^>]*>2009<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="09"[^<>]+selected="selected"[^>]*>September<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="03"[^<>]+selected="selected"[^>]*>3<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="13"[^<>]+selected="selected"[^>]*>13<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="35"[^<>]+selected="selected"[^>]*>35<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="2009"[^<>]+selected="selected"[^>]*>2009<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="09"[^<>]+selected="selected"[^>]*>September<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="03"[^<>]+selected="selected"[^>]*>3<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="13"[^<>]+selected="selected"[^>]*>13<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="35"[^<>]+selected="selected"[^>]*>35<\/option>/', $result);
 
 		$this->assertNoErrors();
 		$this->Form->request->data['Contact'] = array(
@@ -4799,16 +4978,16 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testDatetimeWithDefault() {
 		$result = $this->Form->dateTime('Contact.updated', 'DMY', '12', array('value' => '2009-06-01 11:15:30'));
-		$this->assertPattern('/<option[^<>]+value="2009"[^<>]+selected="selected"[^>]*>2009<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="01"[^<>]+selected="selected"[^>]*>1<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="06"[^<>]+selected="selected"[^>]*>June<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="2009"[^<>]+selected="selected"[^>]*>2009<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="01"[^<>]+selected="selected"[^>]*>1<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="06"[^<>]+selected="selected"[^>]*>June<\/option>/', $result);
 
 		$result = $this->Form->dateTime('Contact.updated', 'DMY', '12', array(
 			'default' => '2009-06-01 11:15:30'
 		));
-		$this->assertPattern('/<option[^<>]+value="2009"[^<>]+selected="selected"[^>]*>2009<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="01"[^<>]+selected="selected"[^>]*>1<\/option>/', $result);
-		$this->assertPattern('/<option[^<>]+value="06"[^<>]+selected="selected"[^>]*>June<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="2009"[^<>]+selected="selected"[^>]*>2009<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="01"[^<>]+selected="selected"[^>]*>1<\/option>/', $result);
+		$this->assertRegExp('/<option[^<>]+value="06"[^<>]+selected="selected"[^>]*>June<\/option>/', $result);
 	}
 
 /**
@@ -4818,7 +4997,7 @@ class FormHelperTest extends CakeTestCase {
  */
 	public function testDateTimeWithBogusData() {
 		$result = $this->Form->dateTime('Contact.updated', 'DMY', '12', array('value' => 'CURRENT_TIMESTAMP'));
-		$this->assertNoPattern('/selected="selected">\d/', $result);
+		$this->assertNotRegExp('/selected="selected">\d/', $result);
 	}
 
 /**
@@ -5251,7 +5430,7 @@ class FormHelperTest extends CakeTestCase {
 		$result = $this->Form->hour('Model.field', true, array('value' => 'now'));
 		$thisHour = date('H');
 		$optValue = date('G');
-		$this->assertPattern('/<option value="' . $thisHour . '" selected="selected">'. $optValue .'<\/option>/', $result);
+		$this->assertRegExp('/<option value="' . $thisHour . '" selected="selected">'. $optValue .'<\/option>/', $result);
 	}
 
 /**
@@ -5577,7 +5756,7 @@ class FormHelperTest extends CakeTestCase {
 		$this->assertTags($result, array('button' => array('type' => 'reset'), '&lt;Clear Form&gt;', '/button'));
 
 		$result = $this->Form->button('Upload Text', array('onClick' => "$('#postAddForm').ajaxSubmit({target: '#postTextUpload', url: '/posts/text'});return false;'", 'escape' => false));
-		$this->assertNoPattern('/\&039/', $result);
+		$this->assertNotRegExp('/\&039/', $result);
 	}
 
 /**
@@ -5901,6 +6080,23 @@ class FormHelperTest extends CakeTestCase {
 	}
 
 /**
+ * Test submit image with timestamps.
+ *
+ * @return void
+ */
+	function testSubmitImageTimestamp() {
+		Configure::write('Asset.timestamp', 'force');
+
+		$result = $this->Form->submit('cake.power.gif');
+		$expected = array(
+			'div' => array('class' => 'submit'),
+			'input' => array('type' => 'image', 'src' => 'preg:/img\/cake\.power\.gif\?\d*/'),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
  * test the create() method
  *
  * @return void
@@ -6066,6 +6262,51 @@ class FormHelperTest extends CakeTestCase {
 		$expected = array(
 			'form' => array(
 				'id' => 'ContactAddForm', 'method' => 'post', 'action' => '/contacts/index/param',
+				'accept-charset' => 'utf-8'
+			),
+			'div' => array('style' => 'display:none;'),
+			'input' => array('type' => 'hidden', 'name' => '_method', 'value' => 'POST'),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+	}
+
+/**
+ * Test the onsubmit option for create()
+ *
+ * @return void
+ */
+	public function testCreateOnSubmit() {
+		$this->Form->request->data = array();
+		$this->Form->request['controller'] = 'contacts';
+		$this->Form->request['models'] = array('Contact' => array('plugin' => null, 'className' => 'Contact'));
+		$result = $this->Form->create(array('url' => array('action' => 'index', 'param'), 'default' => false));
+		$expected = array(
+			'form' => array(
+				'id' => 'ContactAddForm', 'method' => 'post', 'onsubmit' => 'event.returnValue = false; return false;', 'action' => '/contacts/index/param',
+				'accept-charset' => 'utf-8'
+			),
+			'div' => array('style' => 'display:none;'),
+			'input' => array('type' => 'hidden', 'name' => '_method', 'value' => 'POST'),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$this->Form->request->data = array();
+		$this->Form->request['controller'] = 'contacts';
+		$this->Form->request['models'] = array('Contact' => array('plugin' => null, 'className' => 'Contact'));
+		$result = $this->Form->create(array(
+			'url' => array('action' => 'index', 'param'),
+			'default' => false,
+			'onsubmit' => 'someFunction();'
+		));
+
+		$expected = array(
+			'form' => array(
+				'id' => 'ContactAddForm', 'method' => 'post',
+				'onsubmit' => 'someFunction();event.returnValue = false; return false;',
+				'action' => '/contacts/index/param',
 				'accept-charset' => 'utf-8'
 			),
 			'div' => array('style' => 'display:none;'),
@@ -6308,7 +6549,7 @@ class FormHelperTest extends CakeTestCase {
 		$this->assertTags($result, array('input' => array(
 			'name' => 'password', 'type' => 'password', 'id' => 'ContactPassword'
 		)));
-		$this->assertNoPattern('/<input[^<>]+[^id|name|type|value]=[^<>]*>$/', $result);
+		$this->assertNotRegExp('/<input[^<>]+[^id|name|type|value]=[^<>]*>$/', $result);
 
 		$result = $this->Form->text('user_form');
 		$this->assertTags($result, array('input' => array(
@@ -6349,12 +6590,12 @@ class FormHelperTest extends CakeTestCase {
 		$this->Form->create('Contact', array('type' => 'get'));
 		$result = $this->Form->datetime('created');
 
-		$this->assertPattern('/name="created\[year\]"/', $result, 'year name attribute is wrong.');
-		$this->assertPattern('/name="created\[month\]"/', $result, 'month name attribute is wrong.');
-		$this->assertPattern('/name="created\[day\]"/', $result, 'day name attribute is wrong.');
-		$this->assertPattern('/name="created\[hour\]"/', $result, 'hour name attribute is wrong.');
-		$this->assertPattern('/name="created\[min\]"/', $result, 'min name attribute is wrong.');
-		$this->assertPattern('/name="created\[meridian\]"/', $result, 'meridian name attribute is wrong.');
+		$this->assertRegExp('/name="created\[year\]"/', $result, 'year name attribute is wrong.');
+		$this->assertRegExp('/name="created\[month\]"/', $result, 'month name attribute is wrong.');
+		$this->assertRegExp('/name="created\[day\]"/', $result, 'day name attribute is wrong.');
+		$this->assertRegExp('/name="created\[hour\]"/', $result, 'hour name attribute is wrong.');
+		$this->assertRegExp('/name="created\[min\]"/', $result, 'min name attribute is wrong.');
+		$this->assertRegExp('/name="created\[meridian\]"/', $result, 'meridian name attribute is wrong.');
 	}
 /**
  * testEditFormWithData method
@@ -6388,6 +6629,141 @@ class FormHelperTest extends CakeTestCase {
 			array('option' => array('value' => 2)), 'Garrett', '/option',
 			array('option' => array('value' => 3)), 'Larry', '/option',
 			'/select'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
+ * Test that required fields are created for various types of validation.
+ *
+ * @return void
+ */
+	function testFormInputRequiredDetection() {
+		$this->Form->create('Contact');
+
+		$result = $this->Form->input('Contact.non_existing');
+		$expected = array(
+			'div' => array('class' => 'input text required'),
+			'label' => array('for' => 'ContactNonExisting'),
+			'Non Existing',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][non_existing]',
+				'id' => 'ContactNonExisting'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.imrequired');
+		$expected = array(
+			'div' => array('class' => 'input text required'),
+			'label' => array('for' => 'ContactImrequired'),
+			'Imrequired',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][imrequired]',
+				'id' => 'ContactImrequired'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.imalsorequired');
+		$expected = array(
+			'div' => array('class' => 'input text required'),
+			'label' => array('for' => 'ContactImalsorequired'),
+			'Imalsorequired',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][imalsorequired]',
+				'id' => 'ContactImalsorequired'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.imrequiredtoo');
+		$expected = array(
+			'div' => array('class' => 'input text required'),
+			'label' => array('for' => 'ContactImrequiredtoo'),
+			'Imrequiredtoo',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][imrequiredtoo]',
+				'id' => 'ContactImrequiredtoo'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.required_one');
+		$expected = array(
+			'div' => array('class' => 'input text required'),
+			'label' => array('for' => 'ContactRequiredOne'),
+			'Required One',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][required_one]',
+				'id' => 'ContactRequiredOne'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.string_required');
+		$expected = array(
+			'div' => array('class' => 'input text required'),
+			'label' => array('for' => 'ContactStringRequired'),
+			'String Required',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][string_required]',
+				'id' => 'ContactStringRequired'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.imnotrequired');
+		$expected = array(
+			'div' => array('class' => 'input text'),
+			'label' => array('for' => 'ContactImnotrequired'),
+			'Imnotrequired',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][imnotrequired]',
+				'id' => 'ContactImnotrequired'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.imalsonotrequired');
+		$expected = array(
+			'div' => array('class' => 'input text'),
+			'label' => array('for' => 'ContactImalsonotrequired'),
+			'Imalsonotrequired',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][imalsonotrequired]',
+				'id' => 'ContactImalsonotrequired'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->input('Contact.imnotrequiredeither');
+		$expected = array(
+			'div' => array('class' => 'input text'),
+			'label' => array('for' => 'ContactImnotrequiredeither'),
+			'Imnotrequiredeither',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][imnotrequiredeither]',
+				'id' => 'ContactImnotrequiredeither'
+			),
+			'/div'
 		);
 		$this->assertTags($result, $expected);
 	}
@@ -6479,117 +6855,6 @@ class FormHelperTest extends CakeTestCase {
 		);
 		$this->assertTags($result, $expected);
 
-		$result = $this->Form->input('Contact.non_existing');
-		$expected = array(
-			'div' => array('class' => 'input text required'),
-			'label' => array('for' => 'ContactNonExisting'),
-			'Non Existing',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][non_existing]',
-				'id' => 'ContactNonExisting'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.imrequired');
-		$expected = array(
-			'div' => array('class' => 'input text required'),
-			'label' => array('for' => 'ContactImrequired'),
-			'Imrequired',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][imrequired]',
-				'id' => 'ContactImrequired'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.imalsorequired');
-		$expected = array(
-			'div' => array('class' => 'input text required'),
-			'label' => array('for' => 'ContactImalsorequired'),
-			'Imalsorequired',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][imalsorequired]',
-				'id' => 'ContactImalsorequired'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.imrequiredtoo');
-		$expected = array(
-			'div' => array('class' => 'input text required'),
-			'label' => array('for' => 'ContactImrequiredtoo'),
-			'Imrequiredtoo',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][imrequiredtoo]',
-				'id' => 'ContactImrequiredtoo'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.required_one');
-		$expected = array(
-			'div' => array('class' => 'input text required'),
-			'label' => array('for' => 'ContactRequiredOne'),
-			'Required One',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][required_one]',
-				'id' => 'ContactRequiredOne'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.imnotrequired');
-		$expected = array(
-			'div' => array('class' => 'input text'),
-			'label' => array('for' => 'ContactImnotrequired'),
-			'Imnotrequired',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][imnotrequired]',
-				'id' => 'ContactImnotrequired'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.imalsonotrequired');
-		$expected = array(
-			'div' => array('class' => 'input text'),
-			'label' => array('for' => 'ContactImalsonotrequired'),
-			'Imalsonotrequired',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][imalsonotrequired]',
-				'id' => 'ContactImalsonotrequired'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
-
-		$result = $this->Form->input('Contact.imnotrequiredeither');
-		$expected = array(
-			'div' => array('class' => 'input text'),
-			'label' => array('for' => 'ContactImnotrequiredeither'),
-			'Imnotrequiredeither',
-			'/label',
-			'input' => array(
-				'type' => 'text', 'name' => 'data[Contact][imnotrequiredeither]',
-				'id' => 'ContactImnotrequiredeither'
-			),
-			'/div'
-		);
-		$this->assertTags($result, $expected);
 
 		extract($this->dateRegex);
 		$now = strtotime('now');
@@ -6864,7 +7129,7 @@ class FormHelperTest extends CakeTestCase {
  * @return void
  */
 	public function testFormEnd() {
-		$this->assertEqual($this->Form->end(), '</form>');
+		$this->assertEquals($this->Form->end(), '</form>');
 
 		$result = $this->Form->end('');
 		$expected = array(
@@ -7287,7 +7552,7 @@ class FormHelperTest extends CakeTestCase {
 			'input' => array('type' => 'text', 'name' => 'data[User][query]', 'id' => 'UserQuery', 'value' => 'test')
 		);
 		$this->assertTags($result, $expected);
-		
+
 		$result = $this->Form->input('User.website', array('type' => 'url', 'value' => 'http://domain.tld', 'div' => false, 'label' => false));
 		$expected = array(
 			'input' => array('type' => 'url', 'name' => 'data[User][website]', 'id' => 'UserWebsite', 'value' => 'http://domain.tld')

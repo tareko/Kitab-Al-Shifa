@@ -70,12 +70,12 @@ class TaskCollectionTest extends CakeTestCase {
 		$this->assertFalse($this->Tasks->enabled('DbConfig'), 'DbConfigTask should be disabled');
 	}
 /**
- * test missinghelper exception
+ * test missingtask exception
  *
- * @expectedException MissingTaskClassException
+ * @expectedException MissingTaskException
  * @return void
  */
-	public function testLoadMissingTaskFile() {
+	public function testLoadMissingTask() {
 		$result = $this->Tasks->load('ThisTaskShouldAlwaysBeMissing');
 	}
 
@@ -88,7 +88,7 @@ class TaskCollectionTest extends CakeTestCase {
 		$dispatcher = $this->getMock('ShellDispatcher', array(), array(), '', false);
 		$shell = $this->getMock('Shell', array(), array(), '', false);
 		App::build(array(
-			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		CakePlugin::load('TestPlugin');
 		$this->Tasks = new TaskCollection($shell, $dispatcher);

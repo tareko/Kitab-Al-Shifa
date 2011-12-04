@@ -23,28 +23,6 @@ App::uses('ConsoleInput', 'Console');
 App::uses('Shell', 'Console');
 App::uses('DbConfigTask', 'Console/Command/Task');
 
-class TEST_DATABASE_CONFIG {
-	public $default = array(
-		'driver' => 'mysql',
-		'persistent' => false,
-		'host' => 'localhost',
-		'login' => 'user',
-		'password' => 'password',
-		'database' => 'database_name',
-		'prefix' => '',
-	);
-
-	public $otherOne = array(
-		'driver' => 'mysql',
-		'persistent' => false,
-		'host' => 'localhost',
-		'login' => 'user',
-		'password' => 'password',
-		'database' => 'other_one',
-		'prefix' => '',
-	);
-}
-
 /**
  * DbConfigTest class
  *
@@ -62,13 +40,12 @@ class DbConfigTaskTest extends CakeTestCase {
 		$out = $this->getMock('ConsoleOutput', array(), array(), '', false);
 		$in = $this->getMock('ConsoleInput', array(), array(), '', false);
 
-		$this->Task = $this->getMock('DbConfigTask', 
+		$this->Task = $this->getMock('DbConfigTask',
 			array('in', 'out', 'err', 'hr', 'createFile', '_stop', '_checkUnitTest', '_verify'),
 			array($out, $out, $in)
 		);
 
 		$this->Task->path = APP . 'Config' . DS;
-		$this->Task->databaseClassName = 'TEST_DATABASE_CONFIG';
 	}
 
 /**
@@ -87,9 +64,12 @@ class DbConfigTaskTest extends CakeTestCase {
  * @return void
  */
 	public function testGetConfig() {
-		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue('otherOne'));
+		$this->Task->expects($this->any())
+			->method('in')
+			->will($this->returnValue('test'));
+
 		$result = $this->Task->getConfig();
-		$this->assertEquals('otherOne', $result);
+		$this->assertEquals('test', $result);
 	}
 
 /**
@@ -135,7 +115,7 @@ class DbConfigTaskTest extends CakeTestCase {
 			->with(array(
 				array(
 					'name' => 'default',
-					'driver' => 'mysql',
+					'datasource' => 'mysql',
 					'persistent' => 'false',
 					'host' => 'localhost',
 					'login' => 'root',

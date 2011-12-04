@@ -16,6 +16,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+App::uses('AppShell', 'Console/Command');
 App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
 
@@ -24,7 +25,7 @@ App::uses('Folder', 'Utility');
  *
  * @package       Cake.Console.Command.Task
  */
-class PluginTask extends Shell {
+class PluginTask extends AppShell {
 
 /**
  * path to plugins directory
@@ -134,7 +135,6 @@ class PluginTask extends Shell {
 			$out = "<?php\n\n";
 			$out .= "class {$plugin}AppController extends AppController {\n\n";
 			$out .= "}\n\n";
-			$out .= "?>";
 			$this->createFile($this->path . $plugin. DS . 'Controller' . DS . $controllerFileName, $out);
 
 			$modelFileName = $plugin . 'AppModel.php';
@@ -142,7 +142,6 @@ class PluginTask extends Shell {
 			$out = "<?php\n\n";
 			$out .= "class {$plugin}AppModel extends AppModel {\n\n";
 			$out .= "}\n\n";
-			$out .= "?>";
 			$this->createFile($this->path . $plugin . DS . 'Model' . DS . $modelFileName, $out);
 
 			$this->hr();

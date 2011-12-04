@@ -21,6 +21,7 @@
  * CakePlugin class
  *
  * @package       Cake.Core
+ * @link http://book.cakephp.org/2.0/en/plugins.html
  */
 class CakePlugin {
 
@@ -117,7 +118,7 @@ class CakePlugin {
  * @param array $options
  * @return void
  */
-	public function loadAll($options = array()) {
+	public static function loadAll($options = array()) {
 		$plugins = App::objects('plugins');
 		foreach ($plugins as $p) {
 			$opts = isset($options[$p]) ? $options[$p] : null;
@@ -193,7 +194,7 @@ class CakePlugin {
 	}
 
 /**
- * Retruns true if the plugin $plugin is already loaded
+ * Returns true if the plugin $plugin is already loaded
  * If plugin is null, it will return a list of all loaded plugins
  *
  * @param string $plugin

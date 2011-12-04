@@ -1,6 +1,6 @@
 <?php
 /**
- * Short description for file.
+ * TestsAppsPostsController file
  *
  * PHP 5
  *
@@ -50,6 +50,11 @@ class TestsAppsPostsController extends AppController {
  */
 	public function post_var() {
 		$this->set('data', $this->request->data);
+		$this->render('index');
+	}
+
+	public function input_data() {
+		$this->set('data', $this->request->input('json_decode', true));
 		$this->render('index');
 	}
 

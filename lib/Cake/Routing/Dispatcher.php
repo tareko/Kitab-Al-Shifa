@@ -1,6 +1,6 @@
 <?php
 /**
- * Dispatcher takes the URL information, parses it for paramters and
+ * Dispatcher takes the URL information, parses it for parameters and
  * tells the involved controllers what to do.
  *
  * This is the heart of Cake's operation.
@@ -75,13 +75,14 @@ class Dispatcher {
 			return;
 		}
 
-		$request = $this->parseParams($request, $additionalParams);
 		Router::setRequestInfo($request);
+		$request = $this->parseParams($request, $additionalParams);
 		$controller = $this->_getController($request, $response);
 
 		if (!($controller instanceof Controller)) {
 			throw new MissingControllerException(array(
-				'controller' => Inflector::camelize($request->params['controller']) . 'Controller'
+				'class' => Inflector::camelize($request->params['controller']) . 'Controller',
+				'plugin' => empty($request->params['plugin']) ? null : Inflector::camelize($request->params['plugin'])
 			));
 		}
 
@@ -159,7 +160,11 @@ class Dispatcher {
 		if (!$ctrlClass) {
 			return false;
 		}
-		return new $ctrlClass($request, $response);
+		$reflection = new ReflectionClass($ctrlClass);
+		if ($reflection->isAbstract() || $reflection->isInterface()) {
+			return false;
+		}
+		return $reflection->newInstance($request, $response);
 	}
 
 /**
@@ -218,8 +223,10 @@ class Dispatcher {
 			}
 
 			if (file_exists($filename)) {
+				App::uses('ThemeView', 'View');
+
 				$controller = null;
-				$view = new View($controller);
+				$view = new ThemeView($controller);
 				return $view->renderCache($filename, microtime(true));
 			}
 		}
@@ -307,6 +314,9 @@ class Dispatcher {
 				$contentType = 'application/octetstream';
 			}
 			$response->type($contentType);
+		}
+		if (!$compressionEnabled) {
+		    $response->header('Content-Length', filesize($assetFile));
 		}
 		$response->cache(filemtime($assetFile));
 		$response->send();

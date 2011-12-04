@@ -26,7 +26,7 @@ App::uses('CakeSession', 'Model/Datasource');
  * Session reading from the view.
  *
  * @package       Cake.View.Helper
- * @link http://book.cakephp.org/view/1465/Session
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/session.html
  */
 class SessionHelper extends AppHelper {
 
@@ -38,7 +38,7 @@ class SessionHelper extends AppHelper {
  *
  * @param string $name the name of the session key you want to read
  * @return mixed values from the session vars
- * @link http://book.cakephp.org/view/1466/Methods
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/session.html#SessionHelper::read
  */
 	public function read($name = null) {
 		return CakeSession::read($name);
@@ -51,7 +51,7 @@ class SessionHelper extends AppHelper {
  *
  * @param string $name
  * @return boolean
- * @link http://book.cakephp.org/view/1466/Methods
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/session.html#SessionHelper::check
  */
 	public function check($name) {
 		return CakeSession::check($name);
@@ -63,7 +63,7 @@ class SessionHelper extends AppHelper {
  * In your view: `$this->Session->error();`
  *
  * @return string last error
- * @link http://book.cakephp.org/view/1466/Methods
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/session.html#displaying-notifcations-or-flash-messages
  */
 	public function error() {
 		return CakeSession::error();
@@ -100,12 +100,21 @@ class SessionHelper extends AppHelper {
  * echo $this->Session->flash('flash', array('element' => 'my_custom_element'));
  * }}}
  *
+ * If you want to use an element from a plugin for rendering your flash message you can do that using the 
+ * plugin param:
+ *
+ * {{{
+ * echo $this->Session->flash('flash', array(
+ *		'element' => 'my_custom_element',
+ *		'params' => array('plugin' => 'my_plugin')
+ * ));
+ * }}}
+ *
  * @param string $key The [Message.]key you are rendering in the view.
  * @param array $attrs Additional attributes to use for the creation of this flash message.
  *    Supports the 'params', and 'element' keys that are used in the helper.
  * @return string
- * @link http://book.cakephp.org/view/1466/Methods
- * @link http://book.cakephp.org/view/1467/flash
+ * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/session.html#SessionHelper::flash
  */
 	public function flash($key = 'flash', $attrs = array()) {
 		$out = false;
@@ -128,9 +137,13 @@ class SessionHelper extends AppHelper {
 			} elseif ($flash['element'] == '' || $flash['element'] == null) {
 				$out = $message;
 			} else {
+				$options = array();
+				if (isset($flash['params']['plugin'])) {
+					$options['plugin'] = $flash['params']['plugin'];
+				}
 				$tmpVars = $flash['params'];
 				$tmpVars['message'] = $message;
-				$out = $this->_View->element($flash['element'], $tmpVars);
+				$out = $this->_View->element($flash['element'], $tmpVars, $options);
 			}
 			CakeSession::delete('Message.' . $key);
 		}

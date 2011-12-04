@@ -43,7 +43,7 @@
  * You can inspect the currently loaded paths using `App::path('Controller')` for example to see loaded
  * controller paths.
  *
- * 	It is also possible to inspect paths for plugin classes, for instance, to see a plugin's helpers you would call
+ * It is also possible to inspect paths for plugin classes, for instance, to see a plugin's helpers you would call
  * `App::path('View/Helper', 'MyPlugin')`
  *
  * ### Locating plugins and themes
@@ -57,7 +57,7 @@
  * You can find out which objects App knows about using App::objects('Controller') for example to find
  * which application controllers App knows about.
  *
- * @link          http://book.cakephp.org/view/933/The-App-Class
+ * @link          http://book.cakephp.org/2.0/en/core-utility-libraries/app.html
  * @package       Cake.Core
  */
 class App {
@@ -99,7 +99,7 @@ class App {
 		'view' => array('suffix' => 'View', 'extends' => null, 'core' => true),
 		'helper' => array('suffix' => 'Helper', 'extends' => 'AppHelper', 'core' => true),
 		'vendor' => array('extends' => null, 'core' => true),
-		'shell' => array('suffix' => 'Shell', 'extends' => 'Shell', 'core' => true),
+		'shell' => array('suffix' => 'Shell', 'extends' => 'AppShell', 'core' => true),
 		'plugin' => array('extends' => null, 'core' => true)
 	);
 
@@ -166,7 +166,9 @@ class App {
 		'views' => 'View',
 		'helpers' => 'View/Helper',
 		'shells' => 'Console/Command',
-		'libs' => 'Lib'
+		'libs' => 'Lib',
+		'vendors' => 'Vendor',
+		'plugins' => 'Plugin',
 	);
 
 /**
@@ -203,6 +205,7 @@ class App {
  * @param string $type type of path
  * @param string $plugin name of plugin
  * @return string array
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::path
  */
 	public static function path($type, $plugin = null) {
 		if (!empty(self::$legacy[$type])) {
@@ -212,8 +215,9 @@ class App {
 		if (!empty($plugin)) {
 			$path = array();
 			$pluginPath = self::pluginPath($plugin);
-			if (!empty(self::$_packageFormat[$type])) {
-				foreach (self::$_packageFormat[$type] as $f) {
+			$packageFormat= self::_packageFormat();
+			if (!empty($packageFormat[$type])) {
+				foreach ($packageFormat[$type] as $f) {
 					$path[] = sprintf($f, $pluginPath);
 				}
 			}
@@ -233,6 +237,7 @@ class App {
  * use App::path()
  *
  * @return array An array of packages and their associated paths.
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::paths
  */
 	public static function paths() {
 		return self::$_packages;
@@ -249,97 +254,16 @@ class App {
  *
  * `App::build(array('Model' => array('/path/to/models/')), App::RESET); will setup the path as the only valid path for searching models`
  *
- * `App::build(array('View/Helper' => array('/path/to/helpers/', '/another/path/))); will setup multiple search paths for helpers`
+ * `App::build(array('View/Helper' => array('/path/to/helpers/', '/another/path/'))); will setup multiple search paths for helpers`
  *
  * If reset is set to true, all loaded plugins will be forgotten and they will be needed to be loaded again.
  *
  * @param array $paths associative array with package names as keys and a list of directories for new search paths
  * @param mixed $mode App::RESET will set paths, App::APPEND with append paths, App::PREPEND will prepend paths, [default] App::PREPEND
  * @return void
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::build
  */
 	public static function build($paths = array(), $mode = App::PREPEND) {
-		if (empty(self::$_packageFormat)) {
-			self::$_packageFormat = array(
-				'Model' => array(
-					'%s' . 'Model' . DS,
-					'%s' . 'models' . DS
-				),
-				'Model/Behavior' => array(
-					'%s' . 'Model' . DS . 'Behavior' . DS,
-					'%s' . 'models' . DS . 'behaviors' . DS
-				),
-				'Model/Datasource' => array(
-					'%s' . 'Model' . DS . 'Datasource' . DS,
-					'%s' . 'models' . DS . 'datasources' . DS
-				),
-				'Model/Datasource/Database' => array(
-					'%s' . 'Model' . DS . 'Datasource' . DS . 'Database' . DS,
-					'%s' . 'models' . DS . 'datasources' . DS . 'database' . DS
-				),
-				'Model/Datasource/Session' => array(
-					'%s' . 'Model' . DS . 'Datasource' . DS . 'Session' . DS,
-					'%s' . 'models' . DS . 'datasources' . DS . 'session' . DS
-				),
-				'Controller' => array(
-					'%s' . 'Controller' . DS,
-					'%s' . 'controllers' . DS
-				),
-				'Controller/Component' => array(
-					'%s' . 'Controller' . DS . 'Component' . DS,
-					'%s' . 'controllers' . DS . 'components' . DS
-				),
-				'Controller/Component/Auth' => array(
-					'%s' . 'Controller' . DS . 'Component' . DS . 'Auth' . DS,
-					'%s' . 'controllers' . DS . 'components' . DS . 'auth' . DS
-				),
-				'View' => array(
-					'%s' . 'View' . DS,
-					'%s' . 'views' . DS
-				),
-				'View/Helper' => array(
-					'%s' . 'View' . DS . 'Helper' . DS,
-					'%s' . 'views' . DS . 'helpers' . DS
-				),
-				'Console' => array(
-					'%s' . 'Console' . DS,
-					'%s' . 'console' . DS
-				),
-				'Console/Command' => array(
-					'%s' . 'Console' . DS . 'Command' . DS,
-					'%s' . 'console' . DS . 'shells' . DS,
-				),
-				'Console/Command/Task' => array(
-					'%s' . 'Console' . DS . 'Command' . DS . 'Task' . DS,
-					'%s' . 'console' . DS . 'shells' . DS . 'tasks' . DS
-				),
-				'Lib' => array(
-					'%s' . 'Lib' . DS,
-					'%s' . 'libs' . DS
-				),
-				'locales' => array(
-					'%s' . 'Locale' . DS,
-					'%s' . 'locale' . DS
-				),
-				'vendors' => array('%s' . 'Vendor' . DS, VENDORS),
-				'plugins' => array(
-					APP . 'Plugin' . DS,
-					APP . 'plugins' . DS,
-					dirname(dirname(CAKE)) . DS . 'plugins' . DS,
-				)
-			);
-		}
-
-		if ($mode === App::RESET) {
-			foreach ($paths as $type => $new) {
-				if (!empty(self::$legacy[$type])) {
-					$type = self::$legacy[$type];
-				}
-				self::$_packages[$type] = (array)$new;
-				self::objects($type, null, false);
-			}
-			return $paths;
-		}
-
 		//Provides Backwards compatibility for old-style package names
 		$legacyPaths = array();
 		foreach ($paths as $type => $path) {
@@ -348,31 +272,48 @@ class App {
 			}
 			$legacyPaths[$type] = $path;
 		}
-
 		$paths = $legacyPaths;
+
+		if ($mode === App::RESET) {
+			foreach ($paths as $type => $new) {
+				self::$_packages[$type] = (array)$new;
+				self::objects($type, null, false);
+			}
+			return;
+		}
+
+		$packageFormat = self::_packageFormat();
+
 		$defaults = array();
-		foreach (self::$_packageFormat as $package => $format) {
+		foreach ($packageFormat as $package => $format) {
 			foreach ($format as $f) {
 				$defaults[$package][] = sprintf($f, APP);
 			}
 		}
 
-		foreach ($defaults as $type => $default) {
-			if (empty(self::$_packages[$type]) || empty($paths)) {
-				self::$_packages[$type] = $default;
-			}
+		if (empty($paths)) {
+			self::$_packages = $defaults;
+			return;
+		}
 
-			if (!empty($paths[$type])) {
-				if ($mode === App::PREPEND) {
-					$path = array_merge((array)$paths[$type], self::$_packages[$type]);
-				} else {
-					$path = array_merge(self::$_packages[$type], (array)$paths[$type]);
-				}
-			} else {
+		foreach ($defaults as $type => $default) {
+			if (!empty(self::$_packages[$type])) {
 				$path = self::$_packages[$type];
 			}
 
-			self::$_packages[$type] = array_values(array_unique($path));
+			if (!empty($paths[$type])) {
+				$newPath = (array)$paths[$type];
+
+				if ($mode === App::PREPEND) {
+					$path = array_merge($newPath, $path);
+				} else {
+					$path = array_merge($path, $newPath);
+				}
+
+				$path = array_values(array_unique($path));
+			}
+
+			self::$_packages[$type] = $path;
 		}
 	}
 
@@ -385,6 +326,7 @@ class App {
  *
  * @param string $plugin CamelCased/lower_cased plugin name to find the path of.
  * @return string full path to the plugin.
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::pluginPath
  */
 	public static function pluginPath($plugin) {
 		return CakePlugin::path($plugin);
@@ -399,6 +341,7 @@ class App {
  *
  * @param string $theme theme name to find the path of.
  * @return string full path to the theme.
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::themePath
  */
 	public static function themePath($theme) {
 		$themeDir = 'Themed' . DS . Inflector::camelize($theme);
@@ -419,6 +362,7 @@ class App {
  *
  * @param string $type
  * @return string full path to package
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::core
  */
 	public static function core($type) {
 		return array(CAKE . str_replace('/', DS, $type) . DS);
@@ -445,6 +389,7 @@ class App {
  * @param mixed $path Optional Scan only the path given. If null, paths for the chosen type will be used.
  * @param boolean $cache Set to false to rescan objects of the chosen type. Defaults to true.
  * @return mixed Either false on incorrect / miss.  Or an array of found objects.
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::objects
  */
 	public static function objects($type, $path = null, $cache = true) {
 		$extension = '/\.php$/';
@@ -536,6 +481,7 @@ class App {
  * @param string $className the name of the class to configure package for
  * @param string $location the package name
  * @return void
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::uses
  */
 	public static function uses($className, $location) {
 		self::$_classMap[$className] = $location;
@@ -577,12 +523,14 @@ class App {
 			}
 		}
 
-		//To help apps migrate to 2.0 old style file names are allowed
+		// To help apps migrate to 2.0 old style file names are allowed
+		// if the trailing segment is one of the types that changed, alternates will be tried.
 		foreach ($paths as $path) {
 			$underscored = Inflector::underscore($className);
 			$tries = array($path . $underscored . '.php');
 			$parts = explode('_', $underscored);
-			if (count($parts) > 1) {
+			$numParts = count($parts);
+			if ($numParts > 1 && in_array($parts[$numParts - 1], array('behavior', 'helper', 'component'))) {
 				array_pop($parts);
 				$tries[] = $path . implode('_', $parts) . '.php';
 			}
@@ -602,6 +550,7 @@ class App {
  *
  * @param string $className name of the class to obtain the package name from
  * @return string package name or null if not declared
+ * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::location
  */
 	public static function location($className) {
 		if (!empty(self::$_classMap[$className])) {
@@ -614,7 +563,7 @@ class App {
  * Finds classes based on $name or specific file(s) to search.  Calling App::import() will
  * not construct any classes contained in the files. It will only find and require() the file.
  *
- * @link          http://book.cakephp.org/view/934/Using-App-import
+ * @link          http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#including-files-with-app-import
  * @param mixed $type The type of Class if passed as a string, or all params can be passed as
  *                    an single array to $type,
  * @param string $name Name of the Class or a unique name for the file
@@ -728,7 +677,7 @@ class App {
  * @param boolean $return whether this function should return the contents of the file after being parsed by php or just a success notice
  * @return mixed if $return contents of the file after php parses it, boolean indicating success otherwise
  */
-	protected function _loadFile($name, $plugin, $search, $file, $return) {
+	protected static function _loadFile($name, $plugin, $search, $file, $return) {
 		$mapped = self::_mapped($name, $plugin);
 		if ($mapped) {
 			$file = $mapped;
@@ -765,7 +714,7 @@ class App {
  * @param string $ext file extension if known
  * @return boolean true if the file was loaded successfully, false otherwise
  */
-	protected function _loadVendor($name, $plugin, $file, $ext) {
+	protected static function _loadVendor($name, $plugin, $file, $ext) {
 		if ($mapped = self::_mapped($name, $plugin)) {
 			return (bool) include_once($mapped);
 		}
@@ -801,7 +750,6 @@ class App {
 		self::$_map += (array)Cache::read('file_map', '_cake_core_');
 		self::$_objects += (array)Cache::read('object_map', '_cake_core_');
 		register_shutdown_function(array('App', 'shutdown'));
-		self::uses('CakePlugin', 'Core');
 	}
 
 /**
@@ -842,6 +790,88 @@ class App {
 			return self::$_map[$name];
 		}
 		return false;
+	}
+
+/**
+ * Sets then returns the templates for each customizable package path
+ *
+ * @return array templates for each customizable package path
+ */
+	protected static function _packageFormat() {
+		if (empty(self::$_packageFormat)) {
+			self::$_packageFormat = array(
+				'Model' => array(
+					'%s' . 'Model' . DS,
+					'%s' . 'models' . DS
+				),
+				'Model/Behavior' => array(
+					'%s' . 'Model' . DS . 'Behavior' . DS,
+					'%s' . 'models' . DS . 'behaviors' . DS
+				),
+				'Model/Datasource' => array(
+					'%s' . 'Model' . DS . 'Datasource' . DS,
+					'%s' . 'models' . DS . 'datasources' . DS
+				),
+				'Model/Datasource/Database' => array(
+					'%s' . 'Model' . DS . 'Datasource' . DS . 'Database' . DS,
+					'%s' . 'models' . DS . 'datasources' . DS . 'database' . DS
+				),
+				'Model/Datasource/Session' => array(
+					'%s' . 'Model' . DS . 'Datasource' . DS . 'Session' . DS,
+					'%s' . 'models' . DS . 'datasources' . DS . 'session' . DS
+				),
+				'Controller' => array(
+					'%s' . 'Controller' . DS,
+					'%s' . 'controllers' . DS
+				),
+				'Controller/Component' => array(
+					'%s' . 'Controller' . DS . 'Component' . DS,
+					'%s' . 'controllers' . DS . 'components' . DS
+				),
+				'Controller/Component/Auth' => array(
+					'%s' . 'Controller' . DS . 'Component' . DS . 'Auth' . DS,
+					'%s' . 'controllers' . DS . 'components' . DS . 'auth' . DS
+				),
+				'View' => array(
+					'%s' . 'View' . DS,
+					'%s' . 'views' . DS
+				),
+				'View/Helper' => array(
+					'%s' . 'View' . DS . 'Helper' . DS,
+					'%s' . 'views' . DS . 'helpers' . DS
+				),
+				'Console' => array(
+					'%s' . 'Console' . DS,
+					'%s' . 'console' . DS
+				),
+				'Console/Command' => array(
+					'%s' . 'Console' . DS . 'Command' . DS,
+					'%s' . 'console' . DS . 'shells' . DS,
+				),
+				'Console/Command/Task' => array(
+					'%s' . 'Console' . DS . 'Command' . DS . 'Task' . DS,
+					'%s' . 'console' . DS . 'shells' . DS . 'tasks' . DS
+				),
+				'Lib' => array(
+					'%s' . 'Lib' . DS,
+					'%s' . 'libs' . DS
+				),
+				'locales' => array(
+					'%s' . 'Locale' . DS,
+					'%s' . 'locale' . DS
+				),
+				'Vendor' => array(
+					'%s' . 'Vendor' . DS, VENDORS
+				),
+				'Plugin' => array(
+					APP . 'Plugin' . DS,
+					APP . 'plugins' . DS,
+					dirname(dirname(CAKE)) . DS . 'plugins' . DS
+				)
+			);
+		}
+
+		return self::$_packageFormat;
 	}
 
 /**

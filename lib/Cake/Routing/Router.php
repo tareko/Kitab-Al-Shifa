@@ -144,7 +144,7 @@ class Router {
 	protected static $_requests = array();
 
 /**
- * Initial state is popualated the first time reload() is called which is at the bottom
+ * Initial state is populated the first time reload() is called which is at the bottom
  * of this file.  This is a cheat as get_class_vars() returns the value of static vars even if they
  * have changed.
  *
@@ -433,7 +433,7 @@ class Router {
 				Router::connect($url,
 					array(
 						'plugin' => $plugin,
-						'controller' => $urlName, 
+						'controller' => $urlName,
 						'action' => $params['action'],
 						'[method]' => $params['method']
 					),
@@ -775,7 +775,7 @@ class Router {
 			}
 		} else {
 			if (
-				(strpos($url, '://') ||
+				(strpos($url, '://') !== false ||
 				(strpos($url, 'javascript:') === 0) ||
 				(strpos($url, 'mailto:') === 0)) ||
 				(!strncmp($url, '#', 1))
@@ -820,7 +820,7 @@ class Router {
  * @see Router::url()
  */
 	protected static function _handleNoRoute($url) {
-		$named = $args = $query = array();
+		$named = $args = array();
 		$skip = array_merge(
 			array('bare', 'action', 'controller', 'plugin', 'prefix'),
 			self::$_prefixes
@@ -847,7 +847,7 @@ class Router {
 			}
 		}
 
-		if (empty($named) && empty($args) && empty($query) && (!isset($url['action']) || $url['action'] === 'index')) {
+		if (empty($named) && empty($args) && (!isset($url['action']) || $url['action'] === 'index')) {
 			$url['action'] = null;
 		}
 
@@ -880,9 +880,6 @@ class Router {
 					$output .= '/' . $name . self::$_namedConfig['separator'] . $value;
 				}
 			}
-		}
-		if (!empty($query)) {
-			$output .= Router::queryString($query);
 		}
 		return $output;
 	}

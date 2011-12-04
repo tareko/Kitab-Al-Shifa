@@ -18,6 +18,7 @@
  */
 
 App::uses('DboSource', 'Model/Datasource');
+App::uses('String', 'Utility');
 
 /**
  * DBO implementation for the SQLite3 DBMS.
@@ -156,16 +157,17 @@ class Sqlite extends DboSource {
 /**
  * Returns an array of the fields in given table name.
  *
- * @param Model $model
+ * @param Model|string $model Either the model or table name you want described.
  * @return array Fields in table. Keys are name and type
  */
-	public function describe(Model $model) {
+	public function describe($model) {
 		$cache = parent::describe($model);
 		if ($cache != null) {
 			return $cache;
 		}
+		$table = $this->fullTableName($model);
 		$fields = array();
-		$result = $this->_execute('PRAGMA table_info(' . $model->tablePrefix . $model->table . ')');
+		$result = $this->_execute('PRAGMA table_info(' . $table . ')');
 
 		foreach ($result as $column) {
 			$column = (array) $column;
@@ -187,7 +189,7 @@ class Sqlite extends DboSource {
 		}
 
 		$result->closeCursor();
-		$this->_cacheDescription($model->tablePrefix . $model->table, $fields);
+		$this->_cacheDescription($table, $fields);
 		return $fields;
 	}
 
@@ -248,7 +250,7 @@ class Sqlite extends DboSource {
 		if (in_array($col, array('text', 'integer', 'float', 'boolean', 'timestamp', 'date', 'datetime', 'time'))) {
 			return $col;
 		}
-		if (strpos($col, 'varchar') !== false) {
+		if (strpos($col, 'char') !== false) {
 			return 'string';
 		}
 		if (in_array($col, array('blob', 'clob'))) {
@@ -280,7 +282,7 @@ class Sqlite extends DboSource {
 			$last = strripos($querystring, 'FROM');
 			if ($last !== false) {
 				$selectpart = substr($querystring, 7, $last - 8);
-				$selects = explode(',', $selectpart);
+				$selects = String::tokenize($selectpart, ',', '(', ')');
 			}
 		} elseif (strpos($querystring, 'PRAGMA table_info') === 0) {
 			$selects = array('cid', 'name', 'type', 'notnull', 'dflt_value', 'pk');
@@ -328,7 +330,7 @@ class Sqlite extends DboSource {
  * @return mixed array with results fetched and mapped to column names or false if there is no results left to fetch
  */
 	public function fetchResult() {
-		if ($row = $this->_result->fetch()) {
+		if ($row = $this->_result->fetch(PDO::FETCH_NUM)) {
 			$resultRow = array();
 			foreach ($this->map as $col => $meta) {
 				list($table, $column, $type) = $meta;

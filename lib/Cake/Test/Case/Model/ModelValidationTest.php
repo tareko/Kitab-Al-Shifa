@@ -1,6 +1,4 @@
 <?php
-/* SVN FILE: $Id: model.test.php 8225 2009-07-08 03:25:30Z mark_story $ */
-
 /**
  * ModelValidationTest file
  *
@@ -55,7 +53,7 @@ class ModelValidationTest extends BaseModelTest {
 			'or' => true,
 			'ignore_on_same' => 'id'
 		);
-		$this->assertEqual($TestModel->validatorParams, $expected);
+		$this->assertEquals($TestModel->validatorParams, $expected);
 
 		$TestModel->validate['title'] = array(
 			'rule' => 'customValidatorWithMessage',
@@ -65,7 +63,7 @@ class ModelValidationTest extends BaseModelTest {
 			'title' => array('This field will *never* validate! Muhahaha!')
 		);
 
-		$this->assertEqual($TestModel->invalidFields(), $expected);
+		$this->assertEquals($TestModel->invalidFields(), $expected);
 
 		$TestModel->validate['title'] = array(
 			'rule' => array('customValidatorWithSixParams', 'one', 'two', null, 'four'),
@@ -90,7 +88,7 @@ class ModelValidationTest extends BaseModelTest {
 			),
 			'six' => 6
 		);
-		$this->assertEqual($TestModel->validatorParams, $expected);
+		$this->assertEquals($TestModel->validatorParams, $expected);
 
 		$TestModel->validate['title'] = array(
 			'rule' => array('customValidatorWithSixParams', 'one', array('two'), null, 'four', array('five' => 5)),
@@ -115,7 +113,7 @@ class ModelValidationTest extends BaseModelTest {
 				'required' => true
 			)
 		);
-		$this->assertEqual($TestModel->validatorParams, $expected);
+		$this->assertEquals($TestModel->validatorParams, $expected);
 	}
 
 /**
@@ -139,14 +137,14 @@ class ModelValidationTest extends BaseModelTest {
 		$expected = array(
 			'title' => array('This field cannot be left blank')
 		);
-		$this->assertEqual($TestModel->validationErrors, $expected);
+		$this->assertEquals($TestModel->validationErrors, $expected);
 		$TestModel->validationErrors = array();
 
 		$TestModel->invalidFields(array('fieldList' => array('name')));
 		$expected = array(
 			'name' => array('This field cannot be left blank')
 		);
-		$this->assertEqual($TestModel->validationErrors, $expected);
+		$this->assertEquals($TestModel->validationErrors, $expected);
 		$TestModel->validationErrors = array();
 
 		$TestModel->invalidFields(array('fieldList' => array('name', 'title')));
@@ -154,15 +152,15 @@ class ModelValidationTest extends BaseModelTest {
 			'name' => array('This field cannot be left blank'),
 			'title' => array('This field cannot be left blank')
 		);
-		$this->assertEqual($TestModel->validationErrors, $expected);
+		$this->assertEquals($TestModel->validationErrors, $expected);
 		$TestModel->validationErrors = array();
 
 		$TestModel->whitelist = array('name');
 		$TestModel->invalidFields();
 		$expected = array('name' => array('This field cannot be left blank'));
-		$this->assertEqual($TestModel->validationErrors, $expected);
+		$this->assertEquals($TestModel->validationErrors, $expected);
 
-		$this->assertEqual($TestModel->validate, $validate);
+		$this->assertEquals($TestModel->validate, $validate);
 	}
 
 /**
@@ -186,7 +184,7 @@ class ModelValidationTest extends BaseModelTest {
 		$TestModel->save(array('name' => '#$$#', 'title' => '$$$$'));
 
 		$expected = array('name' => array('This field cannot be left blank'));
-		$this->assertEqual($TestModel->validationErrors, $expected);
+		$this->assertEquals($TestModel->validationErrors, $expected);
 	}
 
 /**
@@ -517,7 +515,7 @@ class ModelValidationTest extends BaseModelTest {
 		$expected = array(
 			'title' => array('tooShort')
 		);
-		$this->assertEqual($expected, $result);
+		$this->assertEquals($expected, $result);
 
 		$TestModel->validate = array(
 			'title' => array(
@@ -538,7 +536,7 @@ class ModelValidationTest extends BaseModelTest {
 		$expected = array(
 			'title' => array('tooShort', 'onlyLetters')
 		);
-		$this->assertEqual($expected, $result);
+		$this->assertEquals($expected, $result);
 	}
 
 /**
@@ -571,9 +569,9 @@ class ModelValidationTest extends BaseModelTest {
 		$Something->create();
 		$result = $Something->save($data);
 		$this->assertFalse($result, 'Save occured even when with models failed. %s');
-		$this->assertEqual($JoinThing->validationErrors, $expectedError);
+		$this->assertEquals($JoinThing->validationErrors, $expectedError);
 		$count = $Something->find('count', array('conditions' => array('Something.id' => $data['Something']['id'])));
-		$this->assertIdentical($count, 0);
+		$this->assertSame($count, 0);
 
 		$data = array(
 			'Something' => array(
@@ -594,7 +592,7 @@ class ModelValidationTest extends BaseModelTest {
 		$joinRecords = $JoinThing->find('count', array(
 			'conditions' => array('JoinThing.something_id' => $data['Something']['id'])
 		));
-		$this->assertEqual($joinRecords, 0, 'Records were saved on the join table. %s');
+		$this->assertEquals($joinRecords, 0, 'Records were saved on the join table. %s');
 	}
 
 /**
@@ -623,26 +621,69 @@ class ModelValidationTest extends BaseModelTest {
 		$Something->create();
 		$result = $Something->saveAll($data, array('validate' => 'only'));
 		$this->assertFalse($result);
-		$this->assertEqual($JoinThing->validationErrors, $expectedError);
+		$this->assertEquals($JoinThing->validationErrors, $expectedError);
 
 		$Something->create();
 		$result = $Something->saveAll($data, array('validate' => 'first'));
 		$this->assertFalse($result);
-		$this->assertEqual($JoinThing->validationErrors, $expectedError);
+		$this->assertEquals($JoinThing->validationErrors, $expectedError);
 
 		$count = $Something->find('count', array('conditions' => array('Something.id' => $data['Something']['id'])));
-		$this->assertIdentical($count, 0);
+		$this->assertSame($count, 0);
 
 		$joinRecords = $JoinThing->find('count', array(
 			'conditions' => array('JoinThing.something_id' => $data['Something']['id'])
 		));
-		$this->assertEqual($joinRecords, 0, 'Records were saved on the join table. %s');
+		$this->assertEquals($joinRecords, 0, 'Records were saved on the join table. %s');
+	}
+
+/**
+ * test that saveAll and with models at initial insert (no id has set yet)
+ * with validation interact well
+ *
+ * @return void
+ */
+	public function testValidatesWithModelsAndSaveAllWithoutId() {
+		$this->loadFixtures('Post', 'Author');
+
+		$data = array(
+			'Author' => array(
+				'name' => 'Foo Bar',
+			),
+			'Post' => array(
+				array('title' => 'Hello'),
+				array('title' => 'World'),
+			)
+		);
+		$Author = new Author();
+		$Post = $Author->Post;
+
+		$Post->validate = array('author_id' => array('rule' => 'numeric'));
+
+		$Author->create();
+		$result = $Author->saveAll($data, array('validate' => 'only'));
+		$this->assertTrue($result);
+
+		$Author->create();
+		$result = $Author->saveAll($data, array('validate' => 'first'));
+		$this->assertTrue($result);
+		$this->assertFalse(is_null($Author->id));
+
+		$id = $Author->id;
+		$count = $Author->find('count', array('conditions' => array('Author.id' => $id)));
+		$this->assertSame($count, 1);
+
+		$count = $Post->find('count', array(
+			'conditions' => array('Post.author_id' => $id)
+		));
+		$this->assertEquals($count, count($data['Post']));
 	}
 
 /**
  * Test that missing validation methods trigger errors in development mode.
  * Helps to make developement easier.
  *
+ * @expectedException PHPUnit_Framework_Error
  * @return void
  */
 	public function testMissingValidationErrorTriggering() {
@@ -656,7 +697,6 @@ class ModelValidationTest extends BaseModelTest {
 				'required' => true
 			)
 		);
-		$this->expectError();
 		$TestModel->invalidFields(array('fieldList' => array('title')));
 	}
 
@@ -686,12 +726,12 @@ class ModelValidationTest extends BaseModelTest {
  */
 	public function testValidationMessageAsArray() {
 		$TestModel = new ValidationTest1();
-		$TestModel->create(array('title' => 'foo'));
 		$TestModel->validate = array(
 			'title' => array(
 				'minLength' => array(
 					'rule' => array('minLength', 6),
-					'message' => array('Minimum length allowed is %d chars'),
+					'required' => true,
+					'message' => 'Minimum length allowed is %d chars',
 					'last' => false
 				),
 				'between' => array(
@@ -700,6 +740,17 @@ class ModelValidationTest extends BaseModelTest {
 				)
 			)
 		);
+
+		$TestModel->create();
+		$TestModel->invalidFields();
+		$expected = array(
+			'title' => array(
+				'Minimum length allowed is 6 chars',
+			)
+		);
+		$this->assertEquals($TestModel->validationErrors, $expected);
+
+		$TestModel->create(array('title' => 'foo'));
 		$TestModel->invalidFields();
 		$expected = array(
 			'title' => array(

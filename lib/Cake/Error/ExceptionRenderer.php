@@ -47,7 +47,7 @@ App::uses('CakeResponse', 'Network');
  *
  * Using a subclass of ExceptionRenderer gives you full control over how Exceptions are rendered, you
  * can configure your class in your core.php, with `Configure::write('Exception.renderer', 'MyClass');`
- * You should place any custom exception renderers in `app/libs`.
+ * You should place any custom exception renderers in `app/Lib/Error`.
  *
  * @package       Cake.Error
  */
@@ -119,12 +119,7 @@ class ExceptionRenderer {
 		}
 
 		if (Configure::read('debug') == 0) {
-			$parentClass = get_parent_class($this);
-			if ($parentClass != __CLASS__) {
-				$method = 'error400';
-			}
-			$parentMethods = (array)get_class_methods($parentClass);
-			if (in_array($method, $parentMethods)) {
+			if ($method == '_cakeError') {
 				$method = 'error400';
 			}
 			if ($code == 500) {
@@ -179,7 +174,7 @@ class ExceptionRenderer {
  */
 	protected function _cakeError(CakeException $error) {
 		$url = $this->controller->request->here();
-		$code = $error->getCode();
+		$code = ($error->getCode() >= 400 && $error->getCode() < 506) ? $error->getCode() : 500;
 		$this->controller->response->statusCode($code);
 		$this->controller->set(array(
 			'code' => $code,
@@ -190,6 +185,8 @@ class ExceptionRenderer {
 		try {
 			$this->controller->set($error->getAttributes());
 			$this->_outputMessage($this->template);
+		} catch (MissingViewException $e) {
+			$this->_outputMessage('error500');
 		} catch (Exception $e) {
 			$this->_outputMessageSafe('error500');
 		}
@@ -223,11 +220,15 @@ class ExceptionRenderer {
  * @return void
  */
 	public function error500($error) {
+		$message = $error->getMessage();
+		if (Configure::read('debug') == 0) {
+			$message = __d('cake', 'An Internal Error Has Occurred');
+		}
 		$url = $this->controller->request->here();
 		$code = ($error->getCode() > 500 && $error->getCode() < 506) ? $error->getCode() : 500;
 		$this->controller->response->statusCode($code);
 		$this->controller->set(array(
-			'name' => __d('cake', 'An Internal Error Has Occurred'),
+			'name' => $message,
 			'message' => h($url),
 			'error' => $error,
 		));
@@ -237,7 +238,7 @@ class ExceptionRenderer {
 /**
  * Convenience method to display a PDOException.
  *
- * @param PDOException $error 
+ * @param PDOException $error
  * @return void
  */
 	public function pdoError(PDOException $error) {

@@ -328,7 +328,7 @@ class DboSource extends DataSource {
 					return 'NULL';
 				}
 				if (is_float($data)) {
-					return sprintf('%F', $data);
+					return str_replace(',', '.', strval($data));
 				}
 				if ((is_int($data) || $data === '0') || (
 					is_numeric($data) && strpos($data, ',') === false &&
@@ -417,7 +417,7 @@ class DboSource extends DataSource {
  * @param string $sql SQL statement
  * @param array $params list of params to be bound to query
  * @param array $prepareOptions Options to be used in the prepare statement
- * @return mixed PDOStatement if query executes with no problem, true as the result of a succesfull, false on error
+ * @return mixed PDOStatement if query executes with no problem, true as the result of a successful, false on error
  * query returning no rows, suchs as a CREATE statement, false otherwise
  */
 	protected function _execute($sql, $params = array(), $prepareOptions = array()) {
@@ -440,7 +440,9 @@ class DboSource extends DataSource {
 			}
 			if (!$query->columnCount()) {
 				$query->closeCursor();
-				return true;
+				if (!$query->rowCount()) {
+					return true;
+				}
 			}
 			return $query;
 		} catch (PDOException $e) {
@@ -460,7 +462,11 @@ class DboSource extends DataSource {
  * @return string Error message with error number
  */
 	public function lastError(PDOStatement $query = null) {
-		$error = $query->errorInfo();
+		if ($query) {
+			$error = $query->errorInfo();
+		} else {
+			$error = $this->_connection->errorInfo();
+		}
 		if (empty($error[2])) {
 			return null;
 		}
@@ -947,8 +953,6 @@ class DboSource extends DataSource {
 
 		for ($i = 0; $i < $count; $i++) {
 			$valueInsert[] = $this->value($values[$i], $model->getColumnType($fields[$i]));
-		}
-		for ($i = 0; $i < $count; $i++) {
 			$fieldInsert[] = $this->name($fields[$i]);
 			if ($fields[$i] == $model->primaryKey) {
 				$id = $values[$i];
@@ -986,7 +990,7 @@ class DboSource extends DataSource {
 		$queryData = $this->_scrubQueryData($queryData);
 
 		$null = null;
-		$array = array();
+		$array = array('callbacks' => $queryData['callbacks']);
 		$linkedModels = array();
 		$bypass = false;
 
@@ -1039,7 +1043,11 @@ class DboSource extends DataSource {
 			return false;
 		}
 
-		$filtered = $this->_filterResults($resultSet, $model);
+		$filtered = array();
+
+		if ($queryData['callbacks'] === true || $queryData['callbacks'] === 'after') {
+			$filtered = $this->_filterResults($resultSet, $model);
+		}
 
 		if ($model->recursive > -1) {
 			foreach ($_associations as $type) {
@@ -1067,7 +1075,9 @@ class DboSource extends DataSource {
 					}
 				}
 			}
-			$this->_filterResults($resultSet, $model, $filtered);
+			if ($queryData['callbacks'] === true || $queryData['callbacks'] === 'after') {
+				$this->_filterResults($resultSet, $model, $filtered);
+			}
 		}
 
 		if (!is_null($recursive)) {
@@ -1158,7 +1168,9 @@ class DboSource extends DataSource {
 						}
 					}
 				}
-				$this->_filterResults($fetch, $model);
+				if ($queryData['callbacks'] === true || $queryData['callbacks'] === 'after') {
+					$this->_filterResults($fetch, $model);
+				}
 				return $this->_mergeHasMany($resultSet, $fetch, $association, $model, $linkModel);
 			} elseif ($type === 'hasAndBelongsToMany') {
 				$ins = $fetch = array();
@@ -1484,7 +1496,7 @@ class DboSource extends DataSource {
 					$query += array('order' => $assocData['order'], 'limit' => $assocData['limit']);
 				} else {
 					$join = array(
-						'table' => $this->fullTableName($linkModel),
+						'table' => $linkModel,
 						'alias' => $association,
 						'type' => isset($assocData['type']) ? $assocData['type'] : 'LEFT',
 						'conditions' => trim($this->conditions($conditions, true, false, $model))
@@ -1523,7 +1535,7 @@ class DboSource extends DataSource {
 					$joinKeys = array($assocData['foreignKey'], $assocData['associationForeignKey']);
 					list($with, $joinFields) = $model->joinModel($assocData['with'], $joinKeys);
 
-					$joinTbl = $this->fullTableName($model->{$with});
+					$joinTbl = $model->{$with};
 					$joinAlias = $joinTbl;
 
 					if (is_array($joinFields) && !empty($joinFields)) {
@@ -1533,8 +1545,8 @@ class DboSource extends DataSource {
 						$joinFields = array();
 					}
 				} else {
-					$joinTbl = $this->fullTableName($assocData['joinTable']);
-					$joinAlias = $joinTbl;
+					$joinTbl = $assocData['joinTable'];
+					$joinAlias = $this->fullTableName($assocData['joinTable']);
 				}
 				$query = array(
 					'conditions' => $assocData['conditions'],
@@ -1617,6 +1629,9 @@ class DboSource extends DataSource {
 		}
 		if (!empty($data['conditions'])) {
 			$data['conditions'] = trim($this->conditions($data['conditions'], true, false));
+		}
+		if (!empty($data['table'])) {
+			$data['table'] = $this->fullTableName($data['table']);
 		}
 		return $this->renderJoinStatement($data);
 	}
@@ -1900,7 +1915,7 @@ class DboSource extends DataSource {
 			if (isset($model->{$assoc}) && $model->useDbConfig == $model->{$assoc}->useDbConfig && $model->{$assoc}->getDataSource()) {
 				$assocData = $model->getAssociated($assoc);
 				$join[] = $this->buildJoinStatement(array(
-					'table' => $this->fullTableName($model->{$assoc}),
+					'table' => $model->{$assoc},
 					'alias' => $assoc,
 					'type' => isset($assocData['type']) ? $assocData['type'] : 'LEFT',
 					'conditions' => trim($this->conditions(
@@ -2086,6 +2101,7 @@ class DboSource extends DataSource {
 		static $base = null;
 		if ($base === null) {
 			$base = array_fill_keys(array('conditions', 'fields', 'joins', 'order', 'limit', 'offset', 'group'), array());
+			$base['callbacks'] = null;
 		}
 		return (array)$data + $base;
 	}
@@ -2381,8 +2397,8 @@ class DboSource extends DataSource {
  * @return string
  */
 	protected function _parseKey($model, $key, $value) {
-		$operatorMatch = '/^((' . implode(')|(', $this->_sqlOps);
-		$operatorMatch .= '\\x20)|<[>=]?(?![^>]+>)\\x20?|[>=!]{1,3}(?!<)\\x20?)/is';
+		$operatorMatch = '/^(((' . implode(')|(', $this->_sqlOps);
+		$operatorMatch .= ')\\x20?)|<[>=]?(?![^>]+>)\\x20?|[>=!]{1,3}(?!<)\\x20?)/is';
 		$bound = (strpos($key, '?') !== false || (is_array($value) && strpos($key, ':') !== false));
 
 		if (strpos($key, ' ') === false) {
@@ -2443,7 +2459,7 @@ class DboSource extends DataSource {
 				break;
 			}
 			$value = "({$value})";
-		} elseif ($null) {
+		} elseif ($null || $value === 'NULL') {
 			switch ($operator) {
 				case '=':
 					$operator = 'IS';
@@ -2573,6 +2589,10 @@ class DboSource extends DataSource {
 
 			if (is_object($model) && $model->isVirtualField($key)) {
 				$key =  '(' . $this->_quoteFields($model->getVirtualField($key)) . ')';
+			}
+			list($alias, $field) = pluginSplit($key);
+			if (is_object($model) && $alias !== $model->alias && is_object($model->{$alias}) && $model->{$alias}->isVirtualField($key)) {
+				$key =  '(' . $this->_quoteFields($model->{$alias}->getVirtualField($key)) . ')';
 			}
 
 			if (strpos($key, '.')) {
@@ -2720,9 +2740,11 @@ class DboSource extends DataSource {
 /**
  * Inserts multiple values into a table
  *
- * @param string $table
- * @param string $fields
- * @param array $values
+ * @param string $table The table being inserted into.
+ * @param array $fields The array of field/column names being inserted.
+ * @param array $values The array of values to insert.  The values should
+ *   be an array of rows.  Each row should have values keyed by the column name.
+ *   Each row must have the values in the same order as $fields.
  * @return boolean
  */
 	public function insertMulti($table, $fields, $values) {
@@ -2730,12 +2752,32 @@ class DboSource extends DataSource {
 		$holder = implode(',', array_fill(0, count($fields), '?'));
 		$fields = implode(', ', array_map(array(&$this, 'name'), $fields));
 
+		$pdoMap = array(
+			'integer' => PDO::PARAM_INT,
+			'float' => PDO::PARAM_STR,
+			'boolean' => PDO::PARAM_BOOL,
+			'string' => PDO::PARAM_STR,
+			'text' => PDO::PARAM_STR
+		);
+		$columnMap = array();
+
 		$count = count($values);
 		$sql = "INSERT INTO {$table} ({$fields}) VALUES ({$holder})";
 		$statement = $this->_connection->prepare($sql);
 		$this->begin();
+
+		foreach ($values[0] as $key => $val) {
+			$type = $this->introspectType($val);
+			$columnMap[$key] = $pdoMap[$type];
+		}
+
 		for ($x = 0; $x < $count; $x++) {
-			$statement->execute($values[$x]);
+			$i = 1;
+			foreach ($values[$x] as $key => $val) {
+				$statement->bindValue($i, $val, $columnMap[$key]);
+				$i += 1;
+			}
+			$statement->execute();
 			$statement->closeCursor();
 		}
 		return $this->commit();

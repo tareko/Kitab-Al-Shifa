@@ -39,14 +39,12 @@
  * `config('config1', 'config2');`
  *
  * @return boolean Success
- * @link http://book.cakephp.org/view/1125/config
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#config
  */
 function config() {
 	$args = func_get_args();
 	foreach ($args as $arg) {
-		if ($arg === 'database' && file_exists(APP . 'Config' . DS . 'database.php')) {
-			include_once(APP . 'Config' . DS . $arg . '.php');
-		} elseif (file_exists(APP . 'Config' . DS . $arg . '.php')) {
+		if (file_exists(APP . 'Config' . DS . $arg . '.php')) {
 			include_once(APP . 'Config' . DS . $arg . '.php');
 
 			if (count($args) == 1) {
@@ -69,13 +67,14 @@ function config() {
  * @param boolean $var Variable to show debug information for.
  * @param boolean $showHtml If set to true, the method prints the debug data in a browser-friendly way.
  * @param boolean $showFrom If set to true, the method prints from where the function was called.
- * @link http://book.cakephp.org/view/1190/Basic-Debugging
- * @link http://book.cakephp.org/view/1128/debug
+ * @link http://book.cakephp.org/2.0/en/development/debugging.html#basic-debugging
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#debug
  */
 function debug($var = false, $showHtml = null, $showFrom = true) {
 	if (Configure::read('debug') > 0) {
 		$file = '';
 		$line = '';
+		$lineInfo = '';
 		if ($showFrom) {
 			$calledFrom = debug_backtrace();
 			$file = substr(str_replace(ROOT, '', $calledFrom[0]['file']), 1);
@@ -83,32 +82,37 @@ function debug($var = false, $showHtml = null, $showFrom = true) {
 		}
 		$html = <<<HTML
 <div class="cake-debug-output">
-<span><strong>%s</strong> (line <strong>%s</strong>)</span>
+%s
 <pre class="cake-debug">
 %s
 </pre>
 </div>
 HTML;
-			$text = <<<TEXT
-
-%s (line %s)
+		$text = <<<TEXT
+%s
 ########## DEBUG ##########
 %s
 ###########################
-
 TEXT;
 		$template = $html;
-		if (php_sapi_name() == 'cli') {
+		if (php_sapi_name() == 'cli' || $showHtml === false) {
 			$template = $text;
+			if ($showFrom) {
+				$lineInfo = sprintf('%s (line %s)', $file, $line);
+			}
 		}
 		if ($showHtml === null && $template !== $text) {
 			$showHtml = true;
 		}
 		$var = print_r($var, true);
 		if ($showHtml) {
-			$var = htmlentities($var);
+			$template = $html;
+			$var = h($var);
+			if ($showFrom) {
+				$lineInfo = sprintf('<span><strong>%s</strong> (line <strong>%s</strong>)</span>', $file, $line);
+			}
 		}
-		printf($template, $file, $line, $var);
+		printf($template, $lineInfo, $var);
 	}
 }
 
@@ -122,6 +126,7 @@ if (!function_exists('sortByKey')) {
 	 * @param string $order  Sort order asc/desc (ascending or descending).
 	 * @param integer $type Type of sorting to perform
 	 * @return mixed Sorted array
+	 * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#sortByKey
 	 */
 	function sortByKey(&$array, $sortby, $order = 'asc', $type = SORT_NUMERIC) {
 		if (!is_array($array)) {
@@ -148,11 +153,13 @@ if (!function_exists('sortByKey')) {
 /**
  * Convenience method for htmlspecialchars.
  *
- * @param string $text Text to wrap through htmlspecialchars
+ * @param mixed $text Text to wrap through htmlspecialchars.  Also works with arrays, and objects.
+ *    Arrays will be mapped and have all their elements escaped.  Objects will be string cast if they
+ *    implement a `__toString` method.  Otherwise the class name will be used.
  * @param boolean $double Encode existing html entities
  * @param string $charset Character set to use when escaping.  Defaults to config value in 'App.encoding' or 'UTF-8'
  * @return string Wrapped text
- * @link http://book.cakephp.org/view/1132/h
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#h
  */
 function h($text, $double = true, $charset = null) {
 	if (is_array($text)) {
@@ -161,6 +168,12 @@ function h($text, $double = true, $charset = null) {
 			$texts[$k] = h($t, $double, $charset);
 		}
 		return $texts;
+	} elseif (is_object($text)) {
+		if (method_exists($text, '__toString')) {
+			$text = (string) $text;
+		} else {
+			$text = '(object)' . get_class($text);
+		}
 	}
 
 	static $defaultCharset = false;
@@ -186,6 +199,7 @@ function h($text, $double = true, $charset = null) {
  * @param boolean $dotAppend Set to true if you want the plugin to have a '.' appended to it.
  * @param string $plugin Optional default plugin to use if no plugin is found. Defaults to null.
  * @return array Array with 2 indexes.  0 => plugin name, 1 => classname
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#pluginSplit
  */
 function pluginSplit($name, $dotAppend = false, $plugin = null) {
 	if (strpos($name, '.') !== false) {
@@ -204,7 +218,7 @@ function pluginSplit($name, $dotAppend = false, $plugin = null) {
  *
  * @see	debug()
  * @param array $var Variable to print out
- * @link http://book.cakephp.org/view/1136/pr
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#pr
  */
 function pr($var) {
 	if (Configure::read('debug') > 0) {
@@ -222,7 +236,7 @@ function pr($var) {
  * @param array Third array
  * @param array Etc...
  * @return array All array parameters merged into one
- * @link http://book.cakephp.org/view/1124/am
+ * @link http://book.cakephp.org/2.0/en/development/debugging.html#am
  */
 function am() {
 	$r = array();
@@ -244,7 +258,7 @@ function am() {
  *
  * @param  string $key Environment variable name.
  * @return string Environment variable setting.
- * @link http://book.cakephp.org/view/1130/env
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#env
  */
 function env($key) {
 	if ($key === 'HTTPS') {
@@ -464,7 +478,7 @@ function clearCache($params = null, $type = 'views', $ext = '.php') {
  *
  * @param array $values Array of values to strip slashes
  * @return mixed What is returned from calling stripslashes
- * @link http://book.cakephp.org/view/1138/stripslashes_deep
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#stripslashes_deep
  */
 function stripslashes_deep($values) {
 	if (is_array($values)) {
@@ -483,7 +497,7 @@ function stripslashes_deep($values) {
  * @param string $singular Text to translate
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return mixed translated string
- * @link http://book.cakephp.org/view/1121/__
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__
  */
 function __($singular, $args = null) {
 	if (!$singular) {
@@ -509,6 +523,7 @@ function __($singular, $args = null) {
  * @param integer $count Count
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return mixed plural form of translated string
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__n
  */
 function __n($singular, $plural, $count, $args = null) {
 	if (!$singular) {
@@ -532,6 +547,7 @@ function __n($singular, $plural, $count, $args = null) {
  * @param string $msg String to translate
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return translated string
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__d
  */
 function __d($domain, $msg, $args = null) {
 	if (!$msg) {
@@ -558,6 +574,7 @@ function __d($domain, $msg, $args = null) {
  * @param integer $count Count
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return plural form of translated string
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__dn
  */
 function __dn($domain, $singular, $plural, $count, $args = null) {
 	if (!$singular) {
@@ -595,6 +612,7 @@ function __dn($domain, $singular, $plural, $count, $args = null) {
  * @param integer $category Category
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return translated string
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__dc
  */
 function __dc($domain, $msg, $category, $args = null) {
 	if (!$msg) {
@@ -636,6 +654,7 @@ function __dc($domain, $msg, $category, $args = null) {
  * @param integer $category Category
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return plural form of translated string
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__dcn
  */
 function __dcn($domain, $singular, $plural, $count, $category, $args = null) {
 	if (!$singular) {
@@ -669,6 +688,7 @@ function __dcn($domain, $singular, $plural, $count, $category, $args = null) {
  * @param integer $category Category
  * @param mixed $args Array with arguments or multiple arguments in function
  * @return translated string
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#__c
  */
 function __c($msg, $category, $args = null) {
 	if (!$msg) {
@@ -688,6 +708,8 @@ function __c($msg, $category, $args = null) {
  * Shortcut to Log::write.
  *
  * @param string $message Message to write to log
+ * @return void
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#LogError
  */
 function LogError($message) {
 	App::uses('CakeLog', 'Log');
@@ -701,7 +723,7 @@ function LogError($message) {
  *
  * @param string $file File to look for
  * @return Full path to file if exists, otherwise false
- * @link http://book.cakephp.org/view/1131/fileExistsInPath
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#fileExistsInPath
  */
 function fileExistsInPath($file) {
 	$paths = explode(PATH_SEPARATOR, ini_get('include_path'));
@@ -722,7 +744,7 @@ function fileExistsInPath($file) {
  *
  * @param string String to convert
  * @return string with underscore remove from start and end of string
- * @link http://book.cakephp.org/view/1126/convertSlash
+ * @link http://book.cakephp.org/2.0/en/core-libraries/global-constants-and-functions.html#convertSlash
  */
 function convertSlash($string) {
 	$string = trim($string, '/');

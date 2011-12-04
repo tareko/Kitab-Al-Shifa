@@ -17,7 +17,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-require 'PHPUnit/TextUI/Command.php';
+require_once 'PHPUnit/TextUI/Command.php';
 
 App::uses('CakeTestRunner', 'TestSuite');
 App::uses('CakeTestLoader', 'TestSuite');
@@ -25,8 +25,6 @@ App::uses('CakeTestSuite', 'TestSuite');
 App::uses('CakeTestCase', 'TestSuite');
 App::uses('ControllerTestCase', 'TestSuite');
 App::uses('CakeTestModel', 'TestSuite/Fixture');
-
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'DEFAULT');
 
 /**
  * Class to customize loading of test suites from CLI
@@ -70,8 +68,7 @@ class CakeTestSuiteCommand extends PHPUnit_TextUI_Command {
 		} else {
 			$suite = $runner->getTest(
 			  $this->arguments['test'],
-			  $this->arguments['testFile'],
-			  $this->arguments['syntaxCheck']
+			  $this->arguments['testFile']
 			);
 		}
 

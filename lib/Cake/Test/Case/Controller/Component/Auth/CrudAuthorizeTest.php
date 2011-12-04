@@ -1,5 +1,8 @@
 <?php
 /**
+ * CrudAuthorizeTest file
+ *
+ * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
@@ -53,7 +56,7 @@ class CrudAuthorizeTest extends CakeTestCase {
 /**
  * test authorize() without a mapped action, ensure an error is generated.
  *
- * @expectedException Exception
+ * @expectedException PHPUnit_Framework_Error_Warning
  * @return void
  */
 	public function testAuthorizeNoMappedAction() {
@@ -86,7 +89,7 @@ class CrudAuthorizeTest extends CakeTestCase {
 			->with($user, 'Posts', 'read')
 			->will($this->returnValue(true));
 
-		$this->assertTrue($this->auth->authorize($user, $request));
+		$this->assertTrue($this->auth->authorize($user['User'], $request));
 	}
 
 /**
@@ -108,7 +111,7 @@ class CrudAuthorizeTest extends CakeTestCase {
 			->with($user, 'Posts', 'read')
 			->will($this->returnValue(false));
 
-		$this->assertFalse($this->auth->authorize($user, $request));
+		$this->assertFalse($this->auth->authorize($user['User'], $request));
 	}
 
 
@@ -176,7 +179,7 @@ class CrudAuthorizeTest extends CakeTestCase {
 	public function testAutoPrefixMapActions() {
 		Configure::write('Routing.prefixes', array('admin', 'manager'));
 		Router::reload();
-		
+
 		$auth = new CrudAuthorize($this->Components);
 		$this->assertTrue(isset($auth->settings['actionMap']['admin_index']));
 	}

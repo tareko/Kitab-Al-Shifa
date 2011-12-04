@@ -65,6 +65,14 @@ class Helper extends Object {
 	public $plugin = null;
 
 /**
+ * Holds the fields array('field_name' => array('type'=> 'string', 'length'=> 100),
+ * primaryKey and validates array('field_name')
+ *
+ * @var array
+ */
+	public $fieldset = array();
+
+/**
  * Holds tag templates.
  *
  * @var array
@@ -209,7 +217,7 @@ class Helper extends Object {
  *    the reverse routing features of CakePHP.
  * @param boolean $full If true, the full base URL will be prepended to the result
  * @return string  Full translated URL with base path.
- * @link http://book.cakephp.org/view/1448/url
+ * @link http://book.cakephp.org/2.0/en/views/helpers.html
  */
 	public function url($url = null, $full = false) {
 		return h(Router::url($url, $full));
@@ -425,44 +433,50 @@ class Helper extends Object {
 
 		// Either 'body' or 'date.month' type inputs.
 		if (
-			($count === 1 &&
-			$this->_modelScope &&
-			$setScope == false) ||
-			(in_array($lastPart, $this->_fieldSuffixes) &&
-			$this->_modelScope &&
-			$parts[0] !== $this->_modelScope)
+			($count === 1 && $this->_modelScope && $setScope == false) ||
+			(
+				$count === 2 &&
+				in_array($lastPart, $this->_fieldSuffixes) &&
+				$this->_modelScope &&
+				$parts[0] !== $this->_modelScope
+			)
 		) {
 			$entity = $this->_modelScope . '.' . $entity;
 		}
 
-		// 0.name style inputs.
+		// 0.name, 0.created.month style inputs.  Excludes inputs with the modelScope in them.
 		if (
-			$count === 2 &&
-			is_numeric($parts[0]) &&
-			!is_numeric($parts[1])
+			$count >= 2 && 
+			is_numeric($parts[0]) && 
+			!is_numeric($parts[1]) && 
+			$this->_modelScope && 
+			strpos($entity, $this->_modelScope) === false
 		) {
 			$entity = $this->_modelScope . '.' . $entity;
 		}
 
 		$this->_association = null;
 
-		// check for associated model.
-		$reversed = array_reverse($parts);
-		foreach ($reversed as $part) {
-			if (preg_match('/^[A-Z]/', $part)) {
-				$this->_association = $part;
-				break;
-			}
-		}
+		$isHabtm = (
+			isset($this->fieldset[$this->_modelScope]['fields'][$parts[0]]['type']) &&
+			$this->fieldset[$this->_modelScope]['fields'][$parts[0]]['type'] === 'multiple' &&
+			$count == 1
+		);
 
 		// habtm models are special
-		if (
-			isset($this->fieldset[$this->_modelScope]['fields'][$parts[0]]['type']) &&
-			$this->fieldset[$this->_modelScope]['fields'][$parts[0]]['type'] === 'multiple'
-		) {
+		if ($count == 1 && $isHabtm) {
+			$this->_association = $parts[0];
 			$entity = $parts[0] . '.' . $parts[0];
+		} else {
+			// check for associated model.
+			$reversed = array_reverse($parts);
+			foreach ($reversed as $i => $part) {
+				if ($i > 0 && preg_match('/^[A-Z]/', $part)) {
+					$this->_association = $part;
+					break;
+				}
+			}
 		}
-
 		$this->_entityPath = $entity;
 		return;
 	}
@@ -490,6 +504,8 @@ class Helper extends Object {
 
 /**
  * Gets the currently-used model field of the rendering context.
+ * Strips off fieldsuffixes such as year, month, day, hour, min, meridian
+ * when the current entity is longer than 2 elements.
  *
  * @return string
  */
@@ -497,7 +513,7 @@ class Helper extends Object {
 		$entity = $this->entity();
 		$count = count($entity);
 		$last = $entity[$count - 1];
-		if (in_array($last, $this->_fieldSuffixes)) {
+		if ($count > 2 && in_array($last, $this->_fieldSuffixes)) {
 			$last = isset($entity[$count - 2]) ? $entity[$count - 2] : null;
 		}
 		return $last;
@@ -611,7 +627,7 @@ class Helper extends Object {
 
 		$entity = $this->entity();
 		if (!empty($data) && !empty($entity)) {
-			$result = Set::extract($data, implode('.', $entity));
+			$result = Set::extract(implode('.', $entity), $data);
 		}
 
 		$habtmKey = $this->field();
@@ -656,7 +672,7 @@ class Helper extends Object {
 		$options = $this->_name($options);
 		$options = $this->value($options);
 		$options = $this->domId($options);
-		if ($this->tagIsInvalid()) {
+		if ($this->tagIsInvalid() !== false) {
 			$options = $this->addClass($options, 'form-error');
 		}
 		return $options;

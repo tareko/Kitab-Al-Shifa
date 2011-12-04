@@ -195,11 +195,11 @@ class Sqlserver extends DboSource {
 /**
  * Returns an array of the fields in given table name.
  *
- * @param Model $model Model object to describe
+ * @param Model|string $model Model object to describe, or a string table name.
  * @return array Fields in table. Keys are name and type
  * @throws CakeException
  */
-	public function describe(Model $model) {
+	public function describe($model) {
 		$cache = parent::describe($model);
 		if ($cache != null) {
 			return $cache;
@@ -219,7 +219,7 @@ class Sqlserver extends DboSource {
 			WHERE TABLE_NAME = '" . $table . "'"
 		);
 		if (!$cols) {
-			throw new CakeException(__d('cake_dev', 'Could not describe table for %s', $model->name));
+			throw new CakeException(__d('cake_dev', 'Could not describe table for %s', $table));
 		}
 
 		foreach ($cols as $column) {
@@ -607,7 +607,7 @@ class Sqlserver extends DboSource {
  * @return mixed
  */
 	public function fetchResult() {
-		if ($row = $this->_result->fetch()) {
+		if ($row = $this->_result->fetch(PDO::FETCH_NUM)) {
 			$resultRow = array();
 			foreach ($this->map as $col => $meta) {
 				list($table, $column, $type) = $meta;
@@ -767,9 +767,12 @@ class Sqlserver extends DboSource {
 			}
 			return true;
 		} catch (PDOException $e) {
-			$this->_results = null;
-			$this->error = $e->getMessage();
-			return false;
+			if (isset($query->queryString)) {
+				$e->queryString = $query->queryString;
+			} else {
+				$e->queryString = $sql;
+			}
+			throw $e;
 		}
 	}
 

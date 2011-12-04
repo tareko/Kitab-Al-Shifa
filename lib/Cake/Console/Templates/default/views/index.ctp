@@ -11,7 +11,7 @@
  *
  * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
- * @package       cake.console.libs.templates.views
+ * @package       Cake.Console.Templates.default.views
  * @since         CakePHP(tm) v 1.2.0.5234
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
@@ -59,14 +59,14 @@
 	<p>
 	<?php echo "<?php
 	echo \$this->Paginator->counter(array(
-	'format' => __('Page %page% of %pages%, showing %current% records out of %count% total, starting on record %start%, ending on %end%')
+	'format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')
 	));
 	?>";?>
 	</p>
 
 	<div class="paging">
 	<?php
-		echo "<?php\n"; 
+		echo "<?php\n";
 		echo "\t\techo \$this->Paginator->prev('< ' . __('previous'), array(), null, array('class' => 'prev disabled'));\n";
 		echo "\t\techo \$this->Paginator->numbers(array('separator' => ''));\n";
 		echo "\t\techo \$this->Paginator->next(__('next') . ' >', array(), null, array('class' => 'next disabled'));\n";
