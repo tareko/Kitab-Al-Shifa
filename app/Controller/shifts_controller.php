@@ -4,7 +4,7 @@ class ShiftsController extends AppController {
 	var $name = 'Shifts';
 	
 	var $components = array('RequestHandler', 'Search.Prg');
-	var $helpers = array('Js', 'Calendar', 'Cache');
+	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal');
 //	public $cacheAction = "1 hour";
 
 	var $paginate = array(
@@ -188,6 +188,70 @@ class ShiftsController extends AppController {
 		$this->render();
 	}
 
+
+	function viewIcs() {
+		if (!isset($this->request->named['id']['id'])) {
+			return $this->setAction('viewIcsList');
+		}
+		else {
+			$shiftList = $this->Shift->find('all', array(
+				'fields' => array('Shift.id', 'Shift.physician_id', 'Shift.shifts_type_id', 'Shift.date', 'Shift.day', 'Physician.physician_name', 'ShiftsType.id', 'ShiftsType.location_id', 'ShiftsType.shift_start'),
+				'conditions' => array(
+					'Shift.date >=' => date('Y-m-d', strtotime("-6 months")),
+					'Shift.physician_id' => $this->request->named['id']['id'],
+					),
+				'recursive' => '2'));
+			$locations_raw = $this->Shift->ShiftsType->Location->find('all', array(
+				'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
+				'recursive' => '0'
+				));
+			foreach ($locations_raw as $location) {
+				$locationSet[$location['Location']['id']] = $location['Location']['location'];
+//				$masterSet['locations'][$location['Location']['id']]['abbreviated_name'] = $location['Location']['abbreviated_name']; 
+			}
+
+			$shiftsTypeSetRaw = $this->Shift->ShiftsType->find('all', array(
+				'fields' => array('ShiftsType.comment', 'ShiftsType.shift_start', 'ShiftsType.shift_end'),
+				'conditions' => array(
+					'ShiftsType.expiry_date >=' => date('Y-m-d', strtotime("-6 months")),
+					),
+				'recursive' => '0',
+				)
+			);
+			foreach ($shiftsTypeSetRaw as $shiftsTypeSetRaw) {
+				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['comment'] = $shiftsTypeSetRaw['ShiftsType']['comment'];
+				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_start'] = $shiftsTypeSetRaw['ShiftsType']['shift_start'];
+				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_end'] = $shiftsTypeSetRaw['ShiftsType']['shift_end'];
+			}
+					
+			$i = 1;
+			foreach ($shiftList as $shift) {
+				$masterSet[$i]['id'] = $shift['Shift']['id'];
+				$masterSet[$i]['date'] = $shift['Shift']['date'];
+				$masterSet[$i]['location'] = $locationSet[$shift['ShiftsType']['location_id']];
+				$masterSet[$i]['shift_start'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['shift_start'];
+				$masterSet[$i]['shift_end'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['shift_end'];
+				$masterSet[$i]['comment'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['comment'];
+				$masterSet[$i]['physician_name'] = $shift['Physician']['physician_name'];
+				$i++;
+			}
+			//Editing the calendar: Get list of physicians
+			$this->set('physicians', $this->Shift->Physician->find('list', array(
+				'fields' => array('Physician.id', 'Physician.physician_name'),
+				'order'=>array('Physician.physician_name ASC'))));
+			
+			
+			$this->set('masterSet', $masterSet);
+		}
+	}
+
+
+	function viewIcsList() {
+		$this->set('physicians', $this->Shift->Physician->find('list', array(
+				'fields' => array('Physician.id', 'Physician.physician_name'),
+				'order'=>array('Physician.physician_name ASC'))));
+	}
+	
 	public function delete($id = null) {
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
