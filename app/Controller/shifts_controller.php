@@ -212,6 +212,7 @@ class ShiftsController extends AppController {
 				'recursive' => '0',
 				)
 			);
+
 			foreach ($shiftsTypeSetRaw as $shiftsTypeSetRaw) {
 				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['comment'] = $shiftsTypeSetRaw['ShiftsType']['comment'];
 				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_start'] = $shiftsTypeSetRaw['ShiftsType']['shift_start'];

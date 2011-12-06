@@ -5,9 +5,14 @@
 	foreach($masterSet as $shift)
 	{
 		if ($shift['shift_start'] >= $shift['shift_end']) {
-			$date = new DateTime($shift['date']);
+/*
+ * Not 5.2 compatible
+ * 
+ *  			$date = new DateTime($shift['date']);
 			$date->add(new DateInterval('P1D'));
-			$shift['end_date'] = date_format($date, 'Y-m-d');
+ */ 
+			$date = strtotime($shift['date'] . " +1 day");
+			$shift['end_date'] = date('Y-m-d', $date);
 		}
 		else {
 			$shift['end_date'] = $shift['date'];
