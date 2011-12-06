@@ -3,10 +3,3 @@
    RewriteRule    ^$ app/webroot/    [L]
    RewriteRule    (.*) app/webroot/$1 [L]
 </IfModule>
-
-AuthType Basic
-AuthName "Open Scheduler"
-AuthUserFile /etc/apache2/htpasswd/users-emlondon
-Require valid-user
-Allow from 127.0.0.1
-#Satisfy Any

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (i486)
+-- MySQL dump 10.13  Distrib 5.1.58, for debian-linux-gnu (i686)
 --
 -- Host: localhost    Database: cake_emlondon
 -- ------------------------------------------------------
--- Server version	5.1.41-3.dotdeb.0
+-- Server version	5.1.58-1ubuntu1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -32,7 +32,7 @@ CREATE TABLE `calendars` (
   `comments` text,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +60,7 @@ CREATE TABLE `groups` (
   `name` text NOT NULL,
   `members` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -79,22 +79,6 @@ CREATE TABLE `locations` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `physicians`
---
-
-DROP TABLE IF EXISTS `physicians`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `physicians` (
-  `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `physician_name` text NOT NULL,
-  `email` text NOT NULL,
-  `shifts` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `shifts`
 --
 
@@ -103,12 +87,12 @@ DROP TABLE IF EXISTS `shifts`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `shifts` (
   `id` smallint(8) NOT NULL AUTO_INCREMENT,
-  `physician_id` tinyint(4) NOT NULL,
+  `user_id` int(32) NOT NULL,
   `date` date NOT NULL,
-  `shifts_type_id` tinyint(3) NOT NULL,
+  `shifts_type_id` int(32) NOT NULL,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1740 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1744 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,6 +114,22 @@ CREATE TABLE `shifts_types` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `physician_name` text NOT NULL,
+  `email` text NOT NULL,
+  `shifts` tinyint(4) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -140,4 +140,4 @@ CREATE TABLE `shifts_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-12-02 11:29:54
+-- Dump completed on 2011-12-06  9:16:27

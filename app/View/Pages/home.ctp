@@ -1,6 +1,6 @@
 <ul>
 	<li><?php echo $this->Html->link('Locations', array('controller' => 'locations')); ?></li>
-	<li><?php echo $this->Html->link('Physicians', array('controller' => 'physicians')); ?></li>
+	<li><?php echo $this->Html->link('Physicians', array('controller' => 'users')); ?></li>
 	<li><?php echo $this->Html->link('Scheduled shifts (list)', array('controller' => 'shifts')); ?> - for looking at and editing single entries</li>
 	<li><?php echo $this->Html->link('Scheduled shifts (calendar)', array('controller' => 'shifts', 'action' => 'viewCalendar')); ?> - for looking at and editing many entries</li>
 	<li><?php echo $this->Html->link('Scheduled shifts (iCal)', array('controller' => 'shifts', 'action' => 'viewIcs')); ?> - for downloading a calendar to your calendar software</li>

@@ -26,7 +26,7 @@ echo $this->Form->end();
 			<th><?php echo $this->Paginator->sort('date');?></th>
 			<th><?php echo $this->Paginator->sort('location');?></th>
 			<th><?php echo $this->Paginator->sort('shifts_type_id');?></th>
-			<th><?php echo $this->Paginator->sort('physician_id');?></th>
+			<th><?php echo $this->Paginator->sort('user_id');?></th>
 			<th><?php echo $this->Paginator->sort('updated');?></th>
 			<th class="actions"><?php echo __('Actions');?></th>
 	</tr>
@@ -37,7 +37,7 @@ echo $this->Form->end();
 		<td><?php echo h($shift['Shift']['date']); ?>&nbsp;</td>
 		<td><?php echo $this->Html->link($shift['ShiftsType']['Location']['location'], array('controller' => 'locations', 'action' => 'view', $shift['ShiftsType']['location_id'])); ?>&nbsp;</td>
 		<td><?php echo $this->Html->link($shift['ShiftsType']['times'], array('controller' => 'shifts_types', 'action' => 'view', $shift['ShiftsType']['id'])); ?>&nbsp;</td>
-		<td><?php echo $this->Html->link($shift['Physician']['physician_name'], array('controller' => 'physicians', 'action' => 'view', $shift['Physician']['id'])); ?>&nbsp;</td>
+		<td><?php echo $this->Html->link($shift['User']['name'], array('controller' => 'users', 'action' => 'view', $shift['User']['id'])); ?>&nbsp;</td>
 		<td><?php echo h($shift['Shift']['updated']); ?>&nbsp;</td>
 
 		<td class="actions">
@@ -67,8 +67,8 @@ echo $this->Form->end();
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
 		<li><?php echo $this->Html->link(__('New Shift'), array('action' => 'add')); ?></li>
-		<li><?php echo $this->Html->link(__('List Physicians'), array('controller' => 'physicians', 'action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New Physician'), array('controller' => 'physicians', 'action' => 'add')); ?> </li>
+		<li><?php echo $this->Html->link(__('List Users'), array('controller' => 'users', 'action' => 'index')); ?> </li>
+		<li><?php echo $this->Html->link(__('New User'), array('controller' => 'users', 'action' => 'add')); ?> </li>
 		<li><?php echo $this->Html->link(__('List Shifts Types'), array('controller' => 'shifts_types', 'action' => 'index')); ?> </li>
 		<li><?php echo $this->Html->link(__('New Shifts Type'), array('controller' => 'shifts_types', 'action' => 'add')); ?> </li>
 	</ul>

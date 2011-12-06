@@ -10,7 +10,7 @@ class Shift extends AppModel {
 /**
  * 	Search plugin initialization
  */
-	public $actsAs = array('Search.Searchable');
+	public $actsAs = array('Search.Searchable', 'Containable');
 	public $filterArgs = array(
 		array('name' => 'month', 'type' => 'value', 'field' => 'MONTH(Shift.date)'),
 		array('name' => 'year', 'type' => 'value', 'field' => 'YEAR(Shift.date)'),
@@ -23,10 +23,10 @@ class Shift extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'physician_id' => array(
+		'user_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				'message' => 'Please select a physician',
+				'message' => 'Please select a person working the shift',
 				//'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
@@ -63,9 +63,9 @@ class Shift extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Physician' => array(
-			'className' => 'Physician',
-			'foreignKey' => 'physician_id',
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
