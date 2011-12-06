@@ -185,12 +185,16 @@ class ShiftsController extends AppController {
 		}
 		else {
 			$shiftList = $this->Shift->find('all', array(
-				'fields' => array('Shift.id', 'Shift.user_id', 'Shift.shifts_type_id', 'Shift.date', 'Shift.day', 'Profile.cb_displayname', 'ShiftsType.id', 'ShiftsType.location_id', 'ShiftsType.shift_start'),
+				'contain' => array(
+					'ShiftsType' => array('Location'), 
+					'User' => array('Profile')
+				),
 				'conditions' => array(
 					'Shift.date >=' => date('Y-m-d', strtotime("-6 months")),
 					'Shift.user_id' => $this->request->named['id']['id'],
-					),
-				'recursive' => '2'));
+				),
+			));
+
 			$locations_raw = $this->Shift->ShiftsType->Location->find('all', array(
 				'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
 				'recursive' => '0'
@@ -234,7 +238,10 @@ class ShiftsController extends AppController {
 	function viewIcsList() {
 		$this->set('physicians', $this->Shift->User->find('list', array(
 				'fields' => array('User.id', 'User.name'),
-				'order'=>array('Profile.cb_displayname ASC'))));
+				'order'=>array('Profile.lastname ASC', 'Profile.firstname ASC'),
+				'conditions' => array ('block' => 0),
+				'recursive' => '1'
+		)));
 	}
 	
 	public function delete($id = null) {
