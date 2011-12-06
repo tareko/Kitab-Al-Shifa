@@ -20,7 +20,8 @@ class Profile extends AppModel {
  * @var mixed False or table name
  */
 	public $useTable = 'comprofiler';
-
+	public $tablePrefix = 'j17_';
+	
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
 /**
