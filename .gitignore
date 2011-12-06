@@ -3,4 +3,5 @@
 /app/tmp
 /app/webroot/pdf
 .DS_Store
+.settings
 tags
