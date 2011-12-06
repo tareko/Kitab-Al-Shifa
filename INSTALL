@@ -10,10 +10,12 @@ To install:
 
 6. As above, can either use chown or chmod technique to make the 
 following directories, which have to be writable by your webserver:
-	a. app/tmp
-	b. app/tmp/cache
-	c. app/tmp/logs
-	d. app/tmp/sessions
-	e. app/tmp/tests
+	a. mkdir app/tmp
+	b. mkdir app/tmp/cache
+	c. mkdir app/tmp/cache/persistent
+	d. mkdir app/tmp/cache/models
+	e. mkdir app/tmp/logs
+	f. mkdir app/tmp/sessions
+	g. mkdir app/tmp/tests
 
 7. Config directory - not yet in repository
