@@ -37,6 +37,14 @@
 		<div id="header">
 		</div>
 		<div id="content">
+			<div id="user-nav">
+				<?php if($logged_in):
+					echo $users_username ." ". $this->Html->link('(Logout)', array('controller' => ' users', 'action' => 'logout'));
+				else:
+					echo "Go login";
+				endif;
+				?>
+			</div>				
 
 			<?php echo $this->Session->flash(); ?>
 

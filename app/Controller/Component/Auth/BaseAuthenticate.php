@@ -66,7 +66,7 @@ abstract class BaseAuthenticate {
  * @param string $password The unhashed password.
  * @return Mixed Either false on failure, or an array of user data.
  */
- 	protected function _findUser($username, $password) {
+/*  	protected function _findUser($username, $password) {
 		$userModel = $this->settings['userModel'];
 		list($plugin, $model) = pluginSplit($userModel);
 		$fields = $this->settings['fields'];
@@ -88,7 +88,36 @@ abstract class BaseAuthenticate {
 		unset($result[$model][$fields['password']]);
 		return $result[$model];
 	}
+ */ 
 
+	protected function _findUser($username, $password) {
+		$userModel = $this->settings['userModel'];
+
+		list($plugin, $model) = pluginSplit($userModel);
+		$fields = $this->settings['fields'];
+
+		$user = ClassRegistry::init($userModel)->findByUsername($username);
+		$parts = explode(':', $user['User']['password']);
+		$salt = $parts[1];
+		
+		$conditions = array(
+			$model . '.' . $fields['username'] => $username,
+			$model . '.' . $fields['password'] => md5($password . $salt) . ':' . $salt,
+		);
+		if (!empty($this->settings['scope'])) {
+		$conditions = array_merge($conditions, $this->settings['scope']);
+		}
+		$result = ClassRegistry::init($userModel)->find('first', array(
+		'conditions' => $conditions,
+		'recursive' => 0
+		));
+		if (empty($result) || empty($result[$model])) {
+		return false;
+		}
+		unset($result[$model][$fields['password']]);
+		return $result[$model];
+	}
+	
 /**
  * Hash the plain text password so that it matches the hashed/encrytped password
  * in the datasource.
