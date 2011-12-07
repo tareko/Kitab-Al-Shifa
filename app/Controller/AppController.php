@@ -14,7 +14,7 @@ class AppController extends Controller {
 	);
 	
 	function beforeFilter() {
-		$this->Auth->allow('display', 'home', 'index', 'view', 'login');
+//		$this->Auth->allow('display', 'home', 'index', 'view', 'login');
 		
 		$this->set('admin', $this->_isAdmin());
 		$this->set('logged_in', $this->_loggedIn());
