@@ -9,7 +9,7 @@ class User extends AppModel
 				'className' => 'Profile',
 				'foreignKey' => 'user_id',
 				'conditions' => '',
-				'fields' => '',
+				'fields' => array('cb_displayname', 'firstname', 'lastname'),
 				'order' => '')
 	);
 	var $hasMany = array('Shifts');
@@ -48,6 +48,16 @@ class User extends AppModel
 			)
 		),
 	);
+
+	
+	public function getList() {
+		return $this->find('list', array(
+			'contain' => array('Profile'),
+			'fields' => array('User.id', 'Profile.cb_displayname'),
+			'order'=>array('Profile.cb_displayname ASC'),
+			'recursive' => 0
+		));
+	}
 }
 
 ?>

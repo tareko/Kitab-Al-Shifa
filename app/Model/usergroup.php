@@ -4,6 +4,7 @@ class Usergroup extends AppModel
 	public $actsAs = array('Containable');
 	public $useDbConfig = 'joomla';
 	public $useTable = 'usergroups';
+	public $displayField = 'title';
 	public $hasOne = array(
 			'Group' => array(
 				'className' => 'Group',

@@ -29,7 +29,7 @@ class Profile extends AppModel {
  *
  * @var array
  */
-	public $hasOne = array(
+	public $belongsTo = array(
 		'User' => array(
 			'className' => 'User',
 			'foreignKey' => 'user_id',

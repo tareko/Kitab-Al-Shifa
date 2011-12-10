@@ -112,10 +112,15 @@ class Shift extends AppModel {
 	function getShiftList($conditions) {
 		return $this->find('all', array(
 				'contain' => array(
-					'ShiftsType' => array('Location'), 
-					'User' => array('Profile')
+					'ShiftsType' => array(
+						'fields' => array('id', 'location_id')), 
+					'User' => array(
+						'Profile' => array(
+							'fields' => array('cb_displayname')))
 				),
-				'conditions' => $conditions
+				'conditions' => $conditions,
+				'recursive' => '2'
 			));
+
 	}
 }

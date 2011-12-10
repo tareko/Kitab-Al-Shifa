@@ -1,7 +1,6 @@
 <?php 
 class ShiftsController extends AppController {
 	var $name = 'Shifts';
-	
 	var $components = array('RequestHandler', 'Search.Prg');
 	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal');
 //	public $cacheAction = "1 hour";
@@ -28,6 +27,7 @@ class ShiftsController extends AppController {
 	}
 	
 	function add() {
+		$this->loadModel('Profile');
 		# Check if there is form data to be processed
 		$saved = null;
 		if (!empty($this->data)){
@@ -40,23 +40,21 @@ class ShiftsController extends AppController {
 			if ($saved == 1) {
 				if ($this->Shift->saveAll($data['Shift'])) {
 					$this->Session->setFlash('Shift saved');
-					$this->redirect(array('action' => 'viewCalendar'));
+					$this->redirect(array('action' => 'calendarView'));
 				}
-				$this->Session->setFlash(__('Shift was not deleted'));
-				$this->redirect(array('action' => 'viewCalendar'));
+				$this->Session->setFlash(__('Shift was not saved'));
+				$this->redirect(array('action' => 'calendarView'));
  			}
 		}
 		
 		# If no data, present an add form
 		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
 		$this->set('shifts', $this->paginate());
-		$this->set('physicians', $this->Shift->User->find('list', array(
-			'fields' => array('User.id', 'User.name'),
-			'order'=>array('Profile.cb_displayname ASC'))));
-
+		$this->set('users', $this->Shift->User->getList());
+		
 		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
 			'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
-			'recursive' => '2')));
+			'recursive' => '0')));
 	}
 
 	function pdfCreate() {
@@ -121,7 +119,7 @@ class ShiftsController extends AppController {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
 		}
 		else {
-			return $this->setAction('calendarList');
+			return $this->setAction('calendarList', 'calendarEdit');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 		
@@ -148,14 +146,7 @@ class ShiftsController extends AppController {
 			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
 		}
 		
-		//Editing the calendar: Get list of people
-		$this->set('users', $this->Shift->User->find('list', array(
-			'fields' => array('User.id', 'Profile.cb_displayname'),
-			'order'=>array('Profile.cb_displayname ASC'),
-			'recursive' => 2
-		)));
-		
-		
+		$this->set('users', $this->Shift->User->getList());
 		$this->set('masterSet', $masterSet);
 	}
 
@@ -168,7 +159,7 @@ class ShiftsController extends AppController {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
 		}
 		else {
-			return $this->setAction('calendarList');
+			return $this->setAction('calendarList', 'calendarView');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 	
@@ -194,14 +185,6 @@ class ShiftsController extends AppController {
 		foreach ($shiftList as $shift) {
 			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
 		}
-	
-		//Editing the calendar: Get list of people
-		$this->set('users', $this->Shift->User->find('list', array(
-				'fields' => array('User.id', 'Profile.cb_displayname'),
-				'order'=>array('Profile.cb_displayname ASC'),
-				'recursive' => 2
-		)));
-	
 	
 		$this->set('masterSet', $masterSet);
 	}
@@ -271,8 +254,9 @@ class ShiftsController extends AppController {
 	/**
 	 * List of calendars
 	 */
-	public function calendarList() {
+	public function calendarList($calendarAction) {
 		$this->loadModel('Calendar');
+		$this->set('calendarAction', $calendarAction);
 		$this->set('calendars', $this->Calendar->getList());
 	}
 	
@@ -305,14 +289,7 @@ class ShiftsController extends AppController {
 				$this->Session->setFlash(__('The shift could not be saved. Please, try again.'));
 			}
 		} else {
-			$this->set('physicians', $this->Shift->User->find('list', array(
-						'fields' => array('User.id', 'Profile.cb_displayname'),
-						'order'=>array('Profile.cb_displayname ASC'),
-						'recursive' => 2,
-						'conditions' => array (
-							'block' => 0
-							)
-			)));
+			$this->set('physicians', $this->Shift->User->getList());
 			$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
 			$this->request->data = $this->Shift->read(null, $id);
 		}

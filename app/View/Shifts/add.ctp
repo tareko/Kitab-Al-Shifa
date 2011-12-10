@@ -3,7 +3,7 @@
 	<fieldset>
 		<legend><?php echo __('Add Shift'); ?></legend>
 	<?php
-		echo $this->Form->input('Shift.0.physician_id', array('empty' => true));
+		echo $this->Form->input('Shift.0.user_id', array('empty' => true));
 		echo $this->Form->input('Shift.0.date', array('empty' => true));
 		echo $this->Form->input('Shift.0.shifts_type_id', array('empty' => true));
 	?>

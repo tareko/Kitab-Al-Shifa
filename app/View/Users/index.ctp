@@ -6,7 +6,6 @@
 			<th><?php echo $this->Paginator->sort('Profile.lastname');?></th>
 			<th><?php echo $this->Paginator->sort('Profile.firstname');?></th>
 			<th><?php echo $this->Paginator->sort('email');?></th>
-			<th><?php echo $this->Paginator->sort('Profile.cb_positiond');?></th>
 			<th><?php echo $this->Paginator->sort('block');?></th>
 			<th class="actions"><?php echo __('Actions');?></th>
 	</tr>
@@ -18,7 +17,6 @@
 		<td><?php echo h($user['Profile']['lastname']); ?>&nbsp;</td>
 		<td><?php echo h($user['Profile']['firstname']); ?>&nbsp;</td>
 		<td><?php echo h($user['User']['email']); ?>&nbsp;</td>
-		<td><?php echo h($user['Profile']['cb_positiond']); ?>&nbsp;</td>
 		<td><?php echo h($user['User']['block']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $user['User']['id'])); ?>
