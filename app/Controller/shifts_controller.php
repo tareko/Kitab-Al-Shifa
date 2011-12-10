@@ -67,8 +67,6 @@ class ShiftsController extends AppController {
 					'Shift.updated' => 'DESC',
 				)
 			));
-print_r($masterSet['calendar']['lastupdated']);
-//			$masterSet['calendar']['id'] = $this->request->named['calendar']['calendar'];
 		}
 		else {
 			return $this->setAction('calendarList', 'pdfCreate');
