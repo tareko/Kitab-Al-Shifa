@@ -21,11 +21,10 @@
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
-		<?php echo __('CakePHP: the rapid development php framework:'); ?>
-		<?php echo $title_for_layout; ?>
+		Kitab Al-Shifa: <?php echo $title_for_layout; ?>
 	</title>
 	<?php
-		echo $this->Html->meta('icon');
+//		echo $this->Html->meta('icon');
 
 		echo $this->Html->css('cake.generic');
 
@@ -41,7 +40,7 @@
 				<?php if($logged_in):
 					echo $users_username ." ". $this->Html->link('(Logout)', array('controller' => ' users', 'action' => 'logout'));
 				else:
-					echo "Go login";
+					echo "&nbsp;";
 				endif;
 				?>
 			</div>				
