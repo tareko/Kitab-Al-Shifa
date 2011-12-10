@@ -101,5 +101,21 @@ class Shift extends AppModel {
 	public $order = array("Shift.date" => "ASC");
 	var $virtualFields = array(
 		'day' => 'DAY(Shift.date)',
-	);	
+	);
+
+	/**
+	* Function to get a list of shifts
+	*
+	* @param mixed Conditions for the SQL search in array form
+	* @return mixed An array of location id's and abbreviated names.
+	*/
+	function getShiftList($conditions) {
+		return $this->find('all', array(
+				'contain' => array(
+					'ShiftsType' => array('Location'), 
+					'User' => array('Profile')
+				),
+				'conditions' => $conditions
+			));
+	}
 }

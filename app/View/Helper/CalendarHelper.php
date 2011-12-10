@@ -2,7 +2,7 @@
 class CalendarHelper extends AppHelper {
 	public $helpers = array('Html', 'Form');
 
-	function makeCalendar($masterSet) {
+	function makeCalendarEdit($masterSet) {
 		//Create variables
 		$i = 1;
 		$header = null;
@@ -95,6 +95,88 @@ class CalendarHelper extends AppHelper {
 
 		$output .= "</table>";
 		$output .= $this->Form->end('Save');
+		return $output;
+	}
+	
+	/**
+	 * Calendar View Helper
+	 * This helper creates an HTML table of a calendar for display
+	 * @param mixed $masterSet variable assembled in controller with all relevant info
+	 * @return string Returns HTML for display
+	 */
+	function makeCalendarView($masterSet) {
+		//Create variables
+		$i = 1;
+		$header = null;
+		$output = null;
+		$previousLocation = null;
+		$colspan = 1;
+		$calendar = $masterSet['calendar'];
+		$startDate = $calendar['Calendar']['start_date'];
+		$endDate = $calendar['Calendar']['end_date'];
+		$k = $startDate;
+	
+		$output .= $this->Html->css('calendar.css');
+	
+		// Create headers
+		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
+		$output .= "<table>";
+		$output .= "<thead><tr><th rowspan=\"2\">Date</th>";
+	
+		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
+			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
+				$colspan++;
+				if ($j == count($masterSet['ShiftsType']) - 1) {
+					if ($colspan == 1) {
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
+					}
+					else {
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
+					}
+				}
+			}
+			else {
+				if (isset($firstLocation)) {
+					if ($colspan == 1) {
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
+					}
+					else {
+						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
+					}
+				}
+				$colspan = 1;
+				$firstLocation = true;
+				$previousLocation = $shiftsType['ShiftsType']['location_id'];
+			}
+		}
+		$output .= "</tr>";
+	
+	
+		foreach ($masterSet['ShiftsType'] as $shiftsType) {
+			$output1[] = $shiftsType['ShiftsType']['times'];
+		}
+		$output .= $this->Html->tableCells($output1, array ('class' => 'calendarHeaderTimes'));
+		$output .= "</thead>";
+	
+	
+		//Output Days of the month
+		while ($k <= $calendar['Calendar']['end_date']) {
+			$output1 = null;
+			$output1[] = date('D, M j', strtotime($k));
+			foreach ($masterSet['ShiftsType'] as $shiftsType) {
+				if (isset($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']])) {
+					$output1[] = $this->Html->link($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'], array('controller' => 'shifts', 'action' => 'edit', $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['id']));
+				}
+				else {
+					$output1[] = "&nbsp;";
+				}
+			}
+			// Enter physician names into record, spaced with comma
+			$output .= $this->Html->tableCells($output1);
+			$k = date('Y-m-d', strtotime("$k + 1 day"));
+		}
+	
+		$output .= "</table>";
 		return $output;
 	}
 	

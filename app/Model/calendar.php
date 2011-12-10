@@ -101,22 +101,14 @@ class Calendar extends AppModel {
 			'order' => ''
 		)
 	);
-/* 		public $hasAndBelongsToMany = array(
-		'Calendar' => array(
-			'className' => 'Calendar',
-			'joinTable' => 'calendars_shifts',
-			'foreignKey' => 'shift_id',
-			'associationForeignKey' => 'calendar_id',
-			'unique' => true,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
-		)
-	);
- */}
+
+	/**
+	 * Get list of calendars
+	 */
+	function getList() {
+		return $this->find('list', array(
+			'fields' => array('Calendar.start_date', 'Calendar.name', 'Calendar.id'),
+			'order'=>array('Calendar.start_date DESC')));
+	}
+}
 ?>

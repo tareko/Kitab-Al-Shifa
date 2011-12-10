@@ -1,7 +1,7 @@
 <?php
 
 class AppController extends Controller {
-	public $uses = array('User', 'Usergroup');
+	public $uses = array('User', 'Usergroup', 'Group');
 
 	var $components = array('Session',
 		'Auth' => array(
@@ -17,20 +17,43 @@ class AppController extends Controller {
 	);
 	
 	function beforeFilter() {
-//		$this->Auth->allow('display', 'home', 'index', 'view', 'login');
-		$this->Auth->allow('createPdf', 'viewIcs');
-		
 		$this->set('admin', $this->_isAdmin());
 		$this->set('logged_in', $this->_loggedIn());
 		$this->set('users_username', $this->_usersUsername());
 		$this->set('users_id', $this->_usersId());
+		$this->Auth->allow('pdfCreate', 'icsView');
+		
+ 		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
+			$this->Session->setFlash('Access denied. You do not have permission to access this page');
+			header('HTTP/1.1 401 Unauthorized');
+			$this->viewPath = 'Errors';
+			$this->render('permission_denied');
+		}
 	}
 	
-	// Based on http://debuggable.com/posts/a-lightweight-approach-to-acl-the-33-lines-of-magic:480f4dd6-639c-44f4-a62a-49a8cbdd56cb
-	
+	/**
+	 * requestAllowed
+	 * Checks to see if the user is allowed to access this property.
+	 * Based on http://debuggable.com/posts/a-lightweight-approach-to-acl-the-33-lines-of-magic
+	 * 
+	 * @param string $object
+	 * @param string $property
+	 * @param string $rules
+	 * @param boolean $default True or false
+	 * @return boolean Returns true or false
+	 */
 	function _requestAllowed($object, $property, $rules, $default = FALSE) {
 		// The default value to return if no rule matching $object/$property can be found
 		$allowed = $default;
+		if (isset($rules) || $rules == '') {
+		}
+		if (!isset($rules) || $rules == '') {
+			$rules = $this->Group->find('first', array(
+        		'conditions' => array('Group.usergroups_id' => 0),
+        		'fields' => 'acl'
+			));
+			$rules = $rules['Group']['acl'];
+		}
 
 		// This Regex converts a string of rules like "objectA:actionA,objectB:actionB,..." into the array $matches.
 		preg_match_all('/([^:,]+):([^,:]+)/is', $rules, $matches, PREG_SET_ORDER);

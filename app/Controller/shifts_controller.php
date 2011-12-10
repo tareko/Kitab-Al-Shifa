@@ -59,16 +59,14 @@ class ShiftsController extends AppController {
 			'recursive' => '2')));
 	}
 
-	function createPdf() {
+	function pdfCreate() {
 		$this->loadModel('Calendar');
 		if (isset($this->request->named['calendar']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
 			$masterSet['calendar']['id'] = $this->request->named['calendar']['calendar'];
 		}
 		else {
-			//$calendar = $this->Shift->Calendar->findById('1');
-			$masterSet['calendar'] = $this->Calendar->findById('1');
-			$masterSet['calendar']['id'] = 1;
+			return $this->setAction('calendarList', 'pdfCreate');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 		
@@ -110,7 +108,11 @@ class ShiftsController extends AppController {
 		$this->render();
 	}
 
-	function viewCalendar() {
+	/**
+	 * Function for web-based view of calendar.
+	 * 
+	 */
+	function calendarEdit() {
 		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 		$this->loadModel('Profile');
@@ -119,31 +121,18 @@ class ShiftsController extends AppController {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
 		}
 		else {
-			//$calendar = $this->Shift->Calendar->findById('1');
-			$masterSet['calendar'] = $this->Calendar->findById('1');
+			return $this->setAction('calendarList');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 		
-		$shiftList = $this->Shift->find('all', array(
-					'contain' => array(
-						'ShiftsType' => array('Location'), 
-						'User' => array('Profile')
-					),
-					'conditions' => array(
-						'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
-						'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-						),
-					));
+		$shiftList = $this->Shift->getShiftList(
+			array(
+				'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
+				'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+				)
+			);
 
-  		$locations_raw = $this->Shift->ShiftsType->Location->find('all', array(
-			'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
-			'recursive' => '0'
-			));
-
-		foreach ($locations_raw as $location) {
-			$masterSet['locations'][$location['Location']['id']]['location'] = $location['Location']['location'];
-			$masterSet['locations'][$location['Location']['id']]['abbreviated_name'] = $location['Location']['abbreviated_name']; 
-		}
+  		$masterSet['locations'] = $this->Shift->ShiftsType->Location->getLocations();
 
 		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
 			'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
@@ -170,79 +159,121 @@ class ShiftsController extends AppController {
 		$this->set('masterSet', $masterSet);
 	}
 
-	function viewPdf() {
+	function calendarView() {
+		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
-		$this->set('calendars', $this->Calendar->find('list', array(
-			'fields' => array('Calendar.start_date', 'Calendar.name', 'Calendar.id'),
-			'order'=>array('Calendar.start_date ASC'))));
-		$this->render();
-	}
-
-
-	function viewIcs() {
-		if (!isset($this->request->named['id']['id'])) {
-			return $this->setAction('viewIcsList');
+		$this->loadModel('Profile');
+	
+		if (isset($this->request->named['calendar']['calendar'])) {
+			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
 		}
 		else {
-			$shiftList = $this->Shift->find('all', array(
-				'contain' => array(
-					'ShiftsType' => array('Location'), 
-					'User' => array('Profile')
-				),
-				'conditions' => array(
-					'Shift.date >=' => date('Y-m-d', strtotime("-6 months")),
-					'Shift.user_id' => $this->request->named['id']['id'],
-				),
-			));
-
-			$locations_raw = $this->Shift->ShiftsType->Location->find('all', array(
-				'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
-				'recursive' => '0'
-				));
-			foreach ($locations_raw as $location) {
-				$locationSet[$location['Location']['id']] = $location['Location']['location'];
-//				$masterSet['locations'][$location['Location']['id']]['abbreviated_name'] = $location['Location']['abbreviated_name']; 
-			}
-
-			$shiftsTypeSetRaw = $this->Shift->ShiftsType->find('all', array(
-				'fields' => array('ShiftsType.comment', 'ShiftsType.shift_start', 'ShiftsType.shift_end'),
-				'conditions' => array(
-					'ShiftsType.expiry_date >=' => date('Y-m-d', strtotime("-6 months")),
-					),
-				'recursive' => '0',
-				)
-			);
-
-			foreach ($shiftsTypeSetRaw as $shiftsTypeSetRaw) {
-				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['comment'] = $shiftsTypeSetRaw['ShiftsType']['comment'];
-				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_start'] = $shiftsTypeSetRaw['ShiftsType']['shift_start'];
-				$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_end'] = $shiftsTypeSetRaw['ShiftsType']['shift_end'];
-			}
-					
-			$i = 1;
-			foreach ($shiftList as $shift) {
-				$masterSet[$i]['id'] = $shift['Shift']['id'];
-				$masterSet[$i]['date'] = $shift['Shift']['date'];
-				$masterSet[$i]['location'] = $locationSet[$shift['ShiftsType']['location_id']];
-				$masterSet[$i]['shift_start'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['shift_start'];
-				$masterSet[$i]['shift_end'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['shift_end'];
-				$masterSet[$i]['comment'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['comment'];
-				$masterSet[$i]['display_name'] = $shift['User']['Profile']['cb_displayname'];
-				$i++;
-			}
-			
-			$this->set('masterSet', $masterSet);
+			return $this->setAction('calendarList');
 		}
+		$this->set('calendars', $this->Calendar->find('list'));
+	
+		$shiftList = $this->Shift->getShiftList(
+		array(
+					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
+					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+		)
+		);
+	
+		$masterSet['locations'] = $this->Shift->ShiftsType->Location->getLocations();
+	
+		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
+				'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
+				'conditions' => array(
+					'ShiftsType.start_date <=' => $masterSet['calendar']['Calendar']['start_date'],
+					'ShiftsType.expiry_date >=' => $masterSet['calendar']['Calendar']['start_date'],
+		),
+				'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
+		));
+	
+	
+		foreach ($shiftList as $shift) {
+			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
+		}
+	
+		//Editing the calendar: Get list of people
+		$this->set('users', $this->Shift->User->find('list', array(
+				'fields' => array('User.id', 'Profile.cb_displayname'),
+				'order'=>array('Profile.cb_displayname ASC'),
+				'recursive' => 2
+		)));
+	
+	
+		$this->set('masterSet', $masterSet);
+	}
+	
+	function pdfView() {
+			$this->loadModel('Calendar');
+			$this->set('calendars', $this->Calendar->getList());
 	}
 
 
-	function viewIcsList() {
+	function icsView() {
+		if (!isset($this->request->named['id']['id'])) {
+			return $this->setAction('icsList');
+		}
+		$shiftList = $this->Shift->getShiftList(
+			array (
+				'Shift.date >=' => date('Y-m-d', strtotime("-6 months")),
+				'Shift.user_id' => $this->request->named['id']['id'],
+			)
+		);
+
+		$locationSet = $this->Shift->ShiftsType->Location->getLocations();
+
+		$shiftsTypeSetRaw = $this->Shift->ShiftsType->find('all', array(
+			'fields' => array('ShiftsType.comment', 'ShiftsType.shift_start', 'ShiftsType.shift_end'),
+			'conditions' => array(
+				'ShiftsType.expiry_date >=' => date('Y-m-d', strtotime("-6 months")),
+				),
+			'recursive' => '0',
+			)
+		);
+
+		foreach ($shiftsTypeSetRaw as $shiftsTypeSetRaw) {
+			$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['comment'] = $shiftsTypeSetRaw['ShiftsType']['comment'];
+			$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_start'] = $shiftsTypeSetRaw['ShiftsType']['shift_start'];
+			$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_end'] = $shiftsTypeSetRaw['ShiftsType']['shift_end'];
+		}
+				
+		$i = 1;
+		foreach ($shiftList as $shift) {
+			$masterSet[$i]['id'] = $shift['Shift']['id'];
+			$masterSet[$i]['date'] = $shift['Shift']['date'];
+			$masterSet[$i]['location'] = $locationSet[$shift['ShiftsType']['location_id']]['location'];
+			$masterSet[$i]['shift_start'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['shift_start'];
+			$masterSet[$i]['shift_end'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['shift_end'];
+			$masterSet[$i]['comment'] = $shiftsTypeSet[$shift['Shift']['shifts_type_id']]['comment'];
+			$masterSet[$i]['display_name'] = $shift['User']['Profile']['cb_displayname'];
+			$i++;
+		}
+		
+		$this->set('masterSet', $masterSet);
+	}
+
+	/**
+	 * List of all physicians for icsView
+	 * 
+	 */
+	function icsList() {
 		$this->set('physicians', $this->Shift->User->find('list', array(
 				'fields' => array('User.id', 'User.name'),
 				'order'=>array('Profile.lastname ASC', 'Profile.firstname ASC'),
 				'conditions' => array ('block' => 0),
 				'recursive' => '1'
 		)));
+	}
+	
+	/**
+	 * List of calendars
+	 */
+	public function calendarList() {
+		$this->loadModel('Calendar');
+		$this->set('calendars', $this->Calendar->getList());
 	}
 	
 	public function delete($id = null) {
@@ -283,7 +314,6 @@ class ShiftsController extends AppController {
 							)
 			)));
 			$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
-			print_r($this->Shift->ShiftsType->find('list'));
 			$this->request->data = $this->Shift->read(null, $id);
 		}
 	}
