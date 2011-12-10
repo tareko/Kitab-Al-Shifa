@@ -1,25 +1,24 @@
 <?php
-class User extends AppModel
+class Usergroup extends AppModel
 {
 	public $actsAs = array('Containable');
 	public $useDbConfig = 'joomla';
-	public $useTable = 'users';
+	public $useTable = 'usergroups';
 	public $hasOne = array(
-			'Profile' => array(
-				'className' => 'Profile',
-				'foreignKey' => 'user_id',
+			'Group' => array(
+				'className' => 'Group',
+				'foreignKey' => 'usergroups_id',
 				'conditions' => '',
 				'fields' => '',
 				'order' => '')
 	);
-	var $hasMany = array('Shifts');
 	public $hasAndBelongsToMany = array(
-		'Usergroup' =>
+		'User' =>
 			array(
-				'className'				=> 'Usergroup',
+				'className'				=> 'User',
 				'joinTable'				=> 'user_usergroup_map',
-				'foreignKey'			=> 'user_id',
-				'associationForeignKey'	=> 'group_id',
+				'foreignKey'			=> 'group_id',
+				'associationForeignKey'	=> 'user_id',
 				'unique'				=> true,
 				'conditions'			=> '',
 				'fields'				=> '',
@@ -31,23 +30,20 @@ class User extends AppModel
 				'insertQuery'			=> ''
 			)
 	);
-	var $displayField = 'name';
-	public $order = array('block' => 'ASC');
 
 	public $validate = array(
-		'username' => array(
+		'usergroups_id' => array(
 			'required' => array(
 				'rule' => array('notEmpty'),
-				'message' => 'A username is required'
+				'message' => 'You must enter a usergroup'
 			)
 		),
-		'password' => array(
+		'acl' => array(
 			'required' => array(
 				'rule' => array('notEmpty'),
-				'message' => 'A password is required'
+				'message' => 'Please enter permissions for this group'
 			)
 		),
 	);
 }
-
 ?>

@@ -2,7 +2,7 @@
 <ul>
 	<li><?php echo $this->Html->link('List', array('controller' => 'shifts')); ?> - A list of all my shifts</li>
 	<li><?php echo $this->Html->link('Web Calendar', array('controller' => 'shifts', 'action' => 'viewCalendar')); ?> - A web-based calendar view of my shifts</li>
-	<li><?php echo $this->Html->link('iCalendar', array('controller' => 'shifts', 'action' => 'viewIcs')); ?> - for linking or downloading a calendar to my calendar software</li>
+	<li><?php echo $this->Html->link('iCalendar', array('controller' => 'shifts', 'action' => 'viewIcs', 'id[id]:' . $users_id)); ?> - for linking or downloading a calendar to my calendar software</li>
 	<li><?php echo $this->Html->link('PDF', array('controller' => 'shifts', 'action' => 'viewPdf')); ?> - a printable PDF of only my schedule</li>
 </ul>
 <br/>
@@ -16,7 +16,8 @@
 
 <?php
 	if ($admin) { ?>
-		<p>Administrative functions:</p>
+		<br/><br/>
+		<h2>Administrative functions:</h2>
 		<ul>
 			<li><?php echo $this->Html->link('Locations', array('controller' => 'locations')); ?></li>
 			<li><?php echo $this->Html->link('Physicians', array('controller' => 'users')); ?></li>
