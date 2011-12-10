@@ -61,7 +61,14 @@ class ShiftsController extends AppController {
 		$this->loadModel('Calendar');
 		if (isset($this->request->named['calendar']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']['calendar']);
-			$masterSet['calendar']['id'] = $this->request->named['calendar']['calendar'];
+			$masterSet['calendar']['lastupdated'] = $this->Shift->find('first', array(
+				'fields' => array('Shift.updated'),
+				'order' => array(
+					'Shift.updated' => 'DESC',
+				)
+			));
+print_r($masterSet['calendar']['lastupdated']);
+//			$masterSet['calendar']['id'] = $this->request->named['calendar']['calendar'];
 		}
 		else {
 			return $this->setAction('calendarList', 'pdfCreate');
