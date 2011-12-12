@@ -99,6 +99,7 @@ abstract class BaseAuthenticate {
 		$user = ClassRegistry::init($userModel)->findByUsername($username);
 		$parts = explode(':', $user['User']['password']);
 
+
 		if ($parts[1] == '' || !isset($parts[1])) {
 			$conditions = array(
 				$model . '.' . $fields['username'] => $username,
@@ -106,12 +107,12 @@ abstract class BaseAuthenticate {
 			);
 		}
 		else {
+			$salt = $parts[1];
 			$conditions = array(
 			$model . '.' . $fields['username'] => $username,
 			$model . '.' . $fields['password'] => md5($password . $salt) . ':' . $salt,
 			);
-		}	
-		$salt = $parts[1];
+		}
 		
 		if (!empty($this->settings['scope'])) {
 		$conditions = array_merge($conditions, $this->settings['scope']);
