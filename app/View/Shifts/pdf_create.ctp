@@ -17,7 +17,7 @@ $tcpdf->AddPage('L');
 $tcpdf->setCellHeightRatio(1.5);
 
 $output = $this->Calendar->makeCalendarPdf($masterSet);
-$output .= '<br/><div style="font-size:50%"><p>Notes:<br/>' . $masterSet['calendar']['Calendar']['comments'];
+$output .= '<br/><br/><br/><div style="font-size:60%"><p>Notes:<br/>' . $masterSet['calendar']['Calendar']['comments'];
 $output .= '<p>PDF created: '. date('Y-m-d').'</p>
 <p>Schedule last updated: '.$masterSet['calendar']['lastupdated']['Shift']['updated'].'</p></div>';
 
