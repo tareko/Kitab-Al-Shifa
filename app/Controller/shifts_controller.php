@@ -23,7 +23,13 @@ class ShiftsController extends AppController {
 			)));
 		$this->Prg->commonProcess();
         $this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
-		$this->set('shifts', $this->paginate());
+
+        if (isset($this->request->named['id']['id'])) {
+        	$this->set('shifts', $this->paginate(array('Shift.user_id' => $this->request->named['id']['id'])));
+        }
+        else {
+        	$this->set('shifts', $this->paginate());
+        }
 	}
 	
 	function add() {
@@ -168,13 +174,24 @@ class ShiftsController extends AppController {
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 	
-		$shiftList = $this->Shift->getShiftList(
-		array(
+		if (isset($this->request->named['id']['id'])) {
+			$shiftList = $this->Shift->getShiftList(
+				array(
 					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
 					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-		)
-		);
-	
+					'Shift.user_id' => $this->request->named['id']['id'],
+					)
+			);
+		}
+		else {
+			$shiftList = $this->Shift->getShiftList(
+				array(
+					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
+					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+				)
+			);
+		}
+
 		$masterSet['locations'] = $this->Shift->ShiftsType->Location->getLocations();
 	
 		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
@@ -262,6 +279,9 @@ class ShiftsController extends AppController {
 	public function calendarList($calendarAction) {
 		$this->loadModel('Calendar');
 		$this->set('calendarAction', $calendarAction);
+		if (isset($this->request->named['id']['id'])) {
+			$this->set('passed_id', $this->request->named['id']['id']);
+		}
 		$this->set('calendars', $this->Calendar->getList());
 	}
 	

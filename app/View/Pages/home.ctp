@@ -1,9 +1,9 @@
 <h2>My schedule:</h2>
 <ul>
-	<li><?php echo $this->Html->link('List', array('controller' => 'shifts')); ?> - A list of all my shifts</li>
+	<li><?php echo $this->Html->link('List', array('controller' => 'shifts', 'id[id]:' . $users_id)); ?> - A list of all my shifts</li>
 	<li><?php echo $this->Html->link('Web Calendar', array('controller' => 'shifts', 'action' => 'calendarView', 'id[id]:' . $users_id)); ?> - A web-based calendar view of my shifts</li>
 	<li><?php echo $this->Html->link('iCalendar', array('controller' => 'shifts', 'action' => 'icsView', 'id[id]:' . $users_id)); ?> - for linking or downloading a calendar to my calendar software</li>
-	<li><?php echo $this->Html->link('PDF', array('controller' => 'shifts', 'action' => 'pdfView')); ?> - a printable PDF of only my schedule</li>
+	<li><s><?php echo $this->Html->link('PDF', array('controller' => 'shifts', 'action' => 'pdfView', 'id[id]:' . $users_id)); ?> - a printable PDF of only my schedule</s></li>
 </ul>
 <br/>
 <br/>
