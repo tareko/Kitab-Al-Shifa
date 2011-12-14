@@ -46,10 +46,10 @@ class ShiftsController extends AppController {
 			if ($saved == 1) {
 				if ($this->Shift->saveAll($data['Shift'])) {
 					$this->Session->setFlash('Shift saved');
-					$this->redirect(array('action' => 'calendarView'));
+					$this->redirect(array('action' => $this->request->named['Action'].'/calendar:'.$this->request->named['calendar']));
 				}
 				$this->Session->setFlash(__('Shift was not saved'));
-				$this->redirect(array('action' => 'calendarView'));
+				$this->redirect(array('action' => $this->request->named['Action']));
  			}
 		}
 		
