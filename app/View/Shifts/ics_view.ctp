@@ -25,7 +25,8 @@
 			$shift['comment'], 
 			array(
 				'UID'=>$shift['id'], 
-				'location'=>$shift['location']
+				'location'=>$shift['location'],
+				'categories'=> $shift['location'],
 			)
 		);
 	}
