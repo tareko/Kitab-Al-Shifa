@@ -9,9 +9,7 @@ class Usergroup extends AppModel
 			'Group' => array(
 				'className' => 'Group',
 				'foreignKey' => 'usergroups_id',
-				'conditions' => '',
-				'fields' => '',
-				'order' => '')
+			)
 	);
 	public $hasAndBelongsToMany = array(
 		'User' =>

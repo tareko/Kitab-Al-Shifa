@@ -87,11 +87,11 @@ class AppController extends Controller {
 	function _getAclRules($userId) {
 		$rulesRaw = $this->User->find('all',
 		array(
-				'contain' => array(
-					'Usergroup' => array('Group')
+	  		'contain' => array(
+				'Usergroup' => array('Group.acl')
 				),
-				'conditions' => array(
-					'id' => $userId
+			'conditions' => array(
+				'id' => $userId
 				),
 			)
 		);

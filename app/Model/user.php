@@ -50,14 +50,36 @@ class User extends AppModel
 	);
 
 	
-	public function getList() {
+	public function getList($conditions) {
 		return $this->find('list', array(
 			'contain' => array('Profile'),
 			'fields' => array('User.id', 'Profile.cb_displayname'),
 			'order'=>array('Profile.cb_displayname ASC'),
-			'recursive' => 0
+			'recursive' => 0,
+			'conditions' => $conditions
 		));
 	}
+
+ 	public function getActiveUsersForGroup($group) {
+		$rawInfo = $this->Usergroup->find('all', array(
+			'conditions' => array (
+				'Usergroup.id' => $group
+			),
+			'contain' => array(
+				'User' => array('Profile.cb_displayname')
+		)));
+
+		foreach ($rawInfo as $users) {
+			foreach ($users['User'] as $user) {
+				if ($user['block'] == 0) {
+					$userList[$user['id']] = $user['Profile']['cb_displayname'];
+				}
+			}
+		}
+		$userList = Set::sort($userList, '', 'ASC');
+		return $userList;
+ 	}
+
 }
 
 ?>

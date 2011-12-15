@@ -118,7 +118,7 @@ class ShiftsController extends AppController {
 	}
 
 	/**
-	 * Function for web-based view of calendar.
+	 * Function for web-based editing of calendar.
 	 * 
 	 */
 	function calendarEdit() {
@@ -157,7 +157,7 @@ class ShiftsController extends AppController {
 			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
 		}
 		
-		$this->set('users', $this->Shift->User->getList());
+		$this->set('users', $this->User->getActiveUsersForGroup($masterSet['calendar']['Calendar']['usergroups_id']));
 		$this->set('masterSet', $masterSet);
 	}
 

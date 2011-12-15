@@ -79,24 +79,6 @@ class Shift extends AppModel {
 		),
 	);
 
-/* 	public $hasAndBelongsToMany = array(
-		'Shift' => array(
-			'className' => 'Shift',
-			'joinTable' => 'calendars_shifts',
-			'foreignKey' => 'calendar_id',
-			'associationForeignKey' => 'shift_id',
-			'unique' => true,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
-		)
-	);
- */
 	//public $order = array("Shift.date" => "ASC", "ShiftsType.location_id" => "ASC", "ShiftsType.shift_start" => "ASC", "ShiftsType.shift_end" => "ASC");
 	public $order = array("Shift.date" => "ASC");
 	var $virtualFields = array(

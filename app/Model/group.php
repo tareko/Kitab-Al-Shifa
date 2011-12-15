@@ -4,8 +4,12 @@ class Group extends AppModel {
 	public $hasOne = array(
 		'Usergroup' => array(
 			'className'    => 'Usergroup',
-			'foreignKey'   => 'id'
+			'foreignKey'   => 'id',
 	));
-//	var $displayField = 'Usergroup.title';
+//	var $displayField = 'title';
+/* 	var $virtualFields = array(
+			'title' => 'Usergroup.title'
+	);
+ */
 }
 ?>
