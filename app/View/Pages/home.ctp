@@ -13,6 +13,14 @@
 	<li><?php echo $this->Html->link('PDF', array('controller' => 'shifts', 'action' => 'pdfView')); ?> - a printable PDF of the entire schedule</li>
 	<li><?php echo $this->Html->link('iCalendar', array('controller' => 'shifts', 'action' => 'icsView')); ?> - for linking or downloading a calendar to my calendar software</li>
 </ul>
+<br/>
+<br/>
+<h2>Shift-trading functions:</h2>
+<ul>
+	<li><s><?php echo $this->Html->link('Compare schedules', array('controller' => 'shifts', 'action' => 'calendarView')); ?> - Show a calendar superimposing the shifts of different physicians</s></li>
+	<li><s><?php echo $this->Html->link('Who\'s free to take my shift?', array('controller' => 'shifts', 'action' => 'calendarView')); ?> - Find out who's free during a certain shift</s></li>
+	<li><s><?php echo $this->Html->link('Request a shift trade', array('controller' => 'shifts', 'action' => 'calendarView')); ?> - Find out who's free during a certain shift</s></li>
+</ul>
 	
 
 <?php
