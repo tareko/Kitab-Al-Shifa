@@ -1,6 +1,7 @@
 <?php
 /* Users Test cases generated on: 2011-12-06 04:28:56 : 1323163736*/
 App::uses('UsersController', 'Controller');
+App::uses('Controller', 'Controller');
 
 /**
  * TestUsersController *

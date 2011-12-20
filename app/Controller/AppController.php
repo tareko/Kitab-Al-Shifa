@@ -4,7 +4,7 @@ class AppController extends Controller {
 	public $uses = array('User', 'Usergroup', 'Group');
 
 	var $components = array('Session',
-		'Auth' => array(
+ 		'Auth' => array(
 			'loginAction' => array(
 				'controller' => 'users',
 				'action' => 'login',
@@ -23,7 +23,7 @@ class AppController extends Controller {
 		$this->set('users_id', $this->_usersId());
 		$this->Auth->allow('pdfCreate', 'icsView');
 		
- 		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
+  		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
 			$this->Session->setFlash('Access denied. You do not have permission to access this page');
 			header('HTTP/1.1 401 Unauthorized');
 			$this->viewPath = 'Errors';

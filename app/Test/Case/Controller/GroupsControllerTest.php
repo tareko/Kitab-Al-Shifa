@@ -1,6 +1,7 @@
 <?php
 /* Groups Test cases generated on: 2011-12-14 16:06:25 : 1323896785*/
 App::uses('GroupsController', 'Controller');
+App::uses('Controller', 'Controller');
 
 /**
  * TestGroupsController *
@@ -30,7 +31,7 @@ class TestGroupsController extends GroupsController {
  * GroupsController Test Case
  *
  */
-class GroupsControllerTestCase extends CakeTestCase {
+class GroupsControllerTestCase extends ControllerTestCase {
 /**
  * Fixtures
  *
@@ -50,6 +51,12 @@ class GroupsControllerTestCase extends CakeTestCase {
 		$this->Groups->constructClasses();
 	}
 
+	
+	public function testIndex() {
+	$result = $this->testAction('/groups/index');
+	        debug($result);
+	}
+	
 /**
  * tearDown method
  *

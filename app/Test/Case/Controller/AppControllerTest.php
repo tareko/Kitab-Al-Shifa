@@ -1,12 +1,11 @@
 <?php
-/* Calendars Test cases generated on: 2011-11-11 16:13:39 : 1321046019*/
-App::uses('Calendars', 'Controller');
+/* App Test cases generated on: 2011-12-18 16:21:16 : 1324243276*/
+App::uses('AppController', 'Controller');
 
 /**
- * TestCalendars 
- *
+ * TestAppController *
  */
-class TestCalendars extends Calendars {
+class TestAppController extends AppController {
 /**
  * Auto render
  *
@@ -28,16 +27,16 @@ class TestCalendars extends Calendars {
 }
 
 /**
- * Calendars Test Case
+ * AppController Test Case
  *
  */
-class CalendarsTestCase extends CakeTestCase {
+class AppControllerTestCase extends CakeTestCase {
 /**
  * Fixtures
  *
  * @var array
  */
-	public $fixtures = array('app.calendar');
+	public $fixtures = array('app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map');
 
 /**
  * setUp method
@@ -47,8 +46,8 @@ class CalendarsTestCase extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->Calendars = new TestCalendars();
-		$this->Calendar->constructClasses();
+		$this->App = new TestAppController();
+		$this->App->constructClasses();
 	}
 
 /**
@@ -57,8 +56,7 @@ class CalendarsTestCase extends CakeTestCase {
  * @return void
  */
 	public function tearDown() {
-		unset($this->Calendars);
-		ClassRegistry::flush();
+		unset($this->App);
 
 		parent::tearDown();
 	}
