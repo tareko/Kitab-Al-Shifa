@@ -1,5 +1,5 @@
 <?php
-/* Calendars Test cases generated on: 2011-12-18 16:16:50 : 1324243010*/
+/* Calendars Test cases generated on: 2011-12-19 19:30:08 : 1324341008*/
 App::uses('CalendarsController', 'Controller');
 App::uses('Controller', 'Controller');
 
@@ -31,7 +31,7 @@ class TestCalendarsController extends CalendarsController {
  * CalendarsController Test Case
  *
  */
-class CalendarsControllerTestCase extends CakeTestCase {
+class CalendarsControllerTestCase extends ControllerTestCase {
 /**
  * Fixtures
  *
@@ -50,13 +50,12 @@ class CalendarsControllerTestCase extends CakeTestCase {
 		$this->Calendars = new TestCalendarsController();
 		$this->Calendars->constructClasses();
 	}
-
 	
-    public function testIndex() {
-        $result = $this->testAction('/calendars/index');
-        debug($result);
-    }
-		
+	public function testIndex() {
+		$result = $this->testAction('/calendars/index');
+		debug($result);
+	}
+	
 /**
  * tearDown method
  *

@@ -95,7 +95,7 @@ class Calendar extends AppModel {
 	public $belongsTo = array(
 		'Usergroup' => array(
 			'className' => 'Usergroup',
-			'foreignKey' => 'usergroup_id',
+			'foreignKey' => 'usergroups_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''

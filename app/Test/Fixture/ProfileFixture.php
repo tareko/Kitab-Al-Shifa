@@ -11,7 +11,7 @@ class ProfileFixture extends CakeTestFixture {
  *
  * @var string
  */
-	public $table = 'comprofiler';
+	public $table = 'j17_comprofiler';
 /**
  * Import
  *
