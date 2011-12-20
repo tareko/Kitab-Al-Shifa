@@ -50,7 +50,7 @@ class User extends AppModel
 	);
 
 	
-	public function getList($conditions) {
+	public function getList($conditions = '') {
 		return $this->find('list', array(
 			'contain' => array('Profile'),
 			'fields' => array('User.id', 'Profile.cb_displayname'),

@@ -1,5 +1,5 @@
 <?php
-/* Calendar Fixture generated on: 2011-12-19 16:36:15 : 1324330575 */
+/* Calendar Fixture generated on: 2011-12-20 00:54:26 : 1324360466 */
 
 /**
  * CalendarFixture
@@ -30,7 +30,7 @@ class CalendarFixture extends CakeTestFixture {
  *
  * @var array
  */
-	public $records = array(
+ 	public $records = array(
 		array(
 			'id' => '1',
 			'usergroups_id' => '11',
@@ -38,7 +38,7 @@ class CalendarFixture extends CakeTestFixture {
 			'start_date' => '2011-12-01',
 			'end_date' => '2011-12-22',
 			'published' => 1,
-			'comments' => 'No holiday hours',
+			'comments' => '',
 			'updated' => '2011-12-15 00:46:26'
 		),
 		array(
@@ -48,7 +48,7 @@ class CalendarFixture extends CakeTestFixture {
 			'start_date' => '2011-12-23',
 			'end_date' => '2012-01-06',
 			'published' => 1,
-			'comments' => 'Holiday hours',
+			'comments' => '',
 			'updated' => '2011-12-15 00:46:37'
 		),
 		array(
@@ -78,7 +78,7 @@ class CalendarFixture extends CakeTestFixture {
 			'start_date' => '2012-02-01',
 			'end_date' => '2012-02-29',
 			'published' => 1,
-			'comments' => 'Feb 20 - Family Day',
+			'comments' => '',
 			'updated' => '2011-12-15 00:47:08'
 		),
 		array(

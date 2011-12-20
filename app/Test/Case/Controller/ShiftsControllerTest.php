@@ -37,7 +37,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.shifts_types');
+	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.shifts_types', 'app.calendar');
 
 /**
  * setUp method
@@ -83,7 +83,8 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testAdd() {
-
+		$result = $this->testAction('/shifts/add');
+		debug($result);
 	}
 
 /**
@@ -91,28 +92,55 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  *
  * @return void
  */
-	public function testPdfCreate() {
-
+	public function testPdfCreateNoCalGiven() {
+		$result = $this->testAction('/shifts/pdfCreate');
+		debug($result);
 	}
 
+	public function testPdfCreateCalGiven() {
+		$result = $this->testAction('/shifts/pdfCreate/calendar:1');
+		debug($result);
+	}
+	
 /**
  * testCalendarEdit method
  *
  * @return void
  */
-	public function testCalendarEdit() {
-
+	public function testCalendarEditNoCalGiven() {
+		$result = $this->testAction('/shifts/calendarEdit');
+		debug($result);
 	}
 
+	public function testCalendarEditCalGiven() {
+		$result = $this->testAction('/shifts/calendarEdit/calendar:1');
+		debug($result);
+	}
+	
 /**
  * testCalendarView method
  *
  * @return void
  */
-	public function testCalendarView() {
-
+	public function testCalendarViewNoCalGiven() {
+		$result = $this->testAction('/shifts/calendarView');
+		debug($result);
+	}
+	
+	public function testCalendarViewCalGiven() {
+		$result = $this->testAction('/shifts/calendarView/calendar:1');
+		debug($result);
 	}
 
+	public function testCalendarViewIdGiven() {
+		$result = $this->testAction('/shifts/calendarView/calendar:1/id:2');
+		debug($result);
+	}
+	public function testCalendarViewIdNoCalGiven() {
+		$result = $this->testAction('/shifts/calendarView/id:2');
+		debug($result);
+	}
+	
 /**
  * testPdfView method
  *
