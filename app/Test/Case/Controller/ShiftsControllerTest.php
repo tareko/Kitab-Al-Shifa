@@ -147,18 +147,24 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testPdfView() {
-
+		$result = $this->testAction('/shifts/pdfView');
+		debug($result);
 	}
-
+	
 /**
  * testIcsView method
  *
  * @return void
  */
-	public function testIcsView() {
-
+	public function testIcsViewNoId() {
+		$result = $this->testAction('/shifts/icsView');
+		debug($result);
 	}
-
+	public function testIcsViewId() {
+		$result = $this->testAction('/shifts/icsView/id:1');
+		debug($result);
+	}
+	
 /**
  * testIcsList method
  *
@@ -181,18 +187,30 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * testDelete method
  *
  * @return void
+ * @expectedException NotFoundException
  */
-	public function testDelete() {
-
+	public function testDeleteNoId() {
+		$result = $this->testAction('/shifts/delete');
+		$this->setExpectedException('NotFoundException');
 	}
-
+	public function testDeleteId() {
+		$result = $this->testAction('/shifts/delete/52');
+		debug($result);
+	}
+	
 /**
  * testEdit method
  *
  * @return void
+ * @expectedException NotFoundException
  */
-	public function testEdit() {
-
+ 	public function testEditNoId() {
+		$result = $this->testAction('/shifts/edit');
+		$this->setExpectedException('NotFoundException');
 	}
-
+	public function testEditId() {
+		$result = $this->testAction('/shifts/edit/16');
+		debug($result);
+	}
+	
 }
