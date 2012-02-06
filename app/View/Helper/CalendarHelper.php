@@ -72,18 +72,11 @@ class CalendarHelper extends AppHelper {
 					$output1[] = $this->Html->link($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'], array('controller' => 'shifts', 'action' => 'edit', $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['id']));
 				}
 				else {
-/* 					$output1[] =
-					$this->Form->hidden("Shift.$i.shifts_type_id", array('value' => $shiftsType['ShiftsType']['id'] )) .
-					$this->Form->hidden("Shift.$i.date", array('value' => $k )) .
-					$this->Form->input("Shift.$i.physician_id", array(
-    						'label' => false
-					));
- */
 					$output1[] = 
 					$this->Form->hidden("Shift.$i.shifts_type_id", array('value' => $shiftsType['ShiftsType']['id'] )) .
 					$this->Form->hidden("Shift.$i.date", array('value' => $k )) .
 					$this->Form->input("Shift.$i.user_id", array(
-					'label' => false
+						'label' => false
 					));
 					$i++;
 				}
