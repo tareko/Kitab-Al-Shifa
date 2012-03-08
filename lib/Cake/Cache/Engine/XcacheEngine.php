@@ -110,7 +110,6 @@ class XcacheEngine extends CacheEngine {
 	public function decrement($key, $offset = 1) {
 		return xcache_dec($key, $offset);
 	}
-
 /**
  * Delete a key from the cache
  *

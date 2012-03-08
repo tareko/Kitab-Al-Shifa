@@ -24,6 +24,7 @@ App::uses('ConnectionManager', 'Model');
  */
 class ConnectionManagerTest extends CakeTestCase {
 
+
 /**
  * tearDown method
  *
@@ -33,7 +34,6 @@ class ConnectionManagerTest extends CakeTestCase {
 		parent::tearDown();
 		CakePlugin::unload();
 	}
-
 /**
  * testEnumConnectionObjects method
  *
@@ -277,7 +277,7 @@ class ConnectionManagerTest extends CakeTestCase {
 		), App::RESET);
 		CakePlugin::loadAll();
 		$expected = array(
-			'datasource' => 'Test2Source'
+		    'datasource' => 'Test2Source'
 		);
 
 		ConnectionManager::create('connection1', array('datasource' => 'Test2Source'));

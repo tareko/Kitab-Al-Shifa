@@ -45,12 +45,12 @@ class FileTest extends CakeTestCase {
 	}
 
 /**
- * tearDown method
+ * tear down for test.
  *
  * @return void
  */
-	public function tearDown() {
-		parent::tearDown();
+	public function teardown() {
+		parent::teardown();
 		$this->File->close();
 		unset($this->File);
 	}
@@ -74,7 +74,7 @@ class FileTest extends CakeTestCase {
 		$result = $this->File->info();
 		$expecting = array(
 			'dirname' => dirname(__FILE__), 'basename' => basename(__FILE__),
-			'extension' => 'php', 'filename' => 'FileTest'
+			'extension' => 'php', 'filename' =>'FileTest'
 		);
 		$this->assertEquals($expecting, $result);
 
@@ -226,7 +226,7 @@ class FileTest extends CakeTestCase {
  * @return void
  */
 	public function testCreate() {
-		$tmpFile = TMP.'tests' . DS . 'cakephp.file.test.tmp';
+		$tmpFile = TMP.'tests'.DS.'cakephp.file.test.tmp';
 		$File = new File($tmpFile, true, 0777);
 		$this->assertTrue($File->exists());
 	}
@@ -309,11 +309,10 @@ class FileTest extends CakeTestCase {
  * @return void
  */
 	public function testLastAccess() {
-		$ts = time();
 		$someFile = new File(TMP . 'some_file.txt', false);
 		$this->assertFalse($someFile->lastAccess());
 		$this->assertTrue($someFile->open());
-		$this->assertTrue($someFile->lastAccess() >= $ts);
+		$this->assertEquals($someFile->lastAccess(), time());
 		$someFile->close();
 		$someFile->delete();
 	}
@@ -324,13 +323,12 @@ class FileTest extends CakeTestCase {
  * @return void
  */
 	public function testLastChange() {
-		$ts = time();
 		$someFile = new File(TMP . 'some_file.txt', false);
 		$this->assertFalse($someFile->lastChange());
 		$this->assertTrue($someFile->open('r+'));
-		$this->assertTrue($someFile->lastChange() >= $ts);
+		$this->assertEquals($someFile->lastChange(), time());
 		$someFile->write('something');
-		$this->assertTrue($someFile->lastChange() >= $ts);
+		$this->assertEquals($someFile->lastChange(), time());
 		$someFile->close();
 		$someFile->delete();
 	}
@@ -387,7 +385,7 @@ class FileTest extends CakeTestCase {
 			$r = $TmpFile->append($fragment);
 			$this->assertTrue($r);
 			$this->assertTrue(file_exists($tmpFile));
-			$data = $data . $fragment;
+			$data = $data.$fragment;
 			$this->assertEquals($data, file_get_contents($tmpFile));
 			$TmpFile->close();
 		}

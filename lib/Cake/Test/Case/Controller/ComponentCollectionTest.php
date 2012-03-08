@@ -29,23 +29,21 @@ class CookieAliasComponent extends CookieComponent {
 
 class ComponentCollectionTest extends CakeTestCase {
 /**
- * setUp
+ * setup
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
+	public function setup() {
 		$this->Components = new ComponentCollection();
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */
-	public function tearDown() {
+	public function teardown() {
 		unset($this->Components);
-		parent::tearDown();
 	}
 
 /**
@@ -110,7 +108,6 @@ class ComponentCollectionTest extends CakeTestCase {
 
 		$this->assertFalse($this->Components->enabled('Cookie'), 'Cookie should be disabled');
 	}
-
 /**
  * test missingcomponent exception
  *

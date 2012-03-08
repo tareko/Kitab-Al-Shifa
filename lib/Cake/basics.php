@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Basic Cake functionality.
  *
@@ -76,7 +77,7 @@ function debug($var = false, $showHtml = null, $showFrom = true) {
 		$lineInfo = '';
 		if ($showFrom) {
 			$calledFrom = debug_backtrace();
-			$file = substr(str_ireplace(ROOT, '', $calledFrom[0]['file']), 1);
+			$file = substr(str_replace(ROOT, '', $calledFrom[0]['file']), 1);
 			$line = $calledFrom[0]['line'];
 		}
 		$html = <<<HTML

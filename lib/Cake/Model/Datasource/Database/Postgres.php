@@ -22,6 +22,8 @@ App::uses('DboSource', 'Model/Datasource');
 /**
  * PostgreSQL layer for DBO.
  *
+ * Long description for class
+ *
  * @package       Cake.Model.Datasource.Database
  */
 class Postgres extends DboSource {
@@ -67,7 +69,7 @@ class Postgres extends DboSource {
  */
 	public $columns = array(
 		'primary_key' => array('name' => 'serial NOT NULL'),
-		'string' => array('name' => 'varchar', 'limit' => '255'),
+		'string' => array('name'  => 'varchar', 'limit' => '255'),
 		'text' => array('name' => 'text'),
 		'integer' => array('name' => 'integer', 'formatter' => 'intval'),
 		'float' => array('name' => 'float', 'formatter' => 'floatval'),
@@ -78,7 +80,7 @@ class Postgres extends DboSource {
 		'binary' => array('name' => 'bytea'),
 		'boolean' => array('name' => 'boolean'),
 		'number' => array('name' => 'numeric'),
-		'inet' => array('name' => 'inet')
+		'inet' => array('name'  => 'inet')
 	);
 
 /**
@@ -151,7 +153,7 @@ class Postgres extends DboSource {
  * Returns an array of tables in the database. If there are no tables, an error is raised and the application exits.
  *
  * @param mixed $data
- * @return array Array of table names in the database
+ * @return array Array of tablenames in the database
  */
 	public function listSources($data = null) {
 		$cache = parent::listSources();
@@ -206,8 +208,6 @@ class Postgres extends DboSource {
 					if ($c->type == 'character varying') {
 						$length = null;
 						$type = 'text';
-					} else if ($c->type == 'uuid') {
-						$length = 36;
 					} else {
 						$length = intval($c->oct_length);
 					}
@@ -220,14 +220,14 @@ class Postgres extends DboSource {
 					$length = null;
 				}
 				$fields[$c->name] = array(
-					'type' => $this->column($type),
-					'null' => ($c->null == 'NO' ? false : true),
+					'type'    => $this->column($type),
+					'null'    => ($c->null == 'NO' ? false : true),
 					'default' => preg_replace(
 						"/^'(.*)'$/",
 						"$1",
 						preg_replace('/::.*/', '', $c->default)
 					),
-					'length' => $length
+					'length'  => $length
 				);
 				if ($model instanceof Model) {
 					if ($c->name == $model->primaryKey) {
@@ -296,21 +296,22 @@ class Postgres extends DboSource {
  * Deletes all the records in a table and drops all associated auto-increment sequences
  *
  * @param mixed $table A string or model class representing the table to be truncated
- * @param boolean $reset true for resetting the sequence, false to leave it as is.
- *    and if 1, sequences are not modified
+ * @param boolean $reset true for resseting the sequence, false to leave it as is.
+ *						and if 1, sequences are not modified
  * @return boolean	SQL TRUNCATE TABLE statement, false if not applicable.
  */
-	public function truncate($table, $reset = false) {
-		$fullTable = $this->fullTableName($table, false);
-		if (!isset($this->_sequenceMap[$fullTable])) {
+	public function truncate($table, $reset = 0) {
+		$table = $this->fullTableName($table, false);
+		if (!isset($this->_sequenceMap[$table])) {
 			$cache = $this->cacheSources;
 			$this->cacheSources = false;
 			$this->describe($table);
 			$this->cacheSources = $cache;
 		}
 		if ($this->execute('DELETE FROM ' . $this->fullTableName($table))) {
-			if (isset($this->_sequenceMap[$fullTable]) && $reset != true) {
-				foreach ($this->_sequenceMap[$fullTable] as $field => $sequence) {
+			$table = $this->fullTableName($table, false);
+			if (isset($this->_sequenceMap[$table]) && $reset !== 1) {
+				foreach ($this->_sequenceMap[$table] as $field => $sequence) {
 					$this->_execute("ALTER SEQUENCE \"{$sequence}\" RESTART WITH 1");
 				}
 			}
@@ -336,7 +337,7 @@ class Postgres extends DboSource {
  * Generates the fields list of an SQL query.
  *
  * @param Model $model
- * @param string $alias Alias table name
+ * @param string $alias Alias tablename
  * @param mixed $fields
  * @param boolean $quote
  * @return array
@@ -396,7 +397,7 @@ class Postgres extends DboSource {
  * Quotes the fields in a function call.
  *
  * @param string $match matched string
- * @return string quoted string
+ * @return string quoted strig
  */
 	protected function _quoteFunctionField($match) {
 		$prepend = '';
@@ -408,13 +409,13 @@ class Postgres extends DboSource {
 
 		if (!$constant && strpos($match[1], '.') === false) {
 			$match[1] = $this->name($match[1]);
-		} elseif (!$constant) {
+		} elseif (!$constant){
 			$parts = explode('.', $match[1]);
 			if (!Set::numeric($parts)) {
 				$match[1] = $this->name($match[1]);
 			}
 		}
-		return '(' . $prepend . $match[1] . ')';
+		return '(' . $prepend .$match[1] . ')';
 	}
 
 /**
@@ -482,13 +483,13 @@ class Postgres extends DboSource {
 						case 'add':
 							foreach ($column as $field => $col) {
 								$col['name'] = $field;
-								$colList[] = 'ADD COLUMN ' . $this->buildColumn($col);
+								$colList[] = 'ADD COLUMN '.$this->buildColumn($col);
 							}
 						break;
 						case 'drop':
 							foreach ($column as $field => $col) {
 								$col['name'] = $field;
-								$colList[] = 'DROP COLUMN ' . $this->name($field);
+								$colList[] = 'DROP COLUMN '.$this->name($field);
 							}
 						break;
 						case 'change':
@@ -549,7 +550,7 @@ class Postgres extends DboSource {
 	protected function _alterIndexes($table, $indexes) {
 		$alter = array();
 		if (isset($indexes['drop'])) {
-			foreach ($indexes['drop'] as $name => $value) {
+			foreach($indexes['drop'] as $name => $value) {
 				$out = 'DROP ';
 				if ($name == 'PRIMARY') {
 					continue;
@@ -718,7 +719,7 @@ class Postgres extends DboSource {
 					break;
 					case 'binary':
 					case 'bytea':
-						$resultRow[$table][$column] = is_null($row[$index]) ? null : stream_get_contents($row[$index]);
+						$resultRow[$table][$column] = stream_get_contents($row[$index]);
 					break;
 					default:
 						$resultRow[$table][$column] = $row[$index];
@@ -736,7 +737,7 @@ class Postgres extends DboSource {
  * Translates between PHP boolean values and PostgreSQL boolean values
  *
  * @param mixed $data Value to be translated
- * @param boolean $quote true to quote a boolean to be used in a query, false to return the boolean value
+ * @param boolean $quote true to quote a boolean to be used in a query, flase to return the boolean value
  * @return boolean Converted boolean value
  */
 	public function boolean($data, $quote = false) {

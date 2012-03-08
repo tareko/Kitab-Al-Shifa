@@ -447,7 +447,6 @@ class ViewTest extends CakeTestCase {
 		$this->View->element('test_element', array(), array('callbacks' => true));
 		$this->mockObjects[] = $this->View->ElementCallbackMockHtml;
 	}
-
 /**
  * test that additional element viewVars don't get overwritten with helpers.
  *

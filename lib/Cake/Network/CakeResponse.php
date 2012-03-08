@@ -187,8 +187,6 @@ class CakeResponse {
 		'mp3' => 'audio/mpeg',
 		'mpga' => 'audio/mpeg',
 		'ogg' => 'audio/ogg',
-		'oga' => 'audio/ogg',
-		'spx' => 'audio/ogg',
 		'ra' => 'audio/x-realaudio',
 		'ram' => 'audio/x-pn-realaudio',
 		'rm' => 'audio/x-pn-realaudio',
@@ -196,7 +194,6 @@ class CakeResponse {
 		'snd' => 'audio/basic',
 		'tsi' => 'audio/TSP-audio',
 		'wav' => 'audio/x-wav',
-		'aac' => 'audio/aac',
 		'asc' => 'text/plain',
 		'c' => 'text/plain',
 		'cc' => 'text/plain',
@@ -228,9 +225,6 @@ class CakeResponse {
 		'qt' => 'video/quicktime',
 		'viv' => 'video/vnd.vivo',
 		'vivo' => 'video/vnd.vivo',
-		'ogv' => 'video/ogg',
-		'webm' => 'video/webm',
-		'mp4' => 'video/mp4',
 		'gif' => 'image/gif',
 		'ief' => 'image/ief',
 		'jpe' => 'image/jpeg',
@@ -378,7 +372,7 @@ class CakeResponse {
 				$this->_headers['Content-Length'] = $offset + strlen($this->_body);
 			}
 		}
-	}
+    }
 
 /**
  * Sends a header to the client.
@@ -429,7 +423,7 @@ class CakeResponse {
  * will have the same effect as only doing `header('WWW-Authenticate: Not-Negotiate');`
  *
  * @param mixed $header. An array of header strings or a single header string
- *	- an associative array of "header name" => "header value" is also accepted
+ *	- an assotiative array of "header name" => "header value" is also accepted
  *	- an array of string headers is also accepted
  * @param mixed $value. The header value.
  * @return array list of headers to be sent
@@ -680,7 +674,7 @@ class CakeResponse {
 	}
 
 /**
- * Sets the correct headers to instruct the browser to download the response as a file.
+ * Sets the correct headers to instruct the browser to dowload the response as a file.
  *
  * @param string $filename the name of the file as the browser will download the response
  * @return void

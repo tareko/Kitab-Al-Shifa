@@ -29,25 +29,23 @@ class HtmlAliasHelper extends HtmlHelper {
 
 class HelperCollectionTest extends CakeTestCase {
 /**
- * setUp
+ * setup
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
+	public function setup() {
 		$this->View = $this->getMock('View', array(), array(null));
 		$this->Helpers = new HelperCollection($this->View);
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */
-	public function tearDown() {
+	public function teardown() {
 		CakePlugin::unload();
 		unset($this->Helpers, $this->View);
-		parent::tearDown();
 	}
 
 /**

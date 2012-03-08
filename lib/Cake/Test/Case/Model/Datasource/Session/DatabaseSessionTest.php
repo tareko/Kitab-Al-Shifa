@@ -66,24 +66,22 @@ class DatabaseSessionTest extends CakeTestCase {
 	}
 
 /**
- * setUp
+ * setup
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
+	public function setup() {
 		$this->storage = new DatabaseSession();
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */
-	public function tearDown() {
+	public function teardown() {
 		unset($this->storage);
 		ClassRegistry::flush();
-		parent::tearDown();
 	}
 
 /**
@@ -137,7 +135,6 @@ class DatabaseSessionTest extends CakeTestCase {
 		$result = $this->storage->write('', 'This is a Test');
 		$this->assertFalse($result);
 	}
-
 /**
  * test read()
  *
@@ -172,14 +169,11 @@ class DatabaseSessionTest extends CakeTestCase {
  * @return void
  */
 	public function testGc() {
-		ClassRegistry::flush();
 		Configure::write('Session.timeout', 0);
-
-		$storage = new DatabaseSession();
-		$storage->write('foo', 'Some value');
+		$this->storage->write('foo', 'Some value');
 
 		sleep(1);
-		$storage->gc();
-		$this->assertFalse($storage->read('foo'));
+		$this->storage->gc();
+		$this->assertFalse($this->storage->read('foo'));
 	}
 }

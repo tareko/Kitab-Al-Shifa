@@ -34,7 +34,6 @@ class MergeVarsAppController extends Controller {
  * @var array
  */
 	public $components = array('MergeVar' => array('flag', 'otherFlag', 'redirect' => false));
-
 /**
  * helpers
  *
@@ -42,6 +41,7 @@ class MergeVarsAppController extends Controller {
  */
 	public $helpers = array('MergeVar' => array('format' => 'html', 'terse'));
 }
+
 
 /**
  * MergeVar Component

@@ -16,7 +16,6 @@
  * @since         CakePHP(tm) v 0.10.0.1076
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
 App::uses('View', 'View');
 
 /**
@@ -57,13 +56,14 @@ class ThemeView extends View {
 		$themePaths = array();
 
 		if (!empty($this->theme)) {
-			foreach ($paths as $path) {
-				if (strpos($path, DS . 'Plugin' . DS) === false
-					&& strpos($path, DS . 'Cake' . DS . 'View') === false) {
+			$count = count($paths);
+			for ($i = 0; $i < $count; $i++) {
+				if (strpos($paths[$i], DS . 'Plugin' . DS) === false
+					&& strpos($paths[$i], DS . 'Cake' . DS . 'View') === false) {
 						if ($plugin) {
-							$themePaths[] = $path . 'Themed'. DS . $this->theme . DS . 'Plugin' . DS . $plugin . DS;
+							$themePaths[] = $paths[$i] . 'Themed'. DS . $this->theme . DS . 'Plugin' . DS . $plugin . DS;
 						}
-						$themePaths[] = $path . 'Themed'. DS . $this->theme . DS;
+						$themePaths[] = $paths[$i] . 'Themed'. DS . $this->theme . DS;
 					}
 			}
 			$paths = array_merge($themePaths, $paths);

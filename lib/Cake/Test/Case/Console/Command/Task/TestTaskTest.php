@@ -220,12 +220,12 @@ class TestTaskTest extends CakeTestCase {
 	public $fixtures = array('core.article', 'core.comment', 'core.articles_tag', 'core.tag');
 
 /**
- * setUp method
+ * setup method
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
+	public function setup() {
+		parent::setup();
 		$out = $this->getMock('ConsoleOutput', array(), array(), '', false);
 		$in = $this->getMock('ConsoleInput', array(), array(), '', false);
 

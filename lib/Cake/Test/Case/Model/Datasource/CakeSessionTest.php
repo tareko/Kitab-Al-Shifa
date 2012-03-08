@@ -71,8 +71,8 @@ class CakeSessionTest extends CakeTestCase {
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
+	public function setup() {
+		parent::setup();
 		Configure::write('Session', array(
 			'defaults' => 'php',
 			'cookie' => 'cakephp',
@@ -382,7 +382,7 @@ class CakeSessionTest extends CakeTestCase {
  */
 	public function testCheckKeyWithSpaces() {
 		$this->assertTrue(TestCakeSession::write('Session Test', "test"));
-		$this->assertTrue(TestCakeSession::check('Session Test'));
+		$this->assertEquals('test', TestCakeSession::check('Session Test'));
 		TestCakeSession::delete('Session Test');
 
 		$this->assertTrue(TestCakeSession::write('Session Test.Test Case', "test"));
@@ -526,7 +526,6 @@ class CakeSessionTest extends CakeTestCase {
 		App::build(array(
 			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), true);
-		CakePlugin::load('TestPlugin');
 
 		Configure::write('Session', array(
 			'defaults' => 'cake',

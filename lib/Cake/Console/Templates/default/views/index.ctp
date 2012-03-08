@@ -27,6 +27,7 @@
 	</tr>
 	<?php
 	echo "<?php
+	\$i = 0;
 	foreach (\${$pluralVar} as \${$singularVar}): ?>\n";
 	echo "\t<tr>\n";
 		foreach ($fields as $field) {

@@ -66,7 +66,7 @@ abstract class BaseAuthenticate {
  * @param string $password The unhashed password.
  * @return Mixed Either false on failure, or an array of user data.
  */
-	protected function _findUser($username, $password) {
+ 	protected function _findUser($username, $password) {
 		$userModel = $this->settings['userModel'];
 		list($plugin, $model) = pluginSplit($userModel);
 		$fields = $this->settings['fields'];
@@ -90,7 +90,7 @@ abstract class BaseAuthenticate {
 	}
 
 /**
- * Hash the plain text password so that it matches the hashed/encrypted password
+ * Hash the plain text password so that it matches the hashed/encrytped password
  * in the datasource.
  *
  * @param string $password The plain text password.
@@ -99,6 +99,7 @@ abstract class BaseAuthenticate {
 	protected function _password($password) {
 		return Security::hash($password, null, true);
 	}
+
 
 /**
  * Authenticate a user based on the request information.
@@ -111,7 +112,7 @@ abstract class BaseAuthenticate {
 
 /**
  * Allows you to hook into AuthComponent::logout(),
- * and implement specialized logout behavior.
+ * and implement specialized logout behaviour.
  *
  * All attached authentication objects will have this method
  * called when a user logs out.

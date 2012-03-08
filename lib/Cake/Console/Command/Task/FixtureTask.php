@@ -91,7 +91,7 @@ class FixtureTask extends BakeTask {
 
 /**
  * Execution method always used for tasks
- * Handles dispatching to interactive, named, or all processes.
+ * Handles dispatching to interactive, named, or all processeses.
  *
  * @return void
  */
@@ -137,7 +137,7 @@ class FixtureTask extends BakeTask {
 	protected function _interactive() {
 		$this->DbConfig->interactive = $this->Model->interactive = $this->interactive = true;
 		$this->hr();
-		$this->out(__d('cake_console', "Bake Fixture\nPath: %s", $this->getPath()));
+		$this->out(__d('cake_console', "Bake Fixture\nPath: %s", $this->path));
 		$this->hr();
 
 		if (!isset($this->connection)) {
@@ -222,14 +222,14 @@ class FixtureTask extends BakeTask {
 			$schema = $this->_generateSchema($tableInfo);
 		}
 
-		if (empty($importOptions['records']) && !isset($importOptions['fromTable'])) {
+		if (!isset($importOptions['records']) && !isset($importOptions['fromTable'])) {
 			$recordCount = 1;
 			if (isset($this->params['count'])) {
 				$recordCount = $this->params['count'];
 			}
 			$records = $this->_makeRecordString($this->_generateRecords($tableInfo, $recordCount));
 		}
-		if (!empty($this->params['records']) || isset($importOptions['fromTable'])) {
+		if (isset($this->params['records']) || isset($importOptions['fromTable'])) {
 			$records = $this->_makeRecordString($this->_getRecordsFromTable($model, $useTable));
 		}
 		$out = $this->generateFixtureFile($model, compact('records', 'table', 'schema', 'import', 'fields'));

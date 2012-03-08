@@ -126,19 +126,6 @@ class CacheTest extends CakeTestCase {
 		$read = Cache::read('Test', 'invalid');
 	}
 
-
-/**
- * Test reading from a config that is undefined.
- *
- * @return void
- */
-	public function testReadNonExistingConfig() {
-		$this->assertFalse(Cache::read('key', 'totally fake'));
-		$this->assertFalse(Cache::write('key', 'value', 'totally fake'));
-		$this->assertFalse(Cache::increment('key', 1, 'totally fake'));
-		$this->assertFalse(Cache::decrement('key', 1, 'totally fake'));
-	}
-
 /**
  * test that trying to configure classes that don't extend CacheEngine fail.
  *
@@ -161,10 +148,10 @@ class CacheTest extends CakeTestCase {
 		$_cacheConfigSessions = Cache::config('sessions');
 		$_cacheConfigTests = Cache::config('tests');
 
-		$result = Cache::config('sessions', array('engine' => 'File', 'path' => TMP . 'sessions'));
+		$result = Cache::config('sessions', array('engine'=> 'File', 'path' => TMP . 'sessions'));
 		$this->assertEquals($result['settings'], Cache::settings('sessions'));
 
-		$result = Cache::config('tests', array('engine' => 'File', 'path' => TMP . 'tests'));
+		$result = Cache::config('tests', array('engine'=> 'File', 'path' => TMP . 'tests'));
 		$this->assertEquals($result['settings'], Cache::settings('tests'));
 
 		Cache::config('sessions', $_cacheConfigSessions['settings']);
@@ -335,7 +322,7 @@ class CacheTest extends CakeTestCase {
  */
 	public function testCacheDisable() {
 		Configure::write('Cache.disable', false);
-		Cache::config('test_cache_disable_1', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('test_cache_disable_1', array('engine'=> 'File', 'path' => TMP . 'tests'));
 
 		$this->assertTrue(Cache::write('key_1', 'hello', 'test_cache_disable_1'));
 		$this->assertSame(Cache::read('key_1', 'test_cache_disable_1'), 'hello');
@@ -351,7 +338,7 @@ class CacheTest extends CakeTestCase {
 		$this->assertSame(Cache::read('key_3', 'test_cache_disable_1'), 'hello');
 
 		Configure::write('Cache.disable', true);
-		Cache::config('test_cache_disable_2', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('test_cache_disable_2', array('engine'=> 'File', 'path' => TMP . 'tests'));
 
 		$this->assertFalse(Cache::write('key_4', 'hello', 'test_cache_disable_2'));
 		$this->assertFalse(Cache::read('key_4', 'test_cache_disable_2'));

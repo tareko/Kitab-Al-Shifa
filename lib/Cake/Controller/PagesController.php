@@ -32,6 +32,13 @@ App::uses('AppController', 'Controller');
 class PagesController extends AppController {
 
 /**
+ * Controller name
+ *
+ * @var string
+ */
+	public $name = 'Pages';
+
+/**
  * Default helper
  *
  * @var array

@@ -19,6 +19,10 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+/**
+ * Included libraries.
+ *
+ */
 App::uses('AppHelper', 'View/Helper');
 App::uses('HtmlHelper', 'Helper');
 App::uses('Multibyte', 'I18n');
@@ -179,7 +183,7 @@ class TextHelper extends AppHelper {
 	}
 
 /**
- * Convert all links and email addresses to HTML links.
+ * Convert all links and email adresses to HTML links.
  *
  * @param string $text Text
  * @param array $options Array of HTML options.
@@ -275,38 +279,26 @@ class TextHelper extends AppHelper {
 		}
 		if (!$exact) {
 			$spacepos = mb_strrpos($truncate, ' ');
-			if ($html) {
-				$truncateCheck = mb_substr($truncate, 0, $spacepos);
-				$lastOpenTag = mb_strrpos($truncateCheck, '<');
-				$lastCloseTag = mb_strrpos($truncateCheck, '>');
-				if ($lastOpenTag > $lastCloseTag) {
-					preg_match_all('/<[\w]+[^>]*>/s', $truncate, $lastTagMatches);
-					$lastTag = array_pop($lastTagMatches[0]);
-					$spacepos = mb_strrpos($truncate, $lastTag) + mb_strlen($lastTag);
-				}
-				$bits = mb_substr($truncate, $spacepos);
-				preg_match_all('/<\/([a-z]+)>/', $bits, $droppedTags, PREG_SET_ORDER);
-				if (!empty($droppedTags)) {
-					if (!empty($openTags)) {
+			if (isset($spacepos)) {
+				if ($html) {
+					$bits = mb_substr($truncate, $spacepos);
+					preg_match_all('/<\/([a-z]+)>/', $bits, $droppedTags, PREG_SET_ORDER);
+					if (!empty($droppedTags)) {
 						foreach ($droppedTags as $closingTag) {
 							if (!in_array($closingTag[1], $openTags)) {
 								array_unshift($openTags, $closingTag[1]);
 							}
 						}
-					} else {
-						foreach ($droppedTags as $closingTag) {
-							array_push($openTags, $closingTag[1]);
-						}
 					}
 				}
+				$truncate = mb_substr($truncate, 0, $spacepos);
 			}
-			$truncate = mb_substr($truncate, 0, $spacepos);
 		}
 		$truncate .= $ending;
 
 		if ($html) {
 			foreach ($openTags as $tag) {
-				$truncate .= '</' . $tag . '>';
+				$truncate .= '</'.$tag.'>';
 			}
 		}
 
@@ -329,31 +321,34 @@ class TextHelper extends AppHelper {
 			return $this->truncate($text, $radius * 2, array('ending' => $ending));
 		}
 
-		$append = $prepend = $ending;
-
 		$phraseLen = mb_strlen($phrase);
-		$textLen = mb_strlen($text);
+		if ($radius < $phraseLen) {
+			$radius = $phraseLen;
+		}
 
 		$pos = mb_strpos(mb_strtolower($text), mb_strtolower($phrase));
-		if ($pos === false) {
-			return mb_substr($text, 0, $radius) . $ending;
+
+		$startPos = 0;
+		if ($pos > $radius) {
+			$startPos = $pos - $radius;
 		}
 
-		$startPos = $pos - $radius;
-		if ($startPos <= 0) {
-			$startPos = 0;
-			$prepend = '';
-		}
+		$textLen = mb_strlen($text);
 
 		$endPos = $pos + $phraseLen + $radius;
 		if ($endPos >= $textLen) {
 			$endPos = $textLen;
-			$append = '';
 		}
 
 		$excerpt = mb_substr($text, $startPos, $endPos - $startPos);
-		$excerpt = $prepend . $excerpt . $append;
-		
+		if ($startPos != 0) {
+			$excerpt = substr_replace($excerpt, $ending, 0, $phraseLen);
+		}
+
+		if ($endPos != $textLen) {
+			$excerpt = substr_replace($excerpt, $ending, -$phraseLen);
+		}
+
 		return $excerpt;
 	}
 
@@ -362,7 +357,7 @@ class TextHelper extends AppHelper {
  *
  * @param array $list The list to be joined
  * @param string $and The word used to join the last and second last items together with. Defaults to 'and'
- * @param string $separator The separator used to join all the other items together. Defaults to ', '
+ * @param string $separator The separator used to join all othe other items together. Defaults to ', '
  * @return string The glued together string.
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::toList
  */

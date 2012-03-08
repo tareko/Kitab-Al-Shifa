@@ -32,7 +32,6 @@ class DboMock extends DboSource {
 	public function name($field) {
 		return $field;
 	}
-
 /**
 * Returns true to fake a database connection
 */
@@ -208,11 +207,11 @@ class ModelIntegrationTest extends BaseModelTest {
 	public function testDynamicBehaviorAttachment() {
 		$this->loadFixtures('Apple', 'Sample', 'Author');
 		$TestModel = new Apple();
-		$this->assertEquals(array(), $TestModel->Behaviors->attached());
+		$this->assertEquals($TestModel->Behaviors->attached(), array());
 
 		$TestModel->Behaviors->attach('Tree', array('left' => 'left_field', 'right' => 'right_field'));
 		$this->assertTrue(is_object($TestModel->Behaviors->Tree));
-		$this->assertEquals(array('Tree'), $TestModel->Behaviors->attached());
+		$this->assertEquals($TestModel->Behaviors->attached(), array('Tree'));
 
 		$expected = array(
 			'parent' => 'parent_id',
@@ -223,14 +222,16 @@ class ModelIntegrationTest extends BaseModelTest {
 			'__parentChange' => false,
 			'recursive' => -1
 		);
-		$this->assertEquals($expected, $TestModel->Behaviors->Tree->settings['Apple']);
 
+		$this->assertEquals($TestModel->Behaviors->Tree->settings['Apple'], $expected);
+
+		$expected['enabled'] = false;
 		$TestModel->Behaviors->attach('Tree', array('enabled' => false));
-		$this->assertEquals($expected, $TestModel->Behaviors->Tree->settings['Apple']);
-		$this->assertEquals(array('Tree'), $TestModel->Behaviors->attached());
+		$this->assertEquals($TestModel->Behaviors->Tree->settings['Apple'], $expected);
+		$this->assertEquals($TestModel->Behaviors->attached(), array('Tree'));
 
 		$TestModel->Behaviors->detach('Tree');
-		$this->assertEquals(array(), $TestModel->Behaviors->attached());
+		$this->assertEquals($TestModel->Behaviors->attached(), array());
 		$this->assertFalse(isset($TestModel->Behaviors->Tree));
 	}
 
@@ -244,16 +245,16 @@ class ModelIntegrationTest extends BaseModelTest {
 		$this->loadFixtures('Article', 'User');
 		$TestUser =& new User();
 
-		$options = array(
+		$options = array (
 			'fields' => array(
 				'user',
 				'Article.published',
 			),
-			'joins' => array(
-				array(
+			'joins' => array (
+				array (
 					'table' => 'articles',
 					'alias' => 'Article',
-					'type' => 'LEFT',
+					'type'  => 'LEFT',
 					'conditions' => array(
 						'User.id = Article.user_id',
 					),
@@ -270,7 +271,7 @@ class ModelIntegrationTest extends BaseModelTest {
 			array('User' => array('user' => 'mariano'), 'Article' => array('published' => 'Y')),
 			array('User' => array('user' => 'nate'), 'Article' => array('published' => ''))
 		);
-		$this->assertEquals($expected, $result);
+		$this->assertEquals($result, $expected);
 	}
 
 /**
@@ -660,85 +661,91 @@ class ModelIntegrationTest extends BaseModelTest {
 	}
 
 /**
- * data provider for time tests.
+ * test deconstruct() with time fields.
  *
- * @return array
- */
-	public static function timeProvider() {
-		$db = ConnectionManager::getDataSource('test');
-		$now = $db->expression('NOW()');
-		return array(
-			// blank
-			array(
-				array('hour' => '', 'min' => '', 'meridian' => ''),
-				''
-			),
-			// missing hour
-			array(
-				array('hour' => '', 'min' => '00', 'meridian' => 'pm'),
-				''
-			),
-			// all blank
-			array(
-				array('hour' => '', 'min' => '', 'sec' => ''),
-				''
-			),
-			// set and empty merdian 
-			array(
-				array('hour' => '1', 'min' => '00', 'meridian' => ''),
-				''
-			),
-			// midnight
-			array(
-				array('hour' => '12', 'min' => '0', 'meridian' => 'am'),
-				'00:00:00'
-			),
-			array(
-				array('hour' => '00', 'min' => '00'),
-				'00:00:00'
-			),
-			// 3am
-			array(
-				array('hour' => '03', 'min' => '04', 'sec' => '04'),
-				'03:04:04'
-			),
-			array(
-				array('hour' => '3', 'min' => '4', 'sec' => '4'),
-				'03:04:04'
-			),
-			array(
-				array('hour' => '03', 'min' => '4', 'sec' => '4'),
-				'03:04:04'
-			),
-			array(
-				$now,
-				$now
-			)
-		);
-	}
-
-/**
- * test deconstruct with time fields.
- *
- * @dataProvider timeProvider
  * @return void
  */
-	public function testDeconstructFieldsTime($input, $result) {
+	public function testDeconstructFieldsTime() {
 		$this->skipIf($this->db instanceof Sqlserver, 'This test is not compatible with SQL Server.');
 
 		$this->loadFixtures('Apple');
 		$TestModel = new Apple();
 
-		$data = array(
-			'Apple' => array(
-				'mytime' => $input
-			)
-		);
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '';
+		$data['Apple']['mytime']['min'] = '';
+		$data['Apple']['mytime']['sec'] = '';
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('mytime' => $result));
+		$expected = array('Apple'=> array('mytime'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
+
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '';
+		$data['Apple']['mytime']['min'] = '';
+		$data['Apple']['mytime']['meridan'] = '';
+
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$expected = array('Apple'=> array('mytime'=> ''));
+		$this->assertEquals($TestModel->data, $expected, 'Empty values are not returning properly. %s');
+
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '12';
+		$data['Apple']['mytime']['min'] = '0';
+		$data['Apple']['mytime']['meridian'] = 'am';
+
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$expected = array('Apple'=> array('mytime'=> '00:00:00'));
+		$this->assertEquals($TestModel->data, $expected, 'Midnight is not returning proper values. %s');
+
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '00';
+		$data['Apple']['mytime']['min'] = '00';
+
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$expected = array('Apple'=> array('mytime'=> '00:00:00'));
+		$this->assertEquals($TestModel->data, $expected, 'Midnight is not returning proper values. %s');
+
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '03';
+		$data['Apple']['mytime']['min'] = '04';
+		$data['Apple']['mytime']['sec'] = '04';
+
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$expected = array('Apple'=> array('mytime'=> '03:04:04'));
+		$this->assertEquals($TestModel->data, $expected);
+
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '3';
+		$data['Apple']['mytime']['min'] = '4';
+		$data['Apple']['mytime']['sec'] = '4';
+
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$expected = array('Apple' => array('mytime'=> '03:04:04'));
+		$this->assertEquals($TestModel->data, $expected);
+
+		$data = array();
+		$data['Apple']['mytime']['hour'] = '03';
+		$data['Apple']['mytime']['min'] = '4';
+		$data['Apple']['mytime']['sec'] = '4';
+
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$expected = array('Apple'=> array('mytime'=> '03:04:04'));
+		$this->assertEquals($TestModel->data, $expected);
+
+		$db = ConnectionManager::getDataSource('test');
+		$data = array();
+		$data['Apple']['mytime'] = $db->expression('NOW()');
+		$TestModel->data = null;
+		$TestModel->set($data);
+		$this->assertEquals($TestModel->data, $data);
 	}
 
 /**
@@ -762,7 +769,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => ''));
+		$expected = array('Apple'=> array('created'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -772,7 +779,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('date' => ''));
+		$expected = array('Apple'=> array('date'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -785,7 +792,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => '2007-08-20 00:00:00'));
+		$expected = array('Apple'=> array('created'=> '2007-08-20 00:00:00'));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -798,7 +805,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => '2007-08-20 10:12:00'));
+		$expected = array('Apple'=> array('created'=> '2007-08-20 10:12:00'));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -811,7 +818,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => ''));
+		$expected = array('Apple'=> array('created'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -820,7 +827,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => ''));
+		$expected = array('Apple'=> array('created'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -830,7 +837,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => ''));
+		$expected = array('Apple'=> array('created'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -843,9 +850,9 @@ class ModelIntegrationTest extends BaseModelTest {
 		$TestModel->data = null;
 		$TestModel->set($data);
 		$expected = array(
-			'Apple' => array(
-			'created' => '',
-			'date' => '2006-12-25'
+			'Apple'=> array(
+			'created'=> '',
+			'date'=> '2006-12-25'
 		));
 		$this->assertEquals($TestModel->data, $expected);
 
@@ -863,9 +870,9 @@ class ModelIntegrationTest extends BaseModelTest {
 		$TestModel->data = null;
 		$TestModel->set($data);
 		$expected = array(
-			'Apple' => array(
-				'created' => '2007-08-20 10:12:09',
-				'date' => '2006-12-25'
+			'Apple'=> array(
+				'created'=> '2007-08-20 10:12:09',
+				'date'=> '2006-12-25'
 		));
 		$this->assertEquals($TestModel->data, $expected);
 
@@ -882,7 +889,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => '', 'date' => ''));
+		$expected = array('Apple'=> array('created'=> '', 'date'=> ''));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -898,7 +905,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('created' => '', 'date' => '2006-12-25'));
+		$expected = array('Apple'=> array('created'=> '', 'date'=> '2006-12-25'));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$data = array();
@@ -908,7 +915,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 		$TestModel->data = null;
 		$TestModel->set($data);
-		$expected = array('Apple' => array('date' => '2006-12-25'));
+		$expected = array('Apple'=> array('date'=> '2006-12-25'));
 		$this->assertEquals($TestModel->data, $expected);
 
 		$db = ConnectionManager::getDataSource('test');
@@ -1947,7 +1954,7 @@ class ModelIntegrationTest extends BaseModelTest {
 				'default' => null,
 				'length' => null
 			),
-			'updated' => array(
+			'updated'=> array(
 				'type' => 'datetime',
 				'null' => true,
 				'default' => null,
@@ -2014,6 +2021,7 @@ class ModelIntegrationTest extends BaseModelTest {
 
 /**
  * testEscapeField to prove it escapes the field well even when it has part of the alias on it
+ * @see ttp://cakephp.lighthouseapp.com/projects/42648-cakephp-1x/tickets/473-escapefield-doesnt-consistently-prepend-modelname
  *
  * @return void
  */
@@ -2041,30 +2049,6 @@ class ModelIntegrationTest extends BaseModelTest {
 		$expected = $db->name('Domain.DomainHandle');
 		$this->assertEquals($expected, $result);
 		ConnectionManager::drop('mock');
-	}
-
-/**
- * testGetID
- *
- * @return void
- */
-	public function testGetID() {
-		$TestModel = new Test();
-
-		$result = $TestModel->getID();
-		$this->assertFalse($result);
-
-		$TestModel->id = 9;
-		$result = $TestModel->getID();
-		$this->assertEquals(9, $result);
-
-		$TestModel->id = array(10, 9, 8, 7);
-		$result = $TestModel->getID(2);
-		$this->assertEquals(8, $result);
-
-		$TestModel->id = array(array(), 1, 2, 3);
-		$result = $TestModel->getID();
-		$this->assertFalse($result);
 	}
 
 /**
@@ -2106,16 +2090,4 @@ class ModelIntegrationTest extends BaseModelTest {
 		ConnectionManager::drop('mock');
 	}
 
-/**
- * Tests that calling schema() on a model that is not supposed to use a table
- * does not trigger any calls on any datasource
- *
- * @return void
- **/
-	public function testSchemaNoDB() {
-		$model = $this->getMock('Article', array('getDataSource'));
-		$model->useTable = false;
-		$model->expects($this->never())->method('getDataSource');
-		$this->assertEmpty($model->schema());
-	}
 }

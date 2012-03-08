@@ -18,7 +18,7 @@
  */
 
 /**
- * Send mail using mail() function
+ * Mail class
  *
  * @package       Cake.Network.Email
  */

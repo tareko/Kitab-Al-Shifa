@@ -22,7 +22,7 @@ App::uses('CakeBaseReporter', 'TestSuite/Reporter');
 
 class HtmlCoverageReportTest extends CakeTestCase {
 /**
- * setUp
+ * setup
  *
  * @return void
  */
@@ -220,13 +220,12 @@ class HtmlCoverageReportTest extends CakeTestCase {
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */
 	public function tearDown() {
 		CakePlugin::unload();
 		unset($this->Coverage);
-		parent::tearDown();
 	}
 }

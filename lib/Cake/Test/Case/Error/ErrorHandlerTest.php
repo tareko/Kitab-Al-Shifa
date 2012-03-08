@@ -29,14 +29,12 @@ App::uses('Router', 'Routing');
 class ErrorHandlerTest extends CakeTestCase {
 
 	public $_restoreError = false;
-
 /**
  * setup create a request object to get out of router later.
  *
  * @return void
  */
 	public function setUp() {
-		parent::setUp();
 		App::build(array(
 			'View' => array(
 				CAKE . 'Test' . DS . 'test_app' . DS . 'View'. DS
@@ -53,18 +51,17 @@ class ErrorHandlerTest extends CakeTestCase {
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */
-	public function tearDown() {
+	public function teardown() {
 		Configure::write('debug', $this->_debug);
 		Configure::write('Error', $this->_error);
 		App::build();
 		if ($this->_restoreError) {
 			restore_error_handler();
 		}
-		parent::tearDown();
 	}
 
 /**

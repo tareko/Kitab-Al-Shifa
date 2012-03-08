@@ -88,8 +88,7 @@ class ClassRegistry {
  *  stored in the registry and returned.
  * @param boolean $strict if set to true it will return false if the class was not found instead
  *	of trying to create an AppModel
- * @return object instance of ClassName.
- * @throws CakeException when you try to construct an interface or abstract class.
+ * @return object instance of ClassName
  */
 	public static function init($class, $strict = false) {
 		$_this = ClassRegistry::getInstance();
@@ -133,16 +132,8 @@ class ClassRegistry {
 				App::uses($plugin . 'AppModel', $pluginPath . 'Model');
 				App::uses($class, $pluginPath . 'Model');
 
-				if (class_exists($class) || interface_exists($class)) {
-					$reflection = new ReflectionClass($class);
-					if ($reflection->isAbstract() || $reflection->isInterface()) {
-						throw new CakeException(__d('cake_dev', 'Cannot create instance of %s, as it is abstract or is an interface', $class));
-					}
-					if ($reflection->getConstructor()) {
-						$instance = $reflection->newInstance($settings);
-					} else {
-						$instance = $reflection->newInstance();
-					}
+				if (class_exists($class)) {
+					$instance = new $class($settings);
 					if ($strict) {
 						$instance = ($instance instanceof Model) ? $instance : null;
 					}

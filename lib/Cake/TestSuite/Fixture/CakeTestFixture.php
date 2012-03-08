@@ -1,5 +1,9 @@
 <?php
 /**
+ * Short description for file.
+ *
+ * PHP 5
+ *
  * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
  * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
@@ -12,12 +16,10 @@
  * @since         CakePHP(tm) v 1.2.0.4667
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
 App::uses('CakeSchema', 'Model');
 
 /**
- * CakeTestFixture is responsible for building and destroying tables to be used 
- * during testing.
+ * Short description for class.
  *
  * @package       Cake.TestSuite.Fixture
  */
@@ -142,7 +144,7 @@ class CakeTestFixture {
 
 		if (empty($this->fields['tableParameters']['engine'])) {
 			$canUseMemory = true;
-			foreach ($this->fields as $field => $args) {
+			foreach($this->fields as $field => $args) {
 
 				if (is_string($args)) {
 					$type = $args;
@@ -203,7 +205,7 @@ class CakeTestFixture {
 			$values = array();
 			if (isset($this->records) && !empty($this->records)) {
 				$fields = array();
-				foreach ($this->records as $record) {
+				foreach($this->records as $record) {
 					$fields = array_merge($fields, array_keys(array_intersect_key($record, $this->fields)));
 				}
 				$fields = array_unique($fields);

@@ -155,7 +155,7 @@ class RssHelperTest extends CakeTestCase {
 			'cloud' => array(
 				'domain' => "rpc.sys.com",
 				'port' => "80",
-				'path' => "/RPC2",
+				'path' =>"/RPC2",
 				'registerProcedure' => "myCloud.rssPleaseNotify",
 				'protocol' => "xml-rpc"
 			)
@@ -175,7 +175,7 @@ class RssHelperTest extends CakeTestCase {
 				'cloud' => array(
 					'domain' => "rpc.sys.com",
 					'port' => "80",
-					'path' => "/RPC2",
+					'path' =>"/RPC2",
 					'registerProcedure' => "myCloud.rssPleaseNotify",
 					'protocol' => "xml-rpc"
 				),
@@ -219,7 +219,7 @@ class RssHelperTest extends CakeTestCase {
 					'xmlns:atom' => 'http://www.w3.org/2005/Atom',
 					'href' => "http://www.example.com/rss.xml",
 					'rel' => "self",
-					'type' => "application/rss+xml"
+					'type' =>"application/rss+xml"
 				),
 			'content-here',
 			'/channel',
@@ -567,14 +567,13 @@ class RssHelperTest extends CakeTestCase {
  * @return void
  */
 	public function testItemEnclosureLength() {
-		if (!is_writable(WWW_ROOT)) {
-			$this->markTestSkipped(__d('cake_dev', 'Webroot is not writable.'));
+		$tmpFile = $this->_getWwwTmpFile();
+
+		if (file_exists($tmpFile)) {
+			unlink($tmpFile);
 		}
-		$testExists = is_dir(WWW_ROOT . 'tests');
 
-		$tmpFile = WWW_ROOT . 'tests' . DS . 'cakephp.file.test.tmp';
-		$File = new File($tmpFile, true);
-
+		$File = new File($tmpFile, true, '0777');
 		$this->assertTrue($File->write('123'), 'Could not write to ' . $tmpFile);
 		clearstatcache(true, $tmpFile);
 
@@ -638,12 +637,15 @@ class RssHelperTest extends CakeTestCase {
 		);
 		$this->assertTags($result, $expected);
 
-		$File->delete();
+		unlink($tmpFile);
+	}
 
-		if (!$testExists) {
-			$Folder = new Folder(WWW_ROOT . 'tests');
-			$Folder->delete();
-		}
+/**
+ * testTime method
+ *
+ * @return void
+ */
+	public function testTime() {
 	}
 
 /**
@@ -674,4 +676,21 @@ class RssHelperTest extends CakeTestCase {
 		$this->assertTags($result, $expected);
 	}
 
+/**
+ * getWwwTmpFile method
+ *
+ * @param bool $paintSkip
+ * @return void
+ */
+	function _getWwwTmpFile() {
+		$path = WWW_ROOT . 'tests' . DS;
+		$tmpFile = $path. 'cakephp.file.test.tmp';
+		if (is_writable(dirname($tmpFile)) && (!file_exists($tmpFile) || is_writable($tmpFile))) {
+			return $tmpFile;
+		};
+
+		$message = __d('cake_dev', '%s is not writeable', $path );
+		$this->markTestSkipped($message);
+		return false;
+	}
 }

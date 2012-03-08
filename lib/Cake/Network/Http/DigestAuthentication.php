@@ -42,7 +42,7 @@ class DigestAuthentication {
 	}
 
 /**
- * Retrieve information about the authentication
+ * Retrive information about the authetication
  *
  * @param HttpSocket $http
  * @param array $authInfo

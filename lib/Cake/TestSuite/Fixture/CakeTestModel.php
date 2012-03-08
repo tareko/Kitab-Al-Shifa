@@ -1,5 +1,9 @@
 <?php
 /**
+ * Short description for file.
+ *
+ * PHP 5
+ *
  * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
  * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
@@ -16,7 +20,7 @@
 App::uses('Model', 'Model');
 
 /**
- * A model to extend from to help you during testing.
+ * Short description for class.
  *
  * @package       Cake.TestSuite.Fixture
  */
@@ -35,7 +39,7 @@ class CakeTestModel extends Model {
 	public function beforeFind($queryData) {
 		$pk = $this->primaryKey;
 		$aliasedPk = $this->alias . '.' . $this->primaryKey;
-		switch (true) {
+		switch(true) {
 			case !$pk:
 			case !$this->useTable:
 			case !$this->schema('id'):

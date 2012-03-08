@@ -100,7 +100,6 @@ class DigestAuthenticate extends BaseAuthenticate {
 			$this->settings['opaque'] = md5($this->settings['realm']);
 		}
 	}
-
 /**
  * Authenticate a user using Digest HTTP auth.  Will use the configured User model and attempt a
  * login using Digest HTTP auth.
@@ -143,7 +142,6 @@ class DigestAuthenticate extends BaseAuthenticate {
 		}
 		return false;
 	}
-
 /**
  * Find a user record using the standard options.
  *

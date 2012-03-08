@@ -131,7 +131,7 @@ class ControllerTestCaseTest extends CakeTestCase {
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */

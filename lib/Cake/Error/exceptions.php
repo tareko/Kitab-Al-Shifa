@@ -226,7 +226,6 @@ class MissingActionException extends CakeException {
 		parent::__construct($message, $code);
 	}
 }
-
 /**
  * Private Action exception - used when a controller action
  * starts with a  `_`.

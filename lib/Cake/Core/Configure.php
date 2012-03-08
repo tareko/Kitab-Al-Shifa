@@ -312,7 +312,7 @@ class Configure {
 			$keys = array_keys($values);
 			foreach ($keys as $key) {
 				if (($c = self::read($key)) && is_array($values[$key]) && is_array($c)) {
-					$values[$key] = Set::merge($c, $values[$key]);
+					$values[$key] = array_merge_recursive($c, $values[$key]);
 				}
 			}
 		}

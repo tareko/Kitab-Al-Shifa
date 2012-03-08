@@ -440,14 +440,12 @@ class SchemaPrefixAuthUser extends CakeTestModel {
  * @var string
  */
 	public $name = 'SchemaPrefixAuthUser';
-
 /**
  * table prefix
  *
  * @var string
  */
 	public $tablePrefix = 'auth_';
-
 /**
  * useTable
  *
@@ -642,11 +640,8 @@ class CakeSchemaTest extends CakeTestCase {
  */
 	public function testSchemaReadWithConfigPrefix() {
 		$this->skipIf($this->db instanceof Sqlite, 'Cannot open 2 connections to Sqlite');
-		
 		$db = ConnectionManager::getDataSource('test');
 		$config = $db->config;
-		$this->skipIf(!empty($config['prefix']), 'This test can not be executed with datasource prefix set.');
-		
 		$config['prefix'] = 'schema_test_prefix_';
 		ConnectionManager::create('schema_prefix', $config);
 		$read = $this->Schema->read(array('connection' => 'schema_prefix', 'models' => false));
@@ -748,7 +743,6 @@ class CakeSchemaTest extends CakeTestCase {
 		$result = $this->Schema->generateTable('posts', $posts);
 		$this->assertRegExp('/public \$posts/', $result);
 	}
-
 /**
  * testSchemaWrite method
  *

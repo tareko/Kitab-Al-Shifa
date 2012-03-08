@@ -24,8 +24,6 @@ App::uses('File', 'Utility');
 /**
  * API shell to show method signatures of CakePHP core classes.
  *
- * Implementation of a Cake Shell to show CakePHP core method signatures.
- *
  * @package       Cake.Console.Command
  */
 class ApiShell extends AppShell {
@@ -101,7 +99,7 @@ class ApiShell extends AppShell {
 					$this->_stop();
 				}
 				$method = $parsed[$this->params['method']];
-				$this->out($class . '::' . $method['method'] . $method['parameters']);
+				$this->out($class .'::'.$method['method'] . $method['parameters']);
 				$this->hr();
 				$this->out($method['comment'], true);
 			} else {
@@ -127,7 +125,7 @@ class ApiShell extends AppShell {
 					if (isset($methods[--$number])) {
 						$method = $parsed[$methods[$number]];
 						$this->hr();
-						$this->out($class . '::' . $method['method'] . $method['parameters']);
+						$this->out($class .'::'.$method['method'] . $method['parameters']);
 						$this->hr();
 						$this->out($method['comment'], true);
 					}
@@ -153,7 +151,6 @@ class ApiShell extends AppShell {
 		))->description(__d('cake_console', 'Lookup doc block comments for classes in CakePHP.'));
 		return $parser;
 	}
-
 /**
  * Show help for this shell.
  *

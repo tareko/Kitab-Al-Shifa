@@ -219,7 +219,6 @@ class ShellDispatcher {
 			));
 		}
 		$Shell = new $class();
-		$Shell->plugin = trim($plugin, '.');
 		return $Shell;
 	}
 

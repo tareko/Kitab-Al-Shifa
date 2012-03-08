@@ -124,22 +124,6 @@ class RegisterCategory extends ClassRegisterModel {
 }
 
 /**
- * Abstract class for testing ClassRegistry.
- */
-abstract class ClassRegistryAbstractModel extends ClassRegisterModel {
-
-	abstract function doSomething();
-}
-
-/**
- * Interface for testing ClassRegistry
- */
-interface ClassRegistryInterfaceTest {
-
-	function doSomething();
-}
-
-/**
  * ClassRegistryTest class
  *
  * @package       Cake.Test.Case.Utility
@@ -292,25 +276,5 @@ class ClassRegistryTest extends CakeTestCase {
  */
 	public function testInitStrict() {
 		$this->assertFalse(ClassRegistry::init('NonExistent', true));
-	}
-
-/**
- * Test that you cannot init() an abstract class. An exception will be raised.
- *
- * @expectedException CakeException
- * @return void
- */
-	public function testInitAbstractClass() {
-		ClassRegistry::init('ClassRegistryAbstractModel');
-	}
-	
-/**
- * Test that you cannot init() an abstract class. A exception will be raised.
- *
- * @expectedException CakeException
- * @return void
- */
-	public function testInitInterface() {
-		ClassRegistry::init('ClassRegistryInterfaceTest');
 	}
 }

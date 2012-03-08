@@ -19,13 +19,6 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-/**
- * XML handling for Cake.
- *
- * The methods in these classes enable the datasources that use XML to work.
- *
- * @package       Cake.Utility
- */
 class Xml {
 
 /**

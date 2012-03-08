@@ -17,6 +17,9 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+/**
+ * Included libraries.
+ */
 App::uses('HelperCollection', 'View');
 App::uses('AppHelper', 'View/Helper');
 App::uses('Router', 'Routing');
@@ -514,7 +517,7 @@ class View extends Object {
 
 /**
  * Allows a template or element to set a variable that will be available in
- * a layout or other element. Analogous to Controller::set().
+ * a layout or other element. Analagous to Controller::set().
  *
  * @param mixed $one A string or an array of data.
  * @param mixed $two Value in case $one is a string (which then works as the key).

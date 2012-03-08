@@ -53,7 +53,6 @@ class TestNlValidation {
 	static function postal($check) {
 		return true;
 	}
-
 /**
  * ssn function for testing ssn pass through
  *
@@ -91,12 +90,12 @@ class TestDeValidation {
 class ValidationTest extends CakeTestCase {
 
 /**
- * setUp method
+ * setup method
  *
  * @return void
  */
 	public function setUp() {
-		parent::setUp();
+		parent::setup();
 		$this->_appEncoding = Configure::read('App.encoding');
 	}
 
@@ -1412,16 +1411,6 @@ class ValidationTest extends CakeTestCase {
 	}
 
 /**
- * Test validating dates with multiple formats
- *
- * @return void
- */
-	public function testDateMultiple() {
-		$this->assertTrue(Validation::date('2011-12-31', array('ymd', 'dmy')));
-		$this->assertTrue(Validation::date('31-12-2011', array('ymd', 'dmy')));
-	}
-
-/**
  * testTime method
  *
  * @return void
@@ -1738,7 +1727,6 @@ class ValidationTest extends CakeTestCase {
 		$this->assertTrue(Validation::url('ftp://www.cakephp.org/pub/cake'));
 		$this->assertTrue(Validation::url('ftp://cakephp.org/pub/cake'));
 		$this->assertTrue(Validation::url('ftp://192.168.0.1/pub/cake'));
-		$this->assertTrue(Validation::url('sftp://192.168.0.1/pub/cake'));
 		$this->assertFalse(Validation::url('ftps://256.168.0.1/pub/cake'));
 		$this->assertFalse(Validation::url('ftp://256.168.0.1/pub/cake'));
 		$this->assertTrue(Validation::url('https://my.domain.com/gizmo/app?class=MySip;proc=start'));
@@ -2100,7 +2088,7 @@ class ValidationTest extends CakeTestCase {
  *
  * @return void
  */
-	function testDatetime() {
+    function testDatetime() {
 		$this->assertTrue(Validation::datetime('27-12-2006 01:00', 'dmy'));
 		$this->assertTrue(Validation::datetime('27-12-2006 01:00', array('dmy')));
 		$this->assertFalse(Validation::datetime('27-12-2006 1:00', 'dmy'));

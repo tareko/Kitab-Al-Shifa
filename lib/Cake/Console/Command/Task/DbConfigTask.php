@@ -39,14 +39,14 @@ class DbConfigTask extends AppShell {
  */
 	protected $_defaultConfig = array(
 		'name' => 'default',
-		'datasource' => 'Database/Mysql',
-		'persistent' => 'false',
-		'host' => 'localhost',
-		'login' => 'root',
-		'password' => 'password',
-		'database' => 'project_name',
-		'schema' => null,
-		'prefix' => null,
+		'datasource'=> 'Database/Mysql',
+		'persistent'=> 'false',
+		'host'=> 'localhost',
+		'login'=> 'root',
+		'password'=> 'password',
+		'database'=> 'project_name',
+		'schema'=> null,
+		'prefix'=> null,
 		'encoding' => null,
 		'port' => null
 	);
@@ -87,7 +87,7 @@ class DbConfigTask extends AppShell {
  */
 	protected function _interactive() {
 		$this->hr();
-		$this->out(__d('cake_console', 'Database Configuration:'));
+		$this->out('Database Configuration:');
 		$this->hr();
 		$done = false;
 		$dbConfigs = array();

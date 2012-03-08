@@ -16,7 +16,6 @@
  * @since         CakePHP(tm) v 1.2.0.5550
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
 App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
 App::uses('ConnectionManager', 'Model');
@@ -248,12 +247,7 @@ class CakeSchema extends Object {
 					continue;
 				}
 
-				try {
-					$Object = ClassRegistry::init(array('class' => $model, 'ds' => $connection));
-				} catch (CakeException $e) {
-					continue;
-				}
-
+				$Object = ClassRegistry::init(array('class' => $model, 'ds' => $connection));
 				$db = $Object->getDataSource();
 				if (is_object($Object) && $Object->useTable !== false) {
 					$fulltable = $table = $db->fullTableName($Object, false);
@@ -408,7 +402,7 @@ class CakeSchema extends Object {
 				if ($field != 'indexes' && $field != 'tableParameters') {
 					if (is_string($value)) {
 						$type = $value;
-						$value = array('type' => $type);
+						$value = array('type'=> $type);
 					}
 					$col = "\t\t'{$field}' => array('type' => '" . $value['type'] . "', ";
 					unset($value['type']);

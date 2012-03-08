@@ -63,7 +63,7 @@ class CacheSessionTest extends CakeTestCase {
 	}
 
 /**
- * tearDown
+ * teardown
  *
  * @return void
  */
