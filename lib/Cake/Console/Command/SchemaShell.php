@@ -27,6 +27,9 @@ App::uses('CakeSchema', 'Model');
 /**
  * Schema is a command-line database management utility for automating programmer chores.
  *
+ * Schema is CakePHP's database management utility. This helps you maintain versions of
+ * of your database.
+ *
  * @package       Cake.Console.Command
  * @link          http://book.cakephp.org/2.0/en/console-and-shells/schema-management-and-migrations.html
  */
@@ -519,7 +522,7 @@ class SchemaShell extends AppShell {
 		))->addSubcommand('update', array(
 			'help' => __d('cake_console', 'Alter the tables based on the schema file.'),
 			'parser' => array(
-				'options' => compact('plugin', 'path', 'file', 'name', 'connection', 'dry', 'snapshot'),
+				'options' => compact('plugin', 'path', 'file', 'name', 'connection', 'dry', 'snapshot', 'force'),
 				'args' => array(
 					'name' => array(
 						'help' => __d('cake_console', 'Name of schema to use.')

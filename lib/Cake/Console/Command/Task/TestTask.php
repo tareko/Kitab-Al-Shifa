@@ -94,7 +94,7 @@ class TestTask extends BakeTask {
 		$this->interactive = true;
 		$this->hr();
 		$this->out(__d('cake_console', 'Bake Tests'));
-		$this->out(__d('cake_console', 'Path: %s', $this->path));
+		$this->out(__d('cake_console', 'Path: %s', $this->getPath()));
 		$this->hr();
 
 		if ($type) {
@@ -402,7 +402,7 @@ class TestTask extends BakeTask {
  * @return array Array of fixtures the user wants to add.
  */
 	public function getUserFixtures() {
-		$proceed = $this->in(__d('cake_console', 'Bake could not detect fixtures, would you like to add some?'), array('y','n'), 'n');
+		$proceed = $this->in(__d('cake_console', 'Bake could not detect fixtures, would you like to add some?'), array('y', 'n'), 'n');
 		$fixtures = array();
 		if (strtolower($proceed) == 'y') {
 			$fixtureList = $this->in(__d('cake_console', "Please provide a comma separated list of the fixtures names you'd like to use.\nExample: 'app.comment, app.post, plugin.forums.post'"));
