@@ -24,8 +24,8 @@ class ShiftsController extends AppController {
 		$this->Prg->commonProcess();
         $this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
 
-        if (isset($this->request->named['id'])) {
-        	$this->set('shifts', $this->paginate(array('Shift.user_id' => $this->request->named['id'])));
+        if (isset($this->request->params['named']['id'])) {
+        	$this->set('shifts', $this->paginate(array('Shift.user_id' => $this->request->params['named']['id'])));
         }
         else {
         	$this->set('shifts', $this->paginate());
@@ -46,10 +46,10 @@ class ShiftsController extends AppController {
 			if ($saved == 1) {
 				if ($this->Shift->saveAll($data['Shift'])) {
 					$this->Session->setFlash('Shift saved');
-					$this->redirect(array('action' => $this->request->named['Action'].'/calendar:'.$this->request->named['calendar']));
+					$this->redirect(array('action' => $this->request->params['named']['Action'].'/calendar:'.$this->request->params['named']['calendar']));
 				}
 				$this->Session->setFlash(__('Shift was not saved'));
-				$this->redirect(array('action' => $this->request->named['Action']));
+				$this->redirect(array('action' => $this->request->params['named']['Action']));
  			}
 		}
 		
@@ -65,8 +65,8 @@ class ShiftsController extends AppController {
 
 	function pdfCreate() {
 		$this->loadModel('Calendar');
-		if (isset($this->request->named['calendar'])) {
-			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']);
+		if (isset($this->request->params['named']['calendar'])) {
+			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 			$masterSet['calendar']['lastupdated'] = $this->Shift->find('first', array(
 				'fields' => array('Shift.updated'),
 				'order' => array(
@@ -126,8 +126,8 @@ class ShiftsController extends AppController {
 		$this->loadModel('Calendar');
 		$this->loadModel('Profile');
 		
-		if (isset($this->request->named['calendar'])) {
-			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']);
+		if (isset($this->request->params['named']['calendar'])) {
+			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
 		else {
 			return $this->setAction('calendarList', 'calendarEdit');
@@ -166,20 +166,20 @@ class ShiftsController extends AppController {
 		$this->loadModel('Calendar');
 		$this->loadModel('Profile');
 		
-		if (isset($this->request->named['calendar'])) {
-			$masterSet['calendar'] = $this->Calendar->findById($this->request->named['calendar']);
+		if (isset($this->request->params['named']['calendar'])) {
+			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
 		else {
 			return $this->setAction('calendarList', 'calendarView');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 	
-		if (isset($this->request->named['id'])) {
+		if (isset($this->request->params['named']['id'])) {
 			$shiftList = $this->Shift->getShiftList(
 				array(
 					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
 					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-					'Shift.user_id' => $this->request->named['id'],
+					'Shift.user_id' => $this->request->params['named']['id'],
 					)
 			);
 		}
@@ -218,13 +218,13 @@ class ShiftsController extends AppController {
 
 
 	function icsView() {
-		if (!isset($this->request->named['id'])) {
+		if (!isset($this->request->params['named']['id'])) {
 			return $this->setAction('icsList');
 		}
 		$shiftList = $this->Shift->getShiftList(
 			array (
 				'Shift.date >=' => date('Y-m-d', strtotime("-6 months")),
-				'Shift.user_id' => $this->request->named['id'],
+				'Shift.user_id' => $this->request->params['named']['id'],
 			)
 		);
 
@@ -279,8 +279,8 @@ class ShiftsController extends AppController {
 	public function calendarList($calendarAction) {
 		$this->loadModel('Calendar');
 		$this->set('calendarAction', $calendarAction);
-		if (isset($this->request->named['id'])) {
-			$this->set('passed_id', $this->request->named['id']);
+		if (isset($this->request->params['named']['id'])) {
+			$this->set('passed_id', $this->request->params['named']['id']);
 		}
 		$this->set('calendars', $this->Calendar->getList());
 	}
