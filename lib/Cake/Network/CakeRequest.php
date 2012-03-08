@@ -104,10 +104,10 @@ class CakeRequest implements ArrayAccess {
 		'ajax' => array('env' => 'HTTP_X_REQUESTED_WITH', 'value' => 'XMLHttpRequest'),
 		'flash' => array('env' => 'HTTP_USER_AGENT', 'pattern' => '/^(Shockwave|Adobe) Flash/'),
 		'mobile' => array('env' => 'HTTP_USER_AGENT', 'options' => array(
-			'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone',
+			'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone', 'iPad',
 			'J2ME', 'MIDP', 'NetFront', 'Nokia', 'Opera Mini', 'Opera Mobi', 'PalmOS', 'PalmSource',
 			'portalmmm', 'Plucker', 'ReqwirelessWeb', 'SonyEricsson', 'Symbian', 'UP\\.Browser',
-			'webOS', 'Windows CE', 'Xiino'
+			'webOS', 'Windows CE', 'Windows Phone OS', 'Xiino'
 		))
 	);
 
@@ -145,7 +145,14 @@ class CakeRequest implements ArrayAccess {
 
 /**
  * process the post data and set what is there into the object.
- * processed data is available at $this->data
+ * processed data is available at `$this->data`
+ *
+ * Will merge POST vars prefixed with `data`, and ones without
+ * into a single array. Variables prefixed with `data` will overwrite those without.
+ *
+ * If you have mixed POST values be careful not to make any top level keys numeric
+ * containing arrays. Set::merge() is used to merge data, and it has possibly
+ * unexpected behavior in this situation.
  *
  * @return void
  */
@@ -165,8 +172,13 @@ class CakeRequest implements ArrayAccess {
 			}
 			unset($this->data['_method']);
 		}
+		$data = $this->data;
 		if (isset($this->data['data'])) {
 			$data = $this->data['data'];
+		}
+		if (count($this->data) <= 1) {
+			$this->data = $data;
+		} else {
 			unset($this->data['data']);
 			$this->data = Set::merge($this->data, $data);
 		}
@@ -184,7 +196,7 @@ class CakeRequest implements ArrayAccess {
 			$query = $_GET;
 		}
 
-		unset($query['/' . str_replace('.', '_', $this->url)]);
+		unset($query['/' . str_replace('.', '_', urldecode($this->url))]);
 		if (strpos($this->url, '?') !== false) {
 			list(, $querystr) = explode('?', $this->url);
 			parse_str($querystr, $queryArgs);
@@ -222,7 +234,7 @@ class CakeRequest implements ArrayAccess {
 			$uri = substr($uri, strlen($base));
 		}
 		if (strpos($uri, '?') !== false) {
-			$uri = parse_url($uri, PHP_URL_PATH);
+			list($uri) = explode('?', $uri, 2);
 		}
 		if (empty($uri) || $uri == '/' || $uri == '//') {
 			return '/';
@@ -249,7 +261,7 @@ class CakeRequest implements ArrayAccess {
 		}
 
 		if (!$baseUrl) {
-			$base = dirname(env('SCRIPT_NAME'));
+			$base = dirname(env('PHP_SELF'));
 
 			if ($webroot === 'webroot' && $webroot === basename($base)) {
 				$base = dirname($base);
@@ -278,10 +290,10 @@ class CakeRequest implements ArrayAccess {
 		$docRootContainsWebroot = strpos($docRoot, $dir . '/' . $webroot);
 
 		if (!empty($base) || !$docRootContainsWebroot) {
-			if (strpos($this->webroot, $dir) === false) {
+			if (strpos($this->webroot, '/' . $dir . '/') === false) {
 				$this->webroot .= $dir . '/' ;
 			}
-			if (strpos($this->webroot, $webroot) === false) {
+			if (strpos($this->webroot, '/' . $webroot . '/') === false) {
 				$this->webroot .= $webroot . '/';
 			}
 		}
@@ -483,7 +495,7 @@ class CakeRequest implements ArrayAccess {
  * ### Callback detectors
  *
  * Callback detectors allow you to provide a 'callback' type to handle the check.  The callback will
- * recieve the request object as its only parameter.
+ * receive the request object as its only parameter.
  *
  * e.g `addDetector('custom', array('callback' => array('SomeClass', 'somemethod')));`
  *
@@ -535,7 +547,7 @@ class CakeRequest implements ArrayAccess {
 	public function here($base = true) {
 		$url = $this->here;
 		if (!empty($this->query)) {
-			$url .= '?' . http_build_query($this->query);
+			$url .= '?' . http_build_query($this->query, null, '&');
 		}
 		if (!$base) {
 			$url = preg_replace('/^' . preg_quote($this->base, '/') . '/', '', $url, 1);

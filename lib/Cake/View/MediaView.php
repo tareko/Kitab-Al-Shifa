@@ -16,6 +16,7 @@
  * @since         CakePHP(tm) v 1.2.0.5714
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
 App::uses('View', 'View');
 App::uses('CakeRequest', 'Network');
 
@@ -30,9 +31,11 @@ App::uses('CakeRequest', 'Network');
  * - `id` The filename on the server's filesystem, including extension.
  * - `name` The filename that will be sent to the user, specified without the extension.
  * - `download` Set to true to set a `Content-Disposition` header.  This is ideal for file downloads.
- * - `extension` The extension of the file being served.  This is used to set the mimetype
+ * - `extension` The extension of the file being served. This is used to set the mimetype.
+ * 	If not provided its extracted from filename provided as `id`.
  * - `path` The absolute path, including the trailing / on the server's filesystem to `id`.
  * - `mimeType` The mime type of the file if CakeResponse doesn't know about it.
+ * 	Must be an associative array with extension as key and mime type as value eg. array('ini' => 'text/plain')
  *
  * ### Usage
  *
@@ -112,7 +115,11 @@ class MediaView extends View {
 			$this->response->type($mimeType);
 		}
 
-		if (isset($extension) && $this->_isActive()) {
+		if (!isset($extension)) {
+			$extension = pathinfo($id, PATHINFO_EXTENSION);
+		}
+
+		if ($this->_isActive()) {
 			$extension = strtolower($extension);
 			$chunkSize = 8192;
 			$buffer = '';
@@ -127,7 +134,7 @@ class MediaView extends View {
 			} else {
 				$modified = time();
 			}
-			if ($this->response->type($extension) === false) {
+			if (!$extension || $this->response->type($extension) === false) {
 				$download = true;
 			}
 
@@ -156,6 +163,8 @@ class MediaView extends View {
 				}
 				if (is_null($name)) {
 					$name = $id;
+				} elseif ($extension) {
+					$name .= '.' . $extension;
 				}
 				$this->response->download($name);
 				$this->response->header(array('Accept-Ranges' => 'bytes'));

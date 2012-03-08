@@ -111,7 +111,7 @@ class SqlserverTestDb extends Sqlserver {
  *
  * @package       Cake.Test.Case.Model.Datasource.Database
  */
-class SqlserverTestModel extends Model {
+class SqlserverTestModel extends CakeTestModel {
 
 /**
  * name property
@@ -163,6 +163,7 @@ class SqlserverTestModel extends Model {
 			'foreignKey' => 'client_id'
 		)
 	);
+
 /**
  * find method
  *
@@ -182,7 +183,7 @@ class SqlserverTestModel extends Model {
  *
  * @package       Cake.Test.Case.Model.Datasource.Database
  */
-class SqlserverClientTestModel extends Model {
+class SqlserverClientTestModel extends CakeTestModel {
 /**
  * name property
  *
@@ -223,6 +224,20 @@ class SqlserverTestResultIterator extends ArrayIterator {
  * @return void
  */
 	public function closeCursor() {}
+
+/**
+ * fetch method
+ *
+ * @return void
+ */
+	public function fetch() {
+		if (!$this->valid()) {
+			return null;
+		}
+		$current = $this->current();
+		$this->next();
+		return $current;
+	}
 }
 
 /**
@@ -282,7 +297,7 @@ class SqlserverTest extends CakeTestCase {
  * @return void
  */
 	public function testQuoting() {
-		$expected = "1.200000";
+		$expected = "1.2";
 		$result = $this->db->value(1.2, 'float');
 		$this->assertSame($expected, $result);
 
@@ -302,6 +317,7 @@ class SqlserverTest extends CakeTestCase {
 		$result = $this->db->value('', 'binary');
 		$this->assertSame($expected, $result);
 	}
+
 /**
  * testFields method
  *
@@ -459,6 +475,7 @@ class SqlserverTest extends CakeTestCase {
 		);
 		$this->assertEquals($expected, $result);
 	}
+
 /**
  * testBuildColumn
  *
@@ -521,6 +538,7 @@ class SqlserverTest extends CakeTestCase {
 		$expected = '[body] nvarchar(MAX)';
 		$this->assertEquals($expected, $result);
 	}
+
 /**
  * testBuildIndex method
  *
@@ -547,6 +565,7 @@ class SqlserverTest extends CakeTestCase {
 		$expected = array('ALTER TABLE items ADD CONSTRAINT client_id UNIQUE([client_id], [period_id]);');
 		$this->assertEquals($expected, $result);
 	}
+
 /**
  * testUpdateAllSyntax method
  *
@@ -582,43 +601,6 @@ class SqlserverTest extends CakeTestCase {
 	}
 
 /**
- * testInsertMulti
- *
- * @return void
- */
-	public function testInsertMulti() {
-		$this->db->describe = $this->model->schema();
-
-		$fields = array('id', 'name', 'login');
-		$values = array(
-			array(1, 'Larry', 'PhpNut'),
-			array(2, 'Renan', 'renan.saddam'));
-		$this->db->simulated = array();
-		$this->db->insertMulti($this->model, $fields, $values);
-		$result = $this->db->simulated;
-		$expected = array(
-			'SET IDENTITY_INSERT [sqlserver_test_models] ON',
-			"INSERT INTO [sqlserver_test_models] ([id], [name], [login]) VALUES (1, N'Larry', N'PhpNut')",
-			"INSERT INTO [sqlserver_test_models] ([id], [name], [login]) VALUES (2, N'Renan', N'renan.saddam')",
-			'SET IDENTITY_INSERT [sqlserver_test_models] OFF'
-		);
-		$this->assertEquals($expected, $result);
-
-		$fields = array('name', 'login');
-		$values = array(
-			array('Larry', 'PhpNut'),
-			array('Renan', 'renan.saddam'));
-		$this->db->simulated = array();
-		$this->db->insertMulti($this->model, $fields, $values);
-		$result = $this->db->simulated;
-		$expected = array(
-			"INSERT INTO [sqlserver_test_models] ([name], [login]) VALUES (N'Larry', N'PhpNut')",
-			"INSERT INTO [sqlserver_test_models] ([name], [login]) VALUES (N'Renan', N'renan.saddam')",
-		);
-		$this->assertEquals($expected, $result);
-	}
-
-/**
  * SQL server < 11 doesn't have proper limit/offset support, test that our hack works.
  *
  * @return void
@@ -649,6 +631,33 @@ class SqlserverTest extends CakeTestCase {
 		$this->assertFalse(isset($results[0][0]));
 		$this->assertEquals('mariano', $results[0]['User']['user']);
 		$this->assertEquals('nate', $results[1]['User']['user']);
+	}
+
+/**
+ * Test that the return of stored procedures is honoured
+ *
+ * @return void
+ */
+	public function testStoredProcedureReturn() {
+		$sql = <<<SQL
+CREATE PROCEDURE cake_test_procedure
+AS
+BEGIN
+RETURN 2;
+END
+SQL;
+		$this->Dbo->execute($sql);
+
+		$sql = <<<SQL
+DECLARE @return_value int
+EXEC @return_value = [cake_test_procedure]
+SELECT 'value' = @return_value
+SQL;
+		$query = $this->Dbo->execute($sql);
+		$this->Dbo->execute('DROP PROC cake_test_procedure');
+
+		$result = $query->fetch();
+		$this->assertEquals(2, $result['value']);
 	}
 
 }

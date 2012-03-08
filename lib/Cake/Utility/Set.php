@@ -30,9 +30,12 @@ class Set {
  * This function can be thought of as a hybrid between PHP's array_merge and array_merge_recursive. The difference
  * to the two is that if an array key contains another array then the function behaves recursive (unlike array_merge)
  * but does not do if for keys containing strings (unlike array_merge_recursive).
- * See the unit test for more information.
  *
- * Note: This function will work with an unlimited amount of arguments and typecasts non-array parameters into arrays.
+ * Since this method emulates `array_merge`, it will re-order numeric keys.  When combined with out of
+ * order numeric keys containing arrays, results can be lossy.
+ *
+ * Note: This function will work with an unlimited amount of arguments and typecasts non-array 
+ * parameters into arrays.
  *
  * @param array $arr1 Array to be merged
  * @param array $arr2 Array to merge with
@@ -316,8 +319,9 @@ class Set {
 	}
 
 /**
- * Implements partial support for XPath 2.0. If $path is an array or $data is empty it the call
- * is delegated to Set::classicExtract.
+ * Implements partial support for XPath 2.0. If $path does not contain a '/' the call
+ * is delegated to Set::classicExtract(). Also the $path and $data arguments are 
+ * reversible.
  *
  * #### Currently implemented selectors:
  *
@@ -529,7 +533,7 @@ class Set {
 				}
 				continue;
 			}
-			list(,$key,$op,$expected) = $match;
+			list(, $key, $op, $expected) = $match;
 			if (!isset($data[$key])) {
 				return false;
 			}
@@ -626,11 +630,11 @@ class Set {
 					}
 				}
 				return $tmp;
-			} elseif (false !== strpos($key,'{') && false !== strpos($key,'}')) {
+			} elseif (false !== strpos($key, '{') && false !== strpos($key, '}')) {
 				$pattern = substr($key, 1, -1);
 
 				foreach ($data as $j => $val) {
-					if (preg_match('/^'.$pattern.'/s', $j) !== 0) {
+					if (preg_match('/^' . $pattern . '/s', $j) !== 0) {
 						$tmpPath = array_slice($path, $i + 1);
 						if (empty($tmpPath)) {
 							$tmp[$j] = $val;
@@ -671,13 +675,16 @@ class Set {
 			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
 				$key = intval($key);
 			}
-			if ($i === $count - 1) {
+			if ($i === $count - 1 && is_array($_list)) {
 				$_list[$key] = $data;
 			} else {
 				if (!isset($_list[$key])) {
 					$_list[$key] = array();
 				}
 				$_list =& $_list[$key];
+			}
+			if (!is_array($_list)) {
+				return array();
 			}
 		}
 		return $list;
