@@ -3,7 +3,7 @@
 class AppController extends Controller {
 	public $uses = array('User', 'Usergroup', 'Group');
 
-	var $components = array('Session',
+ 	var $components = array('Session',
  		'Auth' => array(
 			'loginAction' => array(
 				'controller' => 'users',

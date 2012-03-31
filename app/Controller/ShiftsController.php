@@ -183,18 +183,19 @@ class ShiftsController extends AppController {
 					)
 			);
 		}
+
 		else {
 			$shiftList = $this->Shift->getShiftList(
 				array(
 					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
 					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-				)
+					)
 			);
 		}
 
 		$masterSet['locations'] = $this->Shift->ShiftsType->Location->getLocations();
 	
-		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
+ 		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
 				'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
 				'conditions' => array(
 					'ShiftsType.start_date <=' => $masterSet['calendar']['Calendar']['start_date'],
@@ -207,7 +208,7 @@ class ShiftsController extends AppController {
 		foreach ($shiftList as $shift) {
 			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
 		}
-	
+		
 		$this->set('masterSet', $masterSet);
 	}
 	
