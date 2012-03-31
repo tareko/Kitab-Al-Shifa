@@ -5,12 +5,12 @@
  * PHP 5
  *
  * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
- * Copyright 2005-2011, Cake Software Foundation, Inc.
+ * Copyright 2005-2012, Cake Software Foundation, Inc.
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc.
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc.
  * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
  * @package       Cake.Test.Case.Console
  * @since         CakePHP(tm) v 2.0
@@ -38,7 +38,7 @@ class ConsoleOptionParserTest extends CakeTestCase {
 	}
 
 /**
- * test setting the console epliog
+ * test setting the console epilog
  *
  * @return void
  */
@@ -302,7 +302,7 @@ class ConsoleOptionParserTest extends CakeTestCase {
 	public function testPositionalArgument() {
 		$parser = new ConsoleOptionParser('test', false);
 		$result = $parser->addArgument('name', array('help' => 'An argument'));
-		$this->assertEquals($parser, $result, 'Should returnn this');
+		$this->assertEquals($parser, $result, 'Should return this');
 	}
 
 /**

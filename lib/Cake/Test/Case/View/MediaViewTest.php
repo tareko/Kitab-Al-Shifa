@@ -5,12 +5,12 @@
  * PHP 5
  *
  * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
  * @package       Cake.Test.Case.View
  * @since         CakePHP(tm) v 1.2.0.4206
@@ -35,7 +35,6 @@ class MediaViewTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$controller = new Controller();
 		$this->MediaView = $this->getMock('MediaView', array('_isActive', '_clearBuffer', '_flushBuffer'));
 		$this->MediaView->response = $this->getMock('CakeResponse');
 	}
@@ -71,7 +70,7 @@ class MediaViewTest extends CakeTestCase {
  */
 	public function testRender() {
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS .'css' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS,
 			'id' => 'test_asset.css',
 			'extension' => 'css',
 		);
@@ -118,7 +117,7 @@ class MediaViewTest extends CakeTestCase {
 		$currentUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
 		$_SERVER['HTTP_USER_AGENT'] = 'Some generic browser';
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS,
 			'id' => 'no_section.ini',
 			'extension' => 'ini',
 		);
@@ -177,7 +176,7 @@ class MediaViewTest extends CakeTestCase {
 		$currentUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
 		$_SERVER['HTTP_USER_AGENT'] = 'Opera/9.80 (Windows NT 6.0; U; en) Presto/2.8.99 Version/11.10';
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS,
 			'id' => 'no_section.ini',
 			'extension' => 'ini',
 		);
@@ -241,7 +240,7 @@ class MediaViewTest extends CakeTestCase {
 		$currentUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; Media Center PC 4.0; SLCC1; .NET CLR 3.0.04320)';
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS,
 			'id' => 'no_section.ini',
 			'extension' => 'ini',
 			'name' => 'config'
@@ -304,7 +303,7 @@ class MediaViewTest extends CakeTestCase {
  */
 	public function testConnectionAborted() {
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS .'css' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS,
 			'id' => 'test_asset.css',
 			'extension' => 'css',
 		);
@@ -327,7 +326,7 @@ class MediaViewTest extends CakeTestCase {
  */
 	public function testConnectionAbortedOnBuffering() {
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS .'css' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS,
 			'id' => 'test_asset.css',
 			'extension' => 'css',
 		);
@@ -360,7 +359,7 @@ class MediaViewTest extends CakeTestCase {
  */
 	public function testRenderUpperExtension() {
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS .'img' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'img' . DS,
 			'id' => 'test_2.JPG',
 			'extension' => 'JPG',
 		);
@@ -384,7 +383,7 @@ class MediaViewTest extends CakeTestCase {
  */
 	public function testRenderExtensionNotSet() {
 		$this->MediaView->viewVars = array(
-			'path' =>  CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS .'img' . DS,
+			'path' => CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'img' . DS,
 			'id' => 'test_2.JPG',
 		);
 

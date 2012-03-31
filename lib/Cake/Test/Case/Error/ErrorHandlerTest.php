@@ -5,12 +5,12 @@
  * PHP 5
  *
  * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
  * @package       Cake.Test.Case.Error
  * @since         CakePHP(tm) v 1.2.0.5432
@@ -28,7 +28,7 @@ App::uses('Router', 'Routing');
  */
 class ErrorHandlerTest extends CakeTestCase {
 
-	public $_restoreError = false;
+	protected $_restoreError = false;
 
 /**
  * setup create a request object to get out of router later.
@@ -39,9 +39,9 @@ class ErrorHandlerTest extends CakeTestCase {
 		parent::setUp();
 		App::build(array(
 			'View' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'View'. DS
+				CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS
 			)
-		), true);
+		), App::RESET);
 		Router::reload();
 
 		$request = new CakeRequest(null, false);
@@ -148,7 +148,7 @@ class ErrorHandlerTest extends CakeTestCase {
 		$out .= '';
 
 		$result = file(LOGS . 'debug.log');
-		$this->assertEquals(count($result), 1);
+		$this->assertEquals(1, count($result));
 		$this->assertRegExp(
 			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (Notice|Debug): Notice \(8\): Undefined variable:\s+out in \[.+ line \d+\]$/',
 			$result[0]
@@ -229,17 +229,17 @@ class ErrorHandlerTest extends CakeTestCase {
  */
 	public function testLoadPluginHanlder() {
 		App::build(array(
-			'plugins' => array(
+			'Plugin' => array(
 				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
 			)
-		), true);
+		), App::RESET);
 		CakePlugin::load('TestPlugin');
 		Configure::write('Exception.renderer', 'TestPlugin.TestPluginExceptionRenderer');
 		$error = new NotFoundException('Kaboom!');
 		ob_start();
 		ErrorHandler::handleException($error);
 		$result = ob_get_clean();
-		$this->assertEquals($result, 'Rendered by test plugin');
+		$this->assertEquals('Rendered by test plugin', $result);
 		CakePlugin::unload();
 	}
 

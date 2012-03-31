@@ -5,12 +5,12 @@
  * PHP 5
  *
  * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  *	Licensed under The Open Group Test Suite License
  *	Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model.Datasource
  * @since         CakePHP(tm) v 1.2.0.4206
@@ -22,6 +22,13 @@ App::uses('AppModel', 'Model');
 App::uses('DataSource', 'Model/Datasource');
 App::uses('DboSource', 'Model/Datasource');
 require_once dirname(dirname(__FILE__)) . DS . 'models.php';
+
+class MockPDO extends PDO {
+
+	public function __construct() {
+	}
+
+}
 
 class MockDataSource extends DataSource {
 }
@@ -43,6 +50,7 @@ class DboTestSource extends DboSource {
 	public function setConnection($conn) {
 		$this->_connection = $conn;
 	}
+
 }
 
 /**
@@ -103,7 +111,6 @@ class DboSourceTest extends CakeTestCase {
 		unset($this->Model);
 	}
 
-
 /**
  * test that booleans and null make logical condition strings.
  *
@@ -111,22 +118,22 @@ class DboSourceTest extends CakeTestCase {
  */
 	public function testBooleanNullConditionsParsing() {
 		$result = $this->testDb->conditions(true);
-		$this->assertEquals($result, ' WHERE 1 = 1', 'true conditions failed %s');
+		$this->assertEquals(' WHERE 1 = 1', $result, 'true conditions failed %s');
 
 		$result = $this->testDb->conditions(false);
-		$this->assertEquals($result, ' WHERE 0 = 1', 'false conditions failed %s');
+		$this->assertEquals(' WHERE 0 = 1', $result, 'false conditions failed %s');
 
 		$result = $this->testDb->conditions(null);
-		$this->assertEquals($result, ' WHERE 1 = 1', 'null conditions failed %s');
+		$this->assertEquals(' WHERE 1 = 1', $result, 'null conditions failed %s');
 
 		$result = $this->testDb->conditions(array());
-		$this->assertEquals($result, ' WHERE 1 = 1', 'array() conditions failed %s');
+		$this->assertEquals(' WHERE 1 = 1', $result, 'array() conditions failed %s');
 
 		$result = $this->testDb->conditions('');
-		$this->assertEquals($result, ' WHERE 1 = 1', '"" conditions failed %s');
+		$this->assertEquals(' WHERE 1 = 1', $result, '"" conditions failed %s');
 
 		$result = $this->testDb->conditions(' ', '"  " conditions failed %s');
-		$this->assertEquals($result, ' WHERE 1 = 1');
+		$this->assertEquals(' WHERE 1 = 1', $result);
 	}
 
 /**
@@ -168,7 +175,7 @@ class DboSourceTest extends CakeTestCase {
 			)
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Topic', 'hasOne');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array('Article2' => array(
 				'id' => '1', 'user_id' => '1', 'title' => 'First Article',
@@ -191,7 +198,7 @@ class DboSourceTest extends CakeTestCase {
 			)
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'User2', 'belongsTo');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array(
 			'Article2' => array(
@@ -206,7 +213,7 @@ class DboSourceTest extends CakeTestCase {
 			'Comment' => array()
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Comment', 'hasMany');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array(
 			'Article' => array(
@@ -239,7 +246,7 @@ class DboSourceTest extends CakeTestCase {
 			)
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Comment', 'hasMany');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array(
 			'Article' => array(
@@ -284,7 +291,7 @@ class DboSourceTest extends CakeTestCase {
 			)
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Comment', 'hasMany');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array(
 			'Article' => array(
@@ -339,7 +346,7 @@ class DboSourceTest extends CakeTestCase {
 			)
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Comment', 'hasMany');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array(
 			'Article' => array(
@@ -380,7 +387,7 @@ class DboSourceTest extends CakeTestCase {
 			)
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Tag', 'hasAndBelongsToMany');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 
 		$data = array(
 			'Article' => array(
@@ -411,9 +418,8 @@ class DboSourceTest extends CakeTestCase {
 			'Tag' => array('id' => '1', 'tag' => 'Tag 1', 'created' => '2007-03-17 01:16:23', 'updated' => '2007-03-17 01:18:31')
 		);
 		$this->testDb->mergeAssociation($data, $merge, 'Tag', 'hasOne');
-		$this->assertEquals($data, $expected);
+		$this->assertEquals($expected, $data);
 	}
-
 
 /**
  * testMagicMethodQuerying method
@@ -486,7 +492,6 @@ class DboSourceTest extends CakeTestCase {
 		$result = $this->db->query('directCall', array(), $this->Model);
 	}
 
-
 /**
  * testValue method
  *
@@ -497,7 +502,7 @@ class DboSourceTest extends CakeTestCase {
 			$this->markTestSkipped('Cannot run this test with SqlServer');
 		}
 		$result = $this->db->value('{$__cakeForeignKey__$}');
-		$this->assertEquals($result, '{$__cakeForeignKey__$}');
+		$this->assertEquals('{$__cakeForeignKey__$}', $result);
 
 		$result = $this->db->value(array('first', 2, 'third'));
 		$expected = array('\'first\'', 2, '\'third\'');
@@ -512,7 +517,7 @@ class DboSourceTest extends CakeTestCase {
 	public function testReconnect() {
 		$this->testDb->reconnect(array('prefix' => 'foo'));
 		$this->assertTrue($this->testDb->connected);
-		$this->assertEquals($this->testDb->config['prefix'], 'foo');
+		$this->assertEquals('foo', $this->testDb->config['prefix']);
 	}
 
 /**
@@ -575,17 +580,17 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
- * test that cacheMethod works as exepected
+ * test that cacheMethod works as expected
  *
  * @return void
  */
 	public function testCacheMethod() {
 		$this->testDb->cacheMethods = true;
 		$result = $this->testDb->cacheMethod('name', 'some-key', 'stuff');
-		$this->assertEquals($result, 'stuff');
+		$this->assertEquals('stuff', $result);
 
 		$result = $this->testDb->cacheMethod('name', 'some-key');
-		$this->assertEquals($result, 'stuff');
+		$this->assertEquals('stuff', $result);
 
 		$result = $this->testDb->cacheMethod('conditions', 'some-key');
 		$this->assertNull($result);
@@ -595,7 +600,7 @@ class DboSourceTest extends CakeTestCase {
 
 		$this->testDb->cacheMethods = false;
 		$result = $this->testDb->cacheMethod('name', 'some-key', 'stuff');
-		$this->assertEquals($result, 'stuff');
+		$this->assertEquals('stuff', $result);
 
 		$result = $this->testDb->cacheMethod('name', 'some-key');
 		$this->assertNull($result);
@@ -645,11 +650,28 @@ class DboSourceTest extends CakeTestCase {
 		$this->testDb->logQuery('Query 2');
 
 		$log = $this->testDb->getLog();
-		$expected = array('query' => 'Query 1', 'affected' => '', 'numRows' => '', 'took' => '');
-		$this->assertEquals($log['log'][0], $expected);
-		$expected = array('query' => 'Query 2', 'affected' => '', 'numRows' => '', 'took' => '');
-		$this->assertEquals($log['log'][1], $expected);
+		$expected = array('query' => 'Query 1', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
+
+		$this->assertEquals($expected, $log['log'][0]);
+		$expected = array('query' => 'Query 2', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
+		$this->assertEquals($expected, $log['log'][1]);
 		$expected = array('query' => 'Error 1', 'affected' => '', 'numRows' => '', 'took' => '');
+	}
+
+/**
+ * test getting the query log as an array, setting bind params.
+ *
+ * @return void
+ */
+	public function testGetLogParams() {
+		$this->testDb->logQuery('Query 1', array(1,2,'abc'));
+		$this->testDb->logQuery('Query 2', array('field1' => 1, 'field2' => 'abc'));
+
+		$log = $this->testDb->getLog();
+		$expected = array('query' => 'Query 1', 'params' => array(1,2,'abc'), 'affected' => '', 'numRows' => '', 'took' => '');
+		$this->assertEquals($expected, $log['log'][0]);
+		$expected = array('query' => 'Query 2', 'params' => array('field1' => 1, 'field2' => 'abc'), 'affected' => '', 'numRows' => '', 'took' => '');
+		$this->assertEquals($expected, $log['log'][1]);
 	}
 
 /**
@@ -667,7 +689,6 @@ class DboSourceTest extends CakeTestCase {
 		$result = $this->db->query($query);
 		$this->assertTrue($result, 'Query did not return a boolean');
 	}
-
 
 /**
  * test order to generate query order clause for virtual fields
@@ -691,8 +712,6 @@ class DboSourceTest extends CakeTestCase {
 		$this->assertEquals($expected, $result);
 	}
 
-
-
 /**
  * test the permutations of fullTableName()
  *
@@ -700,17 +719,33 @@ class DboSourceTest extends CakeTestCase {
  */
 	public function testFullTablePermutations() {
 		$Article = ClassRegistry::init('Article');
-		$result = $this->testDb->fullTableName($Article, false);
-		$this->assertEquals($result, 'articles');
+		$result = $this->testDb->fullTableName($Article, false, false);
+		$this->assertEquals('articles', $result);
 
 		$Article->tablePrefix = 'tbl_';
-		$result = $this->testDb->fullTableName($Article, false);
-		$this->assertEquals($result, 'tbl_articles');
+		$result = $this->testDb->fullTableName($Article, false, false);
+		$this->assertEquals('tbl_articles', $result);
 
 		$Article->useTable = $Article->table = 'with spaces';
 		$Article->tablePrefix = '';
-		$result = $this->testDb->fullTableName($Article);
-		$this->assertEquals($result, '`with spaces`');
+		$result = $this->testDb->fullTableName($Article, true, false);
+		$this->assertEquals('`with spaces`', $result);
+
+		$this->loadFixtures('Article');
+		$Article->useTable = $Article->table = 'articles';
+		$Article->setDataSource('test');
+		$testdb = $Article->getDataSource();
+		$result = $testdb->fullTableName($Article, false, true);
+		$this->assertEquals($testdb->getSchemaName() . '.articles', $result);
+
+		// tests for empty schemaName
+		$noschema = ConnectionManager::create('noschema', array(
+			'datasource' => 'DboTestSource'
+			));
+		$Article->setDataSource('noschema');
+		$Article->schemaName = null;
+		$result = $noschema->fullTableName($Article, false, true);
+		$this->assertEquals('articles', $result);
 	}
 
 /**
@@ -743,13 +778,12 @@ class DboSourceTest extends CakeTestCase {
 		$this->assertTrue(empty(DboTestSource::$methodCache['fields']), 'Cache not empty');
 	}
 
-
 /**
  * Test that group works without a model
  *
  * @return void
  */
-	function testGroupNoModel() {
+	public function testGroupNoModel() {
 		$result = $this->db->group('created');
 		$this->assertEquals(' GROUP BY created', $result);
 	}
@@ -757,7 +791,7 @@ class DboSourceTest extends CakeTestCase {
 /**
  * Test getting the last error.
  */
-	function testLastError() {
+	public function testLastError() {
 		$stmt = $this->getMock('PDOStatement');
 		$stmt->expects($this->any())
 			->method('errorInfo')
@@ -766,5 +800,40 @@ class DboSourceTest extends CakeTestCase {
 		$result = $this->db->lastError($stmt);
 		$expected = 'something: bad';
 		$this->assertEquals($expected, $result);
+	}
+
+/**
+ * Tests that transaction commands are logged
+ *
+ * @return void
+ **/
+	public function testTransactionLogging() {
+		$conn = $this->getMock('MockPDO');
+		$db = new DboTestSource;
+		$db->setConnection($conn);
+		$conn->expects($this->exactly(2))->method('beginTransaction')
+			->will($this->returnValue(true));
+		$conn->expects($this->once())->method('commit')->will($this->returnValue(true));
+		$conn->expects($this->once())->method('rollback')->will($this->returnValue(true));
+
+		$db->begin();
+		$log = $db->getLog();
+		$expected = array('query' => 'BEGIN', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
+		$this->assertEquals($expected, $log['log'][0]);
+
+		$db->commit();
+		$expected = array('query' => 'COMMIT', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
+		$log = $db->getLog();
+		$this->assertEquals($expected, $log['log'][0]);
+
+		$db->begin();
+		$expected = array('query' => 'BEGIN', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
+		$log = $db->getLog();
+		$this->assertEquals($expected, $log['log'][0]);
+
+		$db->rollback();
+		$expected = array('query' => 'ROLLBACK', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
+		$log = $db->getLog();
+		$this->assertEquals($expected, $log['log'][0]);
 	}
 }

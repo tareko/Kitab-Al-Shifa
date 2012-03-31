@@ -11,12 +11,12 @@
  * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       app.Config
  * @since         CakePHP(tm) v 0.10.8.2117
@@ -40,7 +40,7 @@ Cache::config('default', array('engine' => 'File'));
  *     'View/Helper' => array('/full/path/to/helpers/', '/next/full/path/to/helpers/'),
  *     'Vendor' => array('/full/path/to/vendors/', '/next/full/path/to/vendors/'),
  *     'Console/Command' => array('/full/path/to/shells/', '/next/full/path/to/shells/'),
- *     'locales' => array('/full/path/to/locale/', '/next/full/path/to/locale/')
+ *     'Locale' => array('/full/path/to/locale/', '/next/full/path/to/locale/')
  * ));
  *
  */

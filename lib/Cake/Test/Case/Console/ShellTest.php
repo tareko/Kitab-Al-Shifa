@@ -7,12 +7,12 @@
  * PHP 5
  *
  * CakePHP :  Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2011, Cake Software Foundation, Inc.
+ * Copyright 2005-2012, Cake Software Foundation, Inc.
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc.
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc.
  * @link          http://cakephp.org CakePHP Project
  * @package       Cake.Test.Case.Console.Command
  * @since         CakePHP v 1.2.0.7726
@@ -55,20 +55,18 @@ class ShellTestShell extends Shell {
 	}
 
 	public function do_something() {
-
 	}
 
 	protected function _secret() {
-
 	}
 
 	protected function no_access() {
-
 	}
 
 	public function mergeVars($properties, $class, $normalize = true) {
 		return $this->_mergeVars($properties, $class, $normalize);
 	}
+
 }
 
 /**
@@ -77,8 +75,11 @@ class ShellTestShell extends Shell {
  * @package       Cake.Test.Case.Console.Command
  */
 class TestMergeShell extends Shell {
+
 	public $tasks = array('DbConfig', 'Fixture');
+
 	public $uses = array('Comment');
+
 }
 
 /**
@@ -139,7 +140,7 @@ class ShellTest extends CakeTestCase {
  * @return void
  */
 	public function testConstruct() {
-		$this->assertEquals($this->Shell->name, 'ShellTestShell');
+		$this->assertEquals('ShellTestShell', $this->Shell->name);
 		$this->assertInstanceOf('ConsoleInput', $this->Shell->stdin);
 		$this->assertInstanceOf('ConsoleOutput', $this->Shell->stdout);
 		$this->assertInstanceOf('ConsoleOutput', $this->Shell->stderr);
@@ -171,9 +172,9 @@ class ShellTest extends CakeTestCase {
  */
 	public function testInitialize() {
 		App::build(array(
-			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'models' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS)
-		), true);
+			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Model' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS)
+		), App::RESET);
 
 		CakePlugin::load('TestPlugin');
 		$this->Shell->uses = array('TestPlugin.TestPluginPost');
@@ -181,14 +182,14 @@ class ShellTest extends CakeTestCase {
 
 		$this->assertTrue(isset($this->Shell->TestPluginPost));
 		$this->assertInstanceOf('TestPluginPost', $this->Shell->TestPluginPost);
-		$this->assertEquals($this->Shell->modelClass, 'TestPluginPost');
+		$this->assertEquals('TestPluginPost', $this->Shell->modelClass);
 		CakePlugin::unload('TestPlugin');
 
 		$this->Shell->uses = array('Comment');
 		$this->Shell->initialize();
 		$this->assertTrue(isset($this->Shell->Comment));
 		$this->assertInstanceOf('Comment', $this->Shell->Comment);
-		$this->assertEquals($this->Shell->modelClass, 'Comment');
+		$this->assertEquals('Comment', $this->Shell->modelClass);
 
 		App::build();
 	}
@@ -224,22 +225,22 @@ class ShellTest extends CakeTestCase {
 			->will($this->returnValue('0'));
 
 		$result = $this->Shell->in('Just a test?', array('y', 'n'), 'n');
-		$this->assertEquals($result, 'n');
+		$this->assertEquals('n', $result);
 
 		$result = $this->Shell->in('Just a test?', array('y', 'n'), 'n');
-		$this->assertEquals($result, 'Y');
+		$this->assertEquals('Y', $result);
 
 		$result = $this->Shell->in('Just a test?', 'y,n', 'n');
-		$this->assertEquals($result, 'y');
+		$this->assertEquals('y', $result);
 
 		$result = $this->Shell->in('Just a test?', 'y/n', 'n');
-		$this->assertEquals($result, 'y');
+		$this->assertEquals('y', $result);
 
 		$result = $this->Shell->in('Just a test?', 'y', 'y');
-		$this->assertEquals($result, 'y');
+		$this->assertEquals('y', $result);
 
 		$result = $this->Shell->in('Just a test?', array(0, 1, 2), '0');
-		$this->assertEquals($result, '0');
+		$this->assertEquals('0', $result);
 	}
 
 /**
@@ -251,7 +252,7 @@ class ShellTest extends CakeTestCase {
 		$this->Shell->interactive = false;
 
 		$result = $this->Shell->in('Just a test?', 'y/n', 'n');
-		$this->assertEquals($result, 'n');
+		$this->assertEquals('n', $result);
 	}
 
 /**
@@ -366,7 +367,7 @@ class ShellTest extends CakeTestCase {
 		}
 		$this->assertEquals($this->Shell->nl(), $newLine);
 		$this->assertEquals($this->Shell->nl(true), $newLine);
-		$this->assertEquals($this->Shell->nl(false), "");
+		$this->assertEquals("", $this->Shell->nl(false));
 		$this->assertEquals($this->Shell->nl(2), $newLine . $newLine);
 		$this->assertEquals($this->Shell->nl(1), $newLine);
 	}
@@ -467,7 +468,7 @@ class ShellTest extends CakeTestCase {
  *
  * @return void
  */
-	public function test__getArgAndParamReferences() {
+	public function testMagicGetArgAndParamReferences() {
 		$this->Shell->tasks = array('TestApple');
 		$this->Shell->args = array('one');
 		$this->Shell->params = array('help' => false);
@@ -487,33 +488,33 @@ class ShellTest extends CakeTestCase {
  */
 	public function testShortPath() {
 		$path = $expected = DS . 'tmp' . DS . 'ab' . DS . 'cd';
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
-		$path = $expected = DS . 'tmp' . DS . 'ab' . DS . 'cd' . DS ;
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$path = $expected = DS . 'tmp' . DS . 'ab' . DS . 'cd' . DS;
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
 		$path = $expected = DS . 'tmp' . DS . 'ab' . DS . 'index.php';
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
 		$path = DS . 'tmp' . DS . 'ab' . DS . DS . 'cd';
 		$expected = DS . 'tmp' . DS . 'ab' . DS . 'cd';
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
 		$path = 'tmp' . DS . 'ab';
 		$expected = 'tmp' . DS . 'ab';
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
 		$path = 'tmp' . DS . 'ab';
 		$expected = 'tmp' . DS . 'ab';
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
 		$path = APP;
 		$expected = DS . basename(APP) . DS;
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
 		$path = APP . 'index.php';
 		$expected = DS . basename(APP) . DS . 'index.php';
-		$this->assertEquals($this->Shell->shortPath($path), $expected);
+		$this->assertEquals($expected, $this->Shell->shortPath($path));
 	}
 
 /**
@@ -565,7 +566,6 @@ class ShellTest extends CakeTestCase {
 		$this->Shell->stdin->expects($this->at(1))
 			->method('read')
 			->will($this->returnValue('y'));
-
 
 		$contents = "<?php\necho 'yet another test';\n\$te = 'st';\n";
 		$result = $this->Shell->createFile($file, $contents);
@@ -658,7 +658,6 @@ class ShellTest extends CakeTestCase {
 		$this->Shell->stdin->expects($this->at(1))
 			->method('read')
 			->will($this->returnValue('y'));
-
 
 		$contents = "<?php\r\necho 'yet another test';\r\n\$te = 'st';\r\n";
 		$result = $this->Shell->createFile($file, $contents);
@@ -774,7 +773,6 @@ class ShellTest extends CakeTestCase {
 			->will($this->returnValue($Parser));
 		$Mock->expects($this->once())->method('out');
 
-
 		$result = $Mock->runCommand('idontexist', array());
 		$this->assertFalse($result);
 	}
@@ -866,7 +864,8 @@ TEXT;
 		$this->Shell->name = 'test';
 		$this->Shell->plugin = 'plugin';
 		$parser = $this->Shell->getOptionParser();
-	
+
 		$this->assertEquals('plugin.test', $parser->command());
 	}
+
 }

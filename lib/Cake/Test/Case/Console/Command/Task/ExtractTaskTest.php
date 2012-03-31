@@ -7,12 +7,12 @@
  * PHP 5
  *
  * CakePHP :  Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2011, Cake Software Foundation, Inc.
+ * Copyright 2005-2012, Cake Software Foundation, Inc.
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc.
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc.
  * @link          http://cakephp.org CakePHP Project
  * @package       Cake.Test.Case.Console.Command.Task
  * @since         CakePHP v 1.2.0.7726
@@ -110,7 +110,7 @@ class ExtractTaskTest extends CakeTestCase {
 
 		$pattern = '/msgid "Your database configuration file is NOT present."\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
-		
+
 		$pattern = '/msgid "Rename config\/database.php.default to ';
 		$pattern .= 'config\/database.php"\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
@@ -225,7 +225,7 @@ class ExtractTaskTest extends CakeTestCase {
  */
 	public function testExtractExcludePlugins() {
 		App::build(array(
-			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		$this->out = $this->getMock('ConsoleOutput', array(), array(), '', false);
 		$this->in = $this->getMock('ConsoleInput', array(), array(), '', false);
@@ -251,7 +251,7 @@ class ExtractTaskTest extends CakeTestCase {
  */
 	public function testExtractPlugin() {
 		App::build(array(
-			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 
 		$this->out = $this->getMock('ConsoleOutput', array(), array(), '', false);
@@ -279,7 +279,7 @@ class ExtractTaskTest extends CakeTestCase {
 	public function testExtractModelValidation() {
 		App::build(array(
 			'Model' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS),
-			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		$this->out = $this->getMock('ConsoleOutput', array(), array(), '', false);
 		$this->in = $this->getMock('ConsoleInput', array(), array(), '', false);
@@ -358,7 +358,6 @@ class ExtractTaskTest extends CakeTestCase {
 		$this->assertRegExp($pattern, $result);
 	}
 
-
 /**
  *  Test that the extract shell can obtain validation messages from models inside a specific plugin
  *
@@ -366,7 +365,7 @@ class ExtractTaskTest extends CakeTestCase {
  */
 	public function testExtractModelValidationInPlugin() {
 		App::build(array(
-			'plugins' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		$this->out = $this->getMock('ConsoleOutput', array(), array(), '', false);
 		$this->in = $this->getMock('ConsoleInput', array(), array(), '', false);
@@ -382,10 +381,10 @@ class ExtractTaskTest extends CakeTestCase {
 		$this->Task->execute();
 		$result = file_get_contents($this->path . DS . 'test_plugin.pot');
 
-		$pattern =  preg_quote('#Model' . DS . 'TestPluginPost.php:validation for field title#', '\\');
+		$pattern = preg_quote('#Model' . DS . 'TestPluginPost.php:validation for field title#', '\\');
 		$this->assertRegExp($pattern, $result);
 
-		$pattern =  preg_quote('#Model' . DS . 'TestPluginPost.php:validation for field body#', '\\');
+		$pattern = preg_quote('#Model' . DS . 'TestPluginPost.php:validation for field body#', '\\');
 		$this->assertRegExp($pattern, $result);
 
 		$pattern = '#msgid "Post title is required"#';
