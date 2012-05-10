@@ -1,4 +1,6 @@
 <?php 
+App::uses('Sanitize', 'Utility');
+
 class ShiftsController extends AppController {
 	var $name = 'Shifts';
 	var $components = array('RequestHandler', 'Search.Prg');
@@ -219,8 +221,9 @@ class ShiftsController extends AppController {
 
 
 	function icsView() {
+		$this->Prg->commonProcess();
 		if (!isset($this->request->params['named']['id'])) {
-			return $this->setAction('icsList');
+			return $this->setAction('physicianList', 'icsView');
 		}
 		$shiftList = $this->Shift->getShiftList(
 			array (
@@ -265,13 +268,16 @@ class ShiftsController extends AppController {
 	 * List of all physicians for icsView
 	 * 
 	 */
-	function icsList() {
-		$this->set('physicians', $this->Shift->User->find('list', array(
-				'fields' => array('User.id', 'User.name'),
-				'order'=>array('Profile.lastname ASC', 'Profile.firstname ASC'),
-				'conditions' => array ('block' => 0),
-				'recursive' => '1'
-		)));
+	function physicianList($physicianAction, $group = null) {
+		if ($group) {
+			$this->set('physicians', $this->User->getActiveUsersForGroup($group));
+		}
+		else {
+			$this->set('physicians', $this->User->getList());				
+		}
+
+		$this->Session->setFlash(__('Please select a physician'));
+		$this->set('physicianAction', $physicianAction);
 	}
 	
 	/**
@@ -283,6 +289,7 @@ class ShiftsController extends AppController {
 		if (isset($this->request->params['named']['id'])) {
 			$this->set('passed_id', $this->request->params['named']['id']);
 		}
+		$this->Session->setFlash(__('Please select a calendar'));
 		$this->set('calendars', $this->Calendar->getList());
 	}
 	
@@ -320,6 +327,32 @@ class ShiftsController extends AppController {
 			$this->request->data = $this->Shift->read(null, $id);
 		}
 	}
+
+	function tradeView() {
+		$this->Prg->commonProcess();
+		$this->loadModel('Calendar');
+
+/* 		if (!empty($this->data)){
+			foreach ($this->data['Shift'] as $dataRaw) {
+				if ($dataRaw['user_id'] != '') {
+					$data['Shift'][] = $dataRaw;
+					$saved = 1;
+ */		
+		if (isset($this->request->params['named']['calendar'])) {
+			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
+		}
+		else {
+			return $this->setAction('calendarList', 'tradeView');
+		}
+		$this->set('calendars', $this->Calendar->find('list'));
 	
+		if (!isset($this->request->params['named']['id'])) {
+			return $this->setAction('physicianList', 'tradeView', $masterSet['calendar']['Calendar']['usergroups_id']);
+		}
+
+		else {
+			return $this->setAction('calendarView');
+		}
+	}
 }
 ?>
