@@ -76,7 +76,7 @@ class User extends AppModel
 				}
 			}
 		}
-//		$userList = Set::sort($userList, '', 'ASC'); // Fix Issue #31 by commenting out. We lose alphabetization.
+		asort($userList);
 		return $userList;
  	}
 
