@@ -21,9 +21,32 @@
 	padding:0;
 }
 
+/** Load remote fonts **/
+@font-face {
+  font-family: 'Economica';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Economica'), local('Economica-Regular'), url('../fonts/economica.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Averia Libre';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Averia Libre Regular'), local('AveriaLibre-Regular'), url('../fonts/averia-libre.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ModernPictogramsNormal';
+    src: url('../fonts/modernpics-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 /** General Style Info **/
 body {
-	background: #003d4c;
+	background: #ccc;
 	color: #fff;
 	font-family:'lucida grande',verdana,helvetica,arial,sans-serif;
 	font-size:90%;
@@ -48,7 +71,7 @@ h1, h2, h3, h4 {
 h1 {
 	background:#fff;
 	color: #003d4c;
-	font-size: 100%;
+	font-size: 200%;
 }
 h2 {
 	background:#fff;
@@ -59,8 +82,8 @@ h2 {
 h3 {
 	color: #2c6877;
 	font-family:'Gill Sans','lucida grande', helvetica, arial, sans-serif;
-	font-size: 165%;
 }
+	font-size: 165%;
 h4 {
 	color: #993;
 	font-weight: normal;
@@ -78,17 +101,60 @@ p {
 }
 
 #header{
-	padding: 10px 20px;
+	padding: 30px 0 0;
+	background: #003d4c;
 }
 #header h1 {
 	line-height:20px;
-	background: #003d4c url('../img/cake.icon.png') no-repeat left;
+  font-family: 'Averia Libre';
+//	background: #003d4c url('../img/cake.icon.png') no-repeat left;
+	background: #003d4c;
 	color: #fff;
-	padding: 0px 30px;
+	padding: 0px 30px 10px;
+	font-size: 250%;
+	letter-spacing: 5px;
+	text-transform: lowercase;
 }
+
+nav {
+	background: #eee;
+	display: block;
+	position:relative;
+	clear: both;
+	font-family: 'Economica';
+	font-size: 125%;
+	text-transform: uppercase;
+	color: #aaa;
+}
+
+nav ul, nav li {
+	margin: 0;
+}
+
+nav li {
+	position:relative;
+	float:left;
+	list-style-type:none;
+	border-color: rgba(0, 0, 0, 0.05);
+	border-style: solid;
+    border-width: 0 1px 0 0;
+}
+
+nav li a {
+	padding: 20px 20px 10px 20px;
+	color: #aaa;
+    text-decoration: none;
+	display: block;
+	font-weight: normal;
+}
+
+nav li a:hover {
+//	background: #ff614c;
+	background: #ffbcb3;
+}
+
 #header h1 a {
 	color: #fff;
-	background: #003d4c;
 	font-weight: normal;
 	text-decoration: none;
 }
@@ -736,4 +802,12 @@ pre {
 /** Elements **/
 #url-rewriting-warning {
 	display:none;
+}
+.clear {
+	clear: both;
+}
+
+/** Modern Pictograms**/
+.pictograms {
+    font-family: 'ModernPictogramsNormal';
 }
