@@ -4,7 +4,7 @@ App::uses('Sanitize', 'Utility');
 class ShiftsController extends AppController {
 	var $name = 'Shifts';
 	var $components = array('RequestHandler', 'Search.Prg');
-	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal');
+	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal', 'PhysicianPicker');
 //	public $cacheAction = "1 hour";
 
 	var $paginate = array(
@@ -270,14 +270,15 @@ class ShiftsController extends AppController {
 	 */
 	function physicianList($physicianAction, $group = null) {
 		if ($group) {
-			$this->set('physicians', $this->User->getActiveUsersForGroup($group));
+			$physicians = $this->User->getActiveUsersForGroup($group, true, true);
 		}
 		else {
-			$this->set('physicians', $this->User->getList());				
+			$physicians = $this->User->getList(null, true, true);
 		}
 
 		$this->Session->setFlash(__('Please select a physician'));
 		$this->set('physicianAction', $physicianAction);
+		$this->set('physicians', $physicians);
 	}
 	
 	/**
@@ -332,19 +333,12 @@ class ShiftsController extends AppController {
 		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 
-/* 		if (!empty($this->data)){
-			foreach ($this->data['Shift'] as $dataRaw) {
-				if ($dataRaw['user_id'] != '') {
-					$data['Shift'][] = $dataRaw;
-					$saved = 1;
- */		
 		if (isset($this->request->params['named']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
 		else {
 			return $this->setAction('calendarList', 'tradeView');
 		}
-		$this->set('calendars', $this->Calendar->find('list'));
 	
 		if (!isset($this->request->params['named']['id'])) {
 			return $this->setAction('physicianList', 'tradeView', $masterSet['calendar']['Calendar']['usergroups_id']);
@@ -353,6 +347,12 @@ class ShiftsController extends AppController {
 		else {
 			return $this->setAction('calendarView');
 		}
+	}
+	function wizard() {
+		$this->Prg->commonProcess();
+		$this->loadModel('Calendar');
+		$this->set('physicians', $this->User->getList(null, true, true));
+		$this->set('calendars', $this->Calendar->find('list'));
 	}
 }
 ?>

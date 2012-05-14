@@ -16,8 +16,8 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
@@ -25,31 +25,35 @@
 	</title>
 	<?php
 //		echo $this->Html->meta('icon');
-
 		echo $this->Html->css('cake.generic');
-
 		echo $scripts_for_layout;
 	?>
 </head>
 <body>
 	<div id="container">
 		<div id="header">
+    		<h1><?php echo $this->Html->link('Kitab Al Shifa', array('controller' => 'pages', 'action' => 'home')); ?></h1>
+		<nav> <!-- HTML5 navigation tag -->
+    		<ul>
+    			<li><?php echo $this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard')); ?></li>
+    			<li><?php echo $this->Html->link('Shift trading', array('controller' => 'shifts', 'action' => 'tradeView')); ?></li>
+				<?php
+					if ($admin) { ?>
+		   				<li><?php echo $this->Html->link('Administration', array('controller' => 'admin', 'action' => 'index')); ?></li>
+				<?php } ?>
+    		</ul>
+				<?php if($logged_in) { ?>
+		    		<ul style="float:right">
+						<li><?php echo $this->Html->link($users_username .' (Logout)', array('controller' => ' users', 'action' => 'logout'));
+				} ?>
+				</li>
+			</ul>
+    		<div class="clear"></div>
+    	</nav>
 		</div>
-		<div id="content">
-			<div id="user-nav">
-				<?php if($logged_in) {
-					echo $users_username ." ". $this->Html->link('(Logout)', array('controller' => ' users', 'action' => 'logout'));
-				}
-				else {
-					echo "&nbsp;";
-				}
-				?>
-			</div>				
-
+    	<div id="content">
 			<?php echo $this->Session->flash(); ?>
-
 			<?php echo $content_for_layout; ?>
-
 		</div>
 		<div id="footer">
 			<?php echo $this->Html->link(

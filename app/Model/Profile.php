@@ -38,4 +38,6 @@ class Profile extends AppModel {
 			'order' => ''
 		)
 	);
+	var $virtualFields = array('fullname' => 'CONCAT(Profile.firstname, " ", Profile.lastname)');
+	
 }
