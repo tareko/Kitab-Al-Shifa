@@ -34,6 +34,22 @@ class ShiftsController extends AppController {
         }
 	}
 	
+	function home() {
+		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
+				'fields' => array('Location.location'),
+				//			'order' => array('ShiftsType.location_id ASC', 'ShiftsType.shift_start ASC'),
+		)));
+		$this->Prg->commonProcess();
+		$this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
+		$this->paginate['limit'] = 5;
+	
+		$this->set('shifts', $this->paginate(array(
+				'Shift.user_id' => $this->_usersId(), 
+				'Shift.date >=' => date('Y-m-d')
+				)));
+		$this->set('usersId', $this->_usersId());
+	}
+	
 	function add() {
 		$this->loadModel('Profile');
 		# Check if there is form data to be processed
@@ -366,10 +382,11 @@ class ShiftsController extends AppController {
 					return $this->setAction('index');
 				}
 				elseif ($this->request->params['named']['output'] == 'print') {
-					if ($this->request->params['named']['list'] == 'mine') {
+					if ($this->request->params['named']['list'] == 'mine' || $this->request->params['named']['list'] == 'some') {
 						$this->Session->setFlash('Apologies. That option is not available currently');
 					}
 					else {
+						$this->Session->setFlash('Please select which calendar you would like to see');
 						return $this->setAction('pdfView');
 					}
 				}

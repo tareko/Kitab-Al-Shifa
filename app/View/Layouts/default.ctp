@@ -32,14 +32,14 @@
 <body>
 	<div id="container">
 		<div id="header">
-    		<h1><?php echo $this->Html->link('Kitab Al Shifa', array('controller' => 'pages', 'action' => 'home')); ?></h1>
+    		<h1><?php echo $this->Html->link('Kitab Al Shifa', array('controller' => 'shifts', 'action' => 'home')); ?></h1>
 		<nav> <!-- HTML5 navigation tag -->
     		<ul>
     			<li><?php echo $this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard')); ?></li>
     			<li><?php echo $this->Html->link('Shift trading', array('controller' => 'shifts', 'action' => 'tradeView')); ?></li>
 				<?php
 					if ($admin) { ?>
-		   				<li><?php echo $this->Html->link('Administration', array('controller' => 'admin', 'action' => 'index')); ?></li>
+		   				<li><?php echo $this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin')); ?></li>
 				<?php } ?>
     		</ul>
 				<?php if($logged_in) { ?>
@@ -55,14 +55,14 @@
 			<?php echo $this->Session->flash(); ?>
 			<?php echo $content_for_layout; ?>
 		</div>
-		<div id="footer">
+		<footer>
 			<?php echo $this->Html->link(
 					$this->Html->image('cake.power.gif', array('alt'=> __('CakePHP: the rapid development php framework'), 'border' => '0')),
 					'http://www.cakephp.org/',
 					array('target' => '_blank', 'escape' => false)
 				);
 			?>
-		</div>
+		</footer>
 	</div>
 </body>
 </html>
