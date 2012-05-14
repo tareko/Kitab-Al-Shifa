@@ -24,14 +24,17 @@ echo $this->Form->create();
 <script type="text/javascript">
 $(document).ready(function() {
     $(".Options").buttonset();
+
 });
+
 </script>
 
 <div class="Options list">
 	<?php
-//	$this->Js->get('.Options.list')->event('click', '$(\'#pick-doctor\').hide()');
-	$this->Js->get('.Options.list .ui-corner-right')->event('click', '$(\'#pick-doctor\').show()');
-
+	$this->Js->get('[for=\'ShiftShiftsToShowAll\']')->event('click', '$(\'#pick-doctor\').hide()', array ('stop' => false));
+	$this->Js->get('[for=\'ShiftShiftsToShowMine\']')->event('click', '$(\'#pick-doctor\').hide()', array ('stop' => false));
+	$this->Js->get('[for=\'ShiftShiftsToShowSome\']')->event('click', '$(\'#pick-doctor\').show()', array ('stop' => false));
+	
 	echo $this->Form->radio('Shifts to show', array ('mine' => 'My shifts only', 'all' => 'Everybody\'s shifts', 'some' => 'Let me pick'),
 			array (
 					'name' => 'data[Shift][list]')

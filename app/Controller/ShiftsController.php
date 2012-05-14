@@ -349,6 +349,36 @@ class ShiftsController extends AppController {
 		}
 	}
 	function wizard() {
+		if (isset($this->request->params['named']['list'])) {
+			if ($this->request->params['named']['list'] == 'all') {
+				unset($this->request->params['named']['id']);
+			}
+			if ($this->request->params['named']['list'] == 'mine') {
+				$this->request->params['named']['id'] = $this->_usersId();
+			}
+				
+
+			if (isset($this->request->params['named']['output'])) {
+				if ($this->request->params['named']['output'] == 'webcal') {
+					return $this->setAction('calendarView');
+				}
+				elseif ($this->request->params['named']['output'] == 'list') {
+					return $this->setAction('index');
+				}
+				elseif ($this->request->params['named']['output'] == 'print') {
+					if ($this->request->params['named']['list'] == 'mine') {
+						$this->Session->setFlash('Apologies. That option is not available currently');
+					}
+					else {
+						return $this->setAction('pdfView');
+					}
+				}
+				elseif ($this->request->params['named']['output'] == 'ics') {
+					return $this->setAction('icsView');
+				}
+			}
+		}
+
 		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 		$this->set('physicians', $this->User->getList(null, true, true));
