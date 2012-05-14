@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>Test Suite</title>
+</head>
+<body>
+<table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
+<tr><td><b>Test Suite</b></td></tr>
+<tr><td><a href="kitab-1">Main page</a></td></tr>
+<tr><td><a href="kitab-2">My schedule-list</a></td></tr>
+<tr><td><a href="kitab-3">My schedule-list location sort</a></td></tr>
+<tr><td><a href="kitab-4">wizard-mine-webcal</a></td></tr>
+<tr><td><a href="kitab-5">wizard-mine-list</a></td></tr>
+<tr><td><a href="kitab-6">wizard-mine-print</a></td></tr>
+<tr><td><a href="kitab-7">wizard-mine-ics</a></td></tr>
+<tr><td><a href="kitab-8">wizard-all-webcal</a></td></tr>
+<tr><td><a href="kitab-9">wizard-all-list</a></td></tr>
+<tr><td><a href="kitab-10">wizard-all-print</a></td></tr>
+<tr><td><a href="kitab-11">wizard-all-ics</a></td></tr>
+<tr><td><a href="kitab-12">wizard-some-webcal</a></td></tr>
+</tbody></table>
+</body>
+</html>
