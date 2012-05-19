@@ -50,88 +50,49 @@ class User extends AppModel
 	);
 
 	
-	public function getList($conditions = '', $full = null, $json = NULL) {
+	public function getList($conditions = array(), $full = NULL) {
 		if ($full) {
-			$userList = $this->find('list', array(
-				'contain' => array('Profile'),
-				'fields' => array('Profile.firstname', 'Profile.lastname', 'User.id'),
-				'order'=>array('Profile.lastname ASC'),
-				'recursive' => 0,
-				'conditions' => $conditions
-			));
+			$userFields = array('Profile.firstname', 'Profile.lastname', 'User.id');
+			$userOrder = array('Profile.lastname ASC, Profile.firstname ASC');
+		}
+		else {
+			$userFields = array('User.id', 'Profile.cb_displayname');
+			$userOrder = array('Profile.cb_displayname ASC');
+		}
+		$userList = $this->find('list', array(
+			'contain' => array('Profile'),
+			'fields' => $userFields,
+			'order'=> $userOrder,
+			'recursive' => 0,
+			'conditions' => $conditions
+		));
+
+		if ($full) {
 			foreach ($userList as $id => $fullname) {
 				foreach ($fullname as $firstname => $lastname) {
 					$userList[$id] = $firstname . ' ' . $lastname;
 				}
 			}
 		}
-		else {
-			$userList = $this->find('list', array(
-					'contain' => array('Profile'),
-					'fields' => array('User.id', 'Profile.cb_displayname'),
-					'order'=>array('Profile.cb_displayname ASC'),
-					'recursive' => 0,
-					'conditions' => $conditions
-			));
-		}
-		if ($json) {
-			$userList = $this->jsonUserList($userList);
-		}
 		return $userList;
 	}
 
- 	public function getActiveUsersForGroup($group, $full = null, $json = NULL) {
+ 	public function getActiveUsersForGroup($group, $full = null, $conditions = array()) {
  		if ($full) {
- 			$rawInfo = $this->Usergroup->find('all', array(
- 					'conditions' => array (
- 							'Usergroup.id' => $group
- 					),
- 					'contain' => array(
- 							'User' => array('Profile.firstname', 'Profile.lastname')
- 					)));
- 			
- 			foreach ($rawInfo as $users) {
- 				foreach ($users['User'] as $user) {
- 					if ($user['block'] == 0) {
- 						$userList[$user['id']] = $user['Profile']['firstname'] . " " . $user['Profile']['lastname'];
- 					}
- 				}
- 			}
+ 			$userFields = array('Profile.firstname', 'Profile.lastname');
  		}
  		else {
-			$rawInfo = $this->Usergroup->find('all', array(
-				'conditions' => array (
-					'Usergroup.id' => $group
-				),
-				'contain' => array(
-					'User' => array('Profile.cb_displayname')
-			)));
-	
-			foreach ($rawInfo as $users) {
-				foreach ($users['User'] as $user) {
-					if ($user['block'] == 0) {
-						$userList[$user['id']] = $user['Profile']['cb_displayname'];
-					}
-				}
-			}
+ 			$userFields = array('Profile.cb_displayname');
  		}
-		asort($userList);
-		if ($json) {
-			$userList = $this->jsonUserList($userList);
-		}
+ 		$conditions = array('Usergroup.id' => $group, 'User.block' => '0');
+ 		 	
+		$userList = $this->find('list', array(
+				'conditions' => $conditions,
+				'contain' => array(
+						'Profile' => array('fields' => $userFields),
+						'Usergroup'),
+				'recursive' => '2'));
 		return $userList;
  	}
-
- 	/**
- 	 * jsonUserList function to json-ify a userlist.
- 	 * @param array $userList
- 	 */
-	public function jsonUserList($userList) {
-		foreach ($userList as $id => $name) {
-			$jsonUserList[] = array('value' => $id, 'label' => $name);
-		}
-		$userList = json_encode($jsonUserList);
-		return $userList;
-	}
 }
 ?>

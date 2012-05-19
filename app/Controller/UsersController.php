@@ -6,7 +6,7 @@ App::uses('AppController', 'Controller');
  * @property User $User
  */
 class UsersController extends AppController {
-
+	var $components = array('RequestHandler');
 
 /**
  * index method
@@ -189,5 +189,34 @@ class UsersController extends AppController {
 	
 	public function logout() {
 		$this->redirect($this->Auth->logout());
+	}
+	
+	public function listUsers() {
+		$userOptions = array();
+		$full = null;
+		$conditions = null;
+		$userList = array();
+		if (isset($this->request->query['full'])) {
+			$full = true;
+		}
+			if (isset($this->request->query['term'])) {
+			$conditions = array(
+				'or' => 
+					array('Profile.lastname LIKE' => $this->request->query['term'].'%',
+							'Profile.firstname LIKE' => $this->request->query['term'].'%',
+							'Profile.cb_displayname LIKE' => $this->request->query['term'].'%')
+			);
+		}
+		if (isset($this->request->query['group'])) {
+			$users = $this->User->getActiveUsersForGroup($this->request->query['group'], $full, $conditions);
+		}
+		else {
+			$users = $this->User->getList($conditions, $full);
+		}
+		foreach ($users as $id => $name) {
+			$userList[] = array('value' => $id, 'label' => $name);
+		}
+		$this->set('userList', $userList);
+		$this->set('_serialize', 'userList');
 	}
 }

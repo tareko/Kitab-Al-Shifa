@@ -402,5 +402,22 @@ class ShiftsController extends AppController {
 		$this->set('physicians', $this->User->getList(null, true, true));
 		$this->set('calendars', $this->Calendar->find('list'));
 	}
+	
+	public function listShifts() {
+		$shiftOptions = array();
+		if (isset($this->request->query['date'])) {
+			$shiftOptions = array_merge($shiftOptions, array('Shift.date' => $this->request->query['date']));
+		}
+		if (isset($this->request->query['id'])) {
+			$shiftOptions = array_merge($shiftOptions, array('Shift.user_id' => $this->request->query['id']));
+		}
+		else {
+			$shiftOptions = array_merge($shiftOptions, array('Shift.user_id' => $this->_usersId()));
+			$this->set('usersId', $this->_usersId());
+		}
+		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
+		$this->set('_serialize', array('shiftList'));
+	}
+	
 }
 ?>

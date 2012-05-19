@@ -8,42 +8,50 @@
 class DatePickerHelper extends AppHelper {
 
 	public $helpers = array('Html', 'Form', 'Js');
-	function makeDatePicker($shifts) {
+	/**
+	 * 
+	 * @param unknown_type $shifts
+	 * @param unknown_type $calendarId
+	 */
+	function makeDatePicker($userData, $calendarId) {
 		echo $this->Html->script('jquery'); // Include jQuery library
 		echo $this->Html->script('jquery-ui'); // Include jQuery UI library
 		echo $this->Html->css('ui-lightness/jquery-ui');
+	 	echo $this->Html->div('', '', array('id' => 'datepicker' . $calendarId));
 ?>
-
-<script>
-$(document).ready(function() {
-	$.getJSON('/kitab/trades/add.json', {id: $('#TradeFromUserIdHidden').val()}, function(json) {
-		shiftDays = json;
-	});
-
-	$(".datepicker").datepicker({ beforeShowDay: shiftsWorking, dateFormat: 'yy-mm-dd'});
-
-    function shiftsWorking(date) {
-        for (i = 0; i < shiftDays.shiftList.length; i++) {
-          dateDB = new Date(shiftDays.shiftList[i].Shift.date);
-          if (date.getYear() == dateDB.getYear()
-              && date.getMonth() == dateDB.getMonth()
-              && date.getDate() == dateDB.getDate() + 1) {
-            return [true, shiftDays.shiftList[i].Shift.date + '_day'];
-          }
-        }
-      return [false, ''];
-    }
-});
-</script>
-
-<?php 	echo $this->Form->input('start_date',
-        array(
-        		'class'=>'datepicker',
-        		'type'=>'text',
-        		'label' => '(Format: YYYY-MM-DD)'
-        )
-);
-echo $this->Js->writeBuffer(); // Write cached scripts
+		<script>
+		$(document).ready(function() {
+			startCalendar();
+		});
+		
+		function startCalendar() {
+			$.getJSON(
+				'<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', 
+				{id: $('<?=$userData?>').val()}, 
+				function(json) {
+					shiftDays = json;
+					$("#datepicker<?=$calendarId?>").datepicker({ 
+						beforeShowDay: shiftsWorking, 
+						dateFormat: 'yy-mm-dd'
+					});
+				}
+			);
+		}
+		
+		function shiftsWorking(date) {
+		    for (i = 0; i < shiftDays.shiftList.length; i++) {
+		      dateDB = new Date(shiftDays.shiftList[i].Shift.date);
+		      if (date.getYear() == dateDB.getYear()
+		          && date.getMonth() == dateDB.getMonth()
+		          && date.getDate() == dateDB.getDate() + 1) {
+		        return [true, shiftDays.shiftList[i].Shift.date + '_day'];
+		      }
+		    }
+		  return [false, ''];
+		}
+		</script>
+		<?php 
+		echo $this->Js->writeBuffer(); // Write cached scripts
 	}
 }
 ?>

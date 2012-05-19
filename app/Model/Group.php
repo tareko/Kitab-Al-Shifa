@@ -1,7 +1,7 @@
 <?php
 class Group extends AppModel {
 	public $actsAs = array('Containable');
-	public $hasOne = array(
+	public $belongsTo = array(
 		'Usergroup' => array(
 			'className'    => 'Usergroup',
 			'foreignKey'   => 'id',

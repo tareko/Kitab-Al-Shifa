@@ -80,26 +80,12 @@ class TradesController extends AppController {
 				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
 			}
 		}
-		if (isset($this->request->query['date'])) {
-			$shiftOptions = array_merge($shiftOptions, array('Shift.date' => $this->request->query['date']));				
-		}
 		if (isset($this->request->query['id'])) {
-			$shiftOptions = array_merge($shiftOptions, array('Shift.user_id' => $this->request->query['id']));				
+			$this->set('usersId', $this->request->query['id']);
 		}
 		else {
-			$shiftOptions = array_merge($shiftOptions, array('Shift.user_id' => $this->_usersId()));
 			$this->set('usersId', $this->_usersId());
 		}
-		$shiftList = $this->Trade->Shift->getShiftList(array($shiftOptions));
-		$shifts = '';
- 		foreach ($shiftList as $shift) {
-			$shifts .= date('["Y", "m", "d"],', strtotime($shift['Shift']['date']));
-		}
-
-		$physicians = $this->User->getList(null, true, true);
-		$calendars = $this->Calendar->find('list');
-		$this->set(compact('shifts', 'calendars', 'physicians', 'shiftList'));
-		$this->set('_serialize', array('shiftList'));
 	}
 
 /**

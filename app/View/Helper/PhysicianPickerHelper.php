@@ -5,7 +5,7 @@
 class PhysicianPickerHelper extends AppHelper {
 
 	public $helpers = array('Html', 'Form', 'Js');
-	function makePhysicianPicker($physicians) {
+	function makePhysicianPicker($groups = NULL) {
 		echo $this->Html->script('jquery'); // Include jQuery library
 		echo $this->Html->script('jquery-ui'); // Include jQuery UI library
 		echo $this->Html->css('ui-lightness/jquery-ui');
@@ -17,11 +17,12 @@ class PhysicianPickerHelper extends AppHelper {
 <script type="text/javascript">
 $(function(){
     $("#tags").tagit({
-	    tagSource: <?= $physicians ?>,
+	    tagSource: '<?= $this->Html->url(array('controller' => 'users', 'action' => 'listUsers.json', '?' => array('full' => '1'))); ?>',
         allowSpaces: true,
         itemName: 'data[Shift]',
         fieldName: 'id',
         placeholderText: 'Please type a name',
+        minLength: '3',
     });
 });
 </script>
