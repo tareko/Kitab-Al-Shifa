@@ -345,19 +345,20 @@ class ShiftsController extends AppController {
 		}
 	}
 
-	function tradeView() {
+	function tradeView() {	}
+	function tradeCompare() {
 		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 
-		if (isset($this->request->params['named']['calendar'])) {
+ 		if (isset($this->request->params['named']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
 		else {
-			return $this->setAction('calendarList', 'tradeView');
+			return $this->setAction('calendarList', 'tradeCompare');
 		}
 	
 		if (!isset($this->request->params['named']['id'])) {
-			return $this->setAction('physicianList', 'tradeView', $masterSet['calendar']['Calendar']['usergroups_id']);
+			return $this->setAction('physicianList', 'tradeCompare', $masterSet['calendar']['Calendar']['usergroups_id']);
 		}
 
 		else {

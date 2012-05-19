@@ -76,7 +76,7 @@ class Shift extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		),
+		)
 	);
 
 	//public $order = array("Shift.date" => "ASC", "ShiftsType.location_id" => "ASC", "ShiftsType.shift_start" => "ASC", "ShiftsType.shift_end" => "ASC");
@@ -95,13 +95,16 @@ class Shift extends AppModel {
 		return $this->find('all', array(
 				'contain' => array(
 					'ShiftsType' => array(
-						'fields' => array('id', 'location_id')), 
+						'fields' => array('id', 'shift_start', 'shift_end'),
+						'Location' => array(
+							'fields' => 'location')), 
 					'User' => array(
-						'Profile' => array(
-							'fields' => array('cb_displayname')))
-				),
+							'fields' => array('name'),
+							'Profile' => array(
+									'fields' => array('cb_displayname')
+				))),
 				'conditions' => $conditions,
-				'recursive' => '2'
+				'recursive' => '2',
 			));
 
 	}

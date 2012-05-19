@@ -1,7 +1,12 @@
 <?php
 class Location extends AppModel
 {
-	var $hasMany = 'ShiftsTypes';
+	public $actsAs = array('Containable');
+	public $hasMany = array(
+			'ShiftsType' => array(
+					'classname' => 'ShiftsType',
+					'foreignKey' => 'id'));
+
 	var $displayField = 'location';
 
 	/**

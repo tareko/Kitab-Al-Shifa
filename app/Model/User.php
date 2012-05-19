@@ -4,15 +4,15 @@ class User extends AppModel
 	public $actsAs = array('Containable');
 	public $useDbConfig = 'joomla';
 	public $useTable = 'users';
-	public $hasOne = array(
+ 	public $hasOne = array(
 			'Profile' => array(
 				'className' => 'Profile',
-				'foreignKey' => 'user_id',
+				'foreignKey' => 'id',
 				'conditions' => '',
 				'fields' => array('cb_displayname', 'firstname', 'lastname'),
 				'order' => '')
 	);
-	var $hasMany = array('Shifts');
+	public $hasMany = array('Shifts');
 	public $hasAndBelongsToMany = array(
 		'Usergroup' =>
 			array(

@@ -35,11 +35,31 @@
     		<h1><?php echo $this->Html->link('Kitab Al Shifa', array('controller' => 'shifts', 'action' => 'home')); ?></h1>
 		<nav> <!-- HTML5 navigation tag -->
     		<ul>
-    			<li><?php echo $this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard')); ?></li>
-    			<li><?php echo $this->Html->link('Shift trading', array('controller' => 'shifts', 'action' => 'tradeView')); ?></li>
+    			<li>
+    				<?php
+					$isLive = '';
+					$currentPage = 	$_SERVER['REQUEST_URI'];
+					if ($currentPage == Router::url('/shifts/wizard')) {
+						$isLive = array('class' => 'menu-current');
+					}
+    				echo $this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard'), $isLive); ?>
+    			</li>
+    			<li><?php 
+	    			$isLive = '';
+	    			if ($currentPage == Router::url('/shifts/tradeView') || $currentPage == Router::url('/shifts/tradeCompare') || $currentPage == Router::url('/shifts/tradeMake')) {
+	    				$isLive = array('class' => 'menu-current');
+	    			}
+    				echo $this->Html->link('Shift trading', array('controller' => 'shifts', 'action' => 'tradeView'), $isLive); ?>
+    			</li>
 				<?php
 					if ($admin) { ?>
-		   				<li><?php echo $this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin')); ?></li>
+		   				<li><?php 
+			   				$isLive = '';
+							if ($currentPage == Router::url('/pages/admin')) {
+								$isLive = array('class' => 'menu-current');
+							}
+			   				echo $this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin'), $isLive); ?>
+		   				</li>
 				<?php } ?>
     		</ul>
 				<?php if($logged_in) { ?>
@@ -50,6 +70,32 @@
 			</ul>
     		<div class="clear"></div>
     	</nav>
+		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/shifts/tradeView') && $currentPage != Router::url('/shifts/tradeCompare') && $currentPage != Router::url('/shifts/tradeMake')) {echo 'style="display: none;"';}?>>
+		<ul>
+			<li><?php
+				$isLive = '';
+					if ($currentPage == Router::url('/shifts/tradeView')) {
+					$isLive = array('class' => 'menu-current');
+				}
+				echo $this->Html->link('Trade home', array('controller' => 'shifts', 'action' => 'tradeView'), $isLive) ?>
+			</li>
+			<li><?php 
+				$isLive = '';
+				if ($currentPage == Router::url('/shifts/tradeCompare')) {
+					$isLive = array('class' => 'menu-current');
+				}
+				echo $this->Html->link('Compare schedules', array('controller' => 'shifts', 'action' => 'tradeCompare'), $isLive) ?>
+			</li>
+			<li><?php
+				$isLive = '';
+				if ($currentPage == Router::url('/shifts/tradeMake')) {
+					$isLive = array('class' => 'menu-current');
+				}
+				echo $this->Html->link('Make a trade', array('controller' => 'shifts', 'action' => 'tradeMake'), $isLive) ?>
+			</li>
+			</ul>
+		<div class="clear"></div>
+		</nav>
 		</div>
     	<div id="content">
 			<?php echo $this->Session->flash(); ?>

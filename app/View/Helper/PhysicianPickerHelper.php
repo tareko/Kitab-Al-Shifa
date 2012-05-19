@@ -28,11 +28,8 @@ $(function(){
 
 
 <div class="ui-widget">
-	<fieldset>
-		<legend>Pick some physicians:</legend>
-		<ul id="tags">
-		</ul>
-	</fieldset>
+	<ul id="tags">
+	</ul>
 </div>
 
 <?php 

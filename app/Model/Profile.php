@@ -33,9 +33,12 @@ class Profile extends AppModel {
 		'User' => array(
 			'className' => 'User',
 			'foreignKey' => 'user_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
+		)
+	);
+	public $hasMany = array(
+		'Shift' => array(
+			'className' => 'Shift',
+			'foreignKey' => 'user_id',
 		)
 	);
 	var $virtualFields = array('fullname' => 'CONCAT(Profile.firstname, " ", Profile.lastname)');
