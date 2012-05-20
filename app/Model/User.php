@@ -83,7 +83,7 @@ class User extends AppModel
 		return $userList;
 	}
 
- 	public function getActiveUsersForGroup($group, $full = null, $conditions = array()) {
+/*  	public function getActiveUsersForGroup($group, $full = null, $conditions = array()) {
  		if ($full) {
  			$userFields = array('Profile.firstname', 'Profile.lastname');
  		}
@@ -131,6 +131,49 @@ class User extends AppModel
 		foreach ($values as $key => $value) {
 			$userList[$key] = $userListNoSort[$key];
 		}
+ 		return $userList;
+ 	}
+ */
+	
+ 	public function getActiveUsersForGroup($group, $full = null, $conditions = array()) {
+ 		if ($full) {
+ 			$userFields = array('Profile.firstname', 'Profile.lastname');
+ 		}
+ 		else {
+ 			$userFields = array('Profile.cb_displayname');
+ 		}
+ 		$conditions = array_merge(array('Usergroup.id' => $group, 'User.block' => 0), $conditions);
+
+ 		
+ 		
+ 		$userList = $this->find('all', array(
+ 				'conditions' => $conditions, 
+ 				'recursive' => '0',
+ 				'fields' => array_merge(array('User.id'), $userFields),
+ 				'order' => array('Profile.lastname' => 'ASC', 'Profile.firstname' => 'ASC', 'Profile.cb_displayname' => 'ASC'),
+ 				'joins' => array(
+						array(
+								'table' => 'j17_user_usergroup_map',
+								'alias' => 'UsersUsergroup',
+								'type' => 'inner',
+								'foreignKey' => false,
+								'conditions'=> array('UsersUsergroup.user_id = User.id')
+						),
+						array(
+								'table' => 'j17_usergroups',
+								'alias' => 'Usergroup',
+								'type' => 'inner',
+								'foreignKey' => false,
+								'conditions'=> array('Usergroup.id = UsersUsergroup.group_id')
+ 						)
+				),
+ 				'contain' => array('Profile' => array(
+ 						'fields' => array('Profile.firstname', 'Profile.lastname')
+ 						)
+ 				)
+			)
+ 		);
+
  		return $userList;
  	}
 }

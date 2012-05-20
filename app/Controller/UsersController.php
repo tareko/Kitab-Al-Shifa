@@ -217,10 +217,10 @@ class UsersController extends AppController {
 
 		foreach ($users as $user) {
 			if ($full) {
-				$userList[] = array('value' => $user['id'], 'label' => $user['Profile']['firstname'] . ' ' . $user['Profile']['lastname']);
+				$userList[] = array('value' => $user['User']['id'], 'label' => $user['Profile']['firstname'] . ' ' . $user['Profile']['lastname']);
 			}
 			else {
-				$userList[] = array('value' => $user['id'], 'label' => $user['Profile']['cb_displayname']);
+				$userList[] = array('value' => $user['User']['id'], 'label' => $user['Profile']['cb_displayname']);
 			}
 		}
 		$this->set('userList', $userList);
