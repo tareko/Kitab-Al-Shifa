@@ -194,17 +194,18 @@ class UsersController extends AppController {
 	public function listUsers() {
 		$userOptions = array();
 		$full = null;
-		$conditions = null;
+		$conditions = array();
 		$userList = array();
+
 		if (isset($this->request->query['full'])) {
 			$full = true;
 		}
-			if (isset($this->request->query['term'])) {
+		if (isset($this->request->query['term'])) {
 			$conditions = array(
 				'or' => 
 					array('Profile.lastname LIKE' => $this->request->query['term'].'%',
-							'Profile.firstname LIKE' => $this->request->query['term'].'%',
-							'Profile.cb_displayname LIKE' => $this->request->query['term'].'%')
+						'Profile.firstname LIKE' => $this->request->query['term'].'%',
+						'Profile.cb_displayname LIKE' => $this->request->query['term'].'%')
 			);
 		}
 		if (isset($this->request->query['group'])) {
@@ -213,8 +214,14 @@ class UsersController extends AppController {
 		else {
 			$users = $this->User->getList($conditions, $full);
 		}
-		foreach ($users as $id => $name) {
-			$userList[] = array('value' => $id, 'label' => $name);
+
+		foreach ($users as $user) {
+			if ($full) {
+				$userList[] = array('value' => $user['id'], 'label' => $user['Profile']['firstname'] . ' ' . $user['Profile']['lastname']);
+			}
+			else {
+				$userList[] = array('value' => $user['id'], 'label' => $user['Profile']['cb_displayname']);
+			}
 		}
 		$this->set('userList', $userList);
 		$this->set('_serialize', 'userList');

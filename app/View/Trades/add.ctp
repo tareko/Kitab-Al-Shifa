@@ -1,66 +1,97 @@
 <?= $this->Form->create('Trade');?>
 
 <fieldset>
-		<legend><?php echo __('Make a Trade'); ?></legend>
-		<h2>Which shift would you like to trade?</h2>
-		<?= $this->DatePicker->makeDatePicker('#TradeFromUserIdHidden', 1); ?>
-		<?= $this->Form->input('from_user_id', array('type' => 'text', 'default' => $usersId)); ?>
-		<?= $this->Form->input('from_user_id_hidden', array(
+	<legend><?php echo __('Make a Trade'); ?></legend>
+	<div class="block">
+		<?php
+		echo $this->Form->input('from_user_id', array(
+				'type' => 'text', 
+				'default' => $usersId,
+				'label' => __('Person making the trade'),
+				'div' => 'TradeFromUserIdDiv'));
+		echo $this->Form->input('from_user_id_hidden', array(
 				'type' => 'text', 
 				'default' => $usersId, 
 				'div' => 'input text TradeFromUserIdHiddenDiv',
 				'hidden' => true,
-				'label' => false)); ?>
-		<?= $this->Form->input('shift_id', array('label' => 'Which shift would you like to trade?')); ?>
-		<div id="pick-doctor">
-			<h2>Who are you offering the trade to?</h2>
-			My groups
-			Exclude those who are already working
-			<?= $this->PhysicianPicker->makePhysicianPicker(); ?>
-		</div>
-		Which shift would you like back?
+				'label' => false));
+		?>
+	</div>
+	<div class="block">
+		<label for="datepicker1"><?= __('Please select the date of the shift you would like to trade')?></label>
+		<?php
+		echo $this->DatePicker->makeDatePicker('#TradeFromUserIdHidden', 1);
+		echo $this->Form->input('shift_id', array('label' => __('Which shift would you like to trade?')));
+		?>
+	</div>
+	<div class="block">
+		<label><?=__('Who are you offering the trade to?')?></label>
+		<?php 
+		echo $this->Html->div('pick-doctor',
+			$this->PhysicianPicker->makePhysicianPicker(),
+				array('div' => 'pick-doctor'));
+		?>
+	</div>
+	<div class="block">
+		<?php echo $this->Form->end(__('Submit'));?>
+	</div>
 	</fieldset>
-	<?php echo $this->Form->end(__('Submit'));?>
 
 	<script>
 	$(document).ready(function(){
-		$('#TradeFromUserId').autocomplete({minLength: 3, source: '<?= $this->Html->url(array('controller' => 'users', 'action' => 'listUsers.json', '?' => array('full' => '1'))); ?>'});
-
-		/* 
-		 * This function will activate when #TradeStartDate is selected or changes.
-		 * It then empties the previous shift area, and fills in the shift information
-		 * for all shifts found that day.
-		 *
-		 */
-	
-		$('#TradeStartDate').change(function() {
-			$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', {date: $(this).val(), id: $('input[name="data[Trade][from_user_id_hidden]"]').val()}, function(data){
-				$("select#TradeShiftId").empty();
-				var html = '';
-				var len = data.shiftList.length;
-				for (var i = 0; i< len; i++) {
-			    	html += '<option value="' + data.shiftList[i].Shift.id + '">' + data.shiftList[i].ShiftsType.Location.location + ' ' + data.shiftList[i].ShiftsType.shift_start + '</option>';
-				}
-				$('select#TradeShiftId').append(html);
-				});
-		});
-
-		/* 
-		 * This function will activate when a physician is selected (TradeFromUserId), and update #TradeStartDate's active
-		 * values (shiftDays).
-		 *
-		 */
-
-		$('#TradeFromUserId').change(function() {
-			$('#TradeFromUserIdHidden').remove();
-			$('.TradeFromUserIdHiddenDiv').append('<input type="text" id="TradeFromUserIdHidden" value="' + $(this).val() + '" name="data[Trade][from_user_id_hidden]" hidden="1">');
-			$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', {id: $('#TradeFromUserIdHidden').val()}, function(json) {
-				shiftDays = json;
-				$("#datepicker1").datepicker('refresh');
-			});
-			$("select#TradeShiftId").empty();
-			$("input#TradeStartDate").val('');
+		$('#TradeFromUserId').autocomplete({
+			minLength: 3, 
+			source: '<?= $this->Html->url(array(
+					'controller' => 'users', 
+					'action' => 'listUsers.json', 
+					'?' => array(
+							'full' => '1'
+							)
+					)); ?>',
+			select: docChange,
+			focus: function(event, ui){
+                var selectedObj = ui.item;
+                $('input#TradeFromUserId').val(selectedObj.label);
+                $('input#TradeFromUserIdHidden').val(selectedObj.value);
+                return false;
+            }
 		});
 	});
+
+	/* 
+	 * This function will activate when #TradeStartDate is selected or changes.
+	 * It then empties the previous shift area, and fills in the shift information
+	 * for all shifts found that day.
+	 *
+	 */
+
+	function calendarSelect(data) {
+		$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', {date: $(this).val(), id: $('input[name="data[Trade][from_user_id_hidden]"]').val()}, function(data){
+			$("select#TradeShiftId").empty();
+			var html = '';
+			var len = data.shiftList.length;
+			for (var i = 0; i< len; i++) {
+		    	html += '<option value="' + data.shiftList[i].Shift.id + '">' + data.shiftList[i].ShiftsType.Location.location + ' ' + data.shiftList[i].ShiftsType.shift_start + '</option>';
+			}
+			$('select#TradeShiftId').append(html);
+			});
+	}
+
+	/* 
+	 * This function will activate when a physician is selected (TradeFromUserId), and update #TradeStartDate's active
+	 * values (shiftDays).
+	 *
+	 */
+		 
+	function docChange(event, data) {
+        $('input#TradeFromUserId').val(data.item.label);
+        $('input#TradeFromUserIdHiddenDiv').val(data.item.value);
+		$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', {id: $('#TradeFromUserIdHidden').val()}, function(json) {
+			shiftDays = json;
+			$("#datepicker1").datepicker('refresh');
+		});
+        return false;
+	}
+	
 	</script>
 	<?echo $this->Js->writeBuffer();?>

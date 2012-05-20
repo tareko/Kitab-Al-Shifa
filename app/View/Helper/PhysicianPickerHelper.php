@@ -23,7 +23,10 @@ $(function(){
         fieldName: 'id',
         placeholderText: 'Please type a name',
         minLength: '3',
-    });
+}
+	
+	
+        });
 });
 </script>
 

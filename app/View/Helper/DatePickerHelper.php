@@ -32,7 +32,8 @@ class DatePickerHelper extends AppHelper {
 					shiftDays = json;
 					$("#datepicker<?=$calendarId?>").datepicker({ 
 						beforeShowDay: shiftsWorking, 
-						dateFormat: 'yy-mm-dd'
+						dateFormat: 'yy-mm-dd',
+						onSelect: calendarSelect
 					});
 				}
 			);

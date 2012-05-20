@@ -833,3 +833,13 @@ pre {
 .pictograms {
     font-family: 'ModernPictogramsNormal';
 }
+
+input#TradeFromUserId, .ui-widget ul#tags {
+	width: 200px;
+}
+
+#TradeAddForm .block{
+	width: 300px;
+	float: left;
+	clear: none;
+}

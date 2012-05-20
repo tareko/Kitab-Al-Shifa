@@ -67,13 +67,19 @@ class User extends AppModel
 			'conditions' => $conditions
 		));
 
-		if ($full) {
-			foreach ($userList as $id => $fullname) {
-				foreach ($fullname as $firstname => $lastname) {
-					$userList[$id] = $firstname . ' ' . $lastname;
+		foreach ($userList as $id => $fullname) {
+			foreach ($fullname as $firstname => $lastname) {
+				$userList[$id]['id'] = $id;
+				if ($full) {
+					$userList[$id]['Profile']['firstname'] = $firstname;
+					$userList[$id]['Profile']['lastname'] = $lastname;
+				}
+				else {
+					$userList[$id]['Profile']['cb_displayname'] = $fullname;
 				}
 			}
 		}
+
 		return $userList;
 	}
 
@@ -84,15 +90,48 @@ class User extends AppModel
  		else {
  			$userFields = array('Profile.cb_displayname');
  		}
- 		$conditions = array('Usergroup.id' => $group, 'User.block' => '0');
- 		 	
-		$userList = $this->find('list', array(
-				'conditions' => $conditions,
-				'contain' => array(
-						'Profile' => array('fields' => $userFields),
-						'Usergroup'),
-				'recursive' => '2'));
-		return $userList;
+ 		$conditions = array_merge(array('Usergroup.id' => $group), $conditions);
+
+ 		$this->Usergroup->bindModel(array(
+ 				'hasAndBelongsToMany' => array(
+ 						'User' => array(
+ 								'joinTable'				=> 'user_usergroup_map',
+								'className'				=> 'User',
+								'foreignKey'			=> 'group_id',
+								'associationForeignKey'	=> 'user_id',
+ 								)
+ 				)));
+ 			
+ 		$users = $this->Usergroup->find('all', array(
+ 				'conditions' => $conditions, 
+ 				'recursive' => '0',
+ 				'fields' => array('Usergroup.id', 'Usergroup.title'),
+ 				'recursive' => '2',
+ 				'contain' => array(
+ 						'User' => array(
+ 								'fields' => array('User.id', 'User.block'),
+ 								'Profile' => array(
+ 										'fields' => $userFields
+ 								)
+ 						)
+ 				)
+ 		));
+
+ 		$userListNoSort = array_shift(array_slice(array_shift($users), 1));
+		$values = array();
+		foreach ($userListNoSort as $id => $value) {
+			if ($full) {
+				$values[$id] = isset($value['Profile']['lastname']) ? $value['Profile']['lastname'] : '';
+			}
+			else {
+				$values[$id] = isset($value['Profile']['cb_displayname']) ? $value['Profile']['cb_displayname'] : '';
+			}
+		}
+		asort($values);
+		foreach ($values as $key => $value) {
+			$userList[$key] = $userListNoSort[$key];
+		}
+ 		return $userList;
  	}
 }
 ?>
