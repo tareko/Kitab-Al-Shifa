@@ -83,21 +83,6 @@ class TradesDetail extends AppModel {
  *
  * @var array
  */
-	public $hasOne = array(
-		'User' => array(
-			'className' => 'User',
-			'foreignKey' => 'trades_detail_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
-	);
-
-/**
- * belongsTo associations
- *
- * @var array
- */
 	public $belongsTo = array(
 		'Trade' => array(
 			'className' => 'Trade',
@@ -107,26 +92,4 @@ class TradesDetail extends AppModel {
 			'order' => ''
 		)
 	);
-
-/**
- * hasMany associations
- *
- * @var array
- */
-	public $hasMany = array(
-		'User' => array(
-			'className' => 'User',
-			'foreignKey' => 'trades_detail_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
-
 }

@@ -9,12 +9,13 @@
 				'default' => $usersId,
 				'label' => __('Person making the trade'),
 				'div' => 'TradeFromUserIdDiv'));
-		echo $this->Form->input('from_user_id_hidden', array(
+		echo $this->Form->input('Trade.user_id', array(
 				'type' => 'text', 
 				'default' => $usersId, 
 				'div' => 'input text TradeFromUserIdHiddenDiv',
 				'hidden' => true,
-				'label' => false));
+				'label' => false,
+				'id' => 'TradeFromUserIdHidden'));
 		?>
 	</div>
 	<div class="block">
@@ -27,8 +28,8 @@
 	<div class="block">
 		<label><?=__('Who are you offering the trade to?')?></label>
 		<?php 
-		echo $this->Html->div('pick-doctor',
-			$this->PhysicianPicker->makePhysicianPicker(),
+		echo $this->Html->div('TradesDetail.user_id',
+			$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail][user_id]'),
 				array('div' => 'pick-doctor'));
 		?>
 	</div>
@@ -66,7 +67,7 @@
 	 */
 
 	function calendarSelect(data) {
-		$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', {date: $(this).val(), id: $('input[name="data[Trade][from_user_id_hidden]"]').val()}, function(data){
+		$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', {date: $(this).val(), id: $('input[name="data[Trade][user_id]"]').val()}, function(data){
 			$("select#TradeShiftId").empty();
 			var html = '';
 			var len = data.shiftList.length;

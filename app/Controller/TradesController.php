@@ -67,13 +67,15 @@ class TradesController extends AppController {
  * @return void
  */
 	public function add() {
-		$this->Prg->commonProcess();
 		$shiftOptions[] = array();
-		
 		$this->loadModel('Calendar');
 		if ($this->request->is('post')) {
+			$this->request->data['Trade']['created'] = date('Y-m-d H:i:s', time());
+debug($this->RelatedModel->id);
+			debug($this->request);
 			$this->Trade->create();
-			if ($this->Trade->save($this->request->data)) {
+			if ($this->Trade->saveAssociated(array($this->request->data,
+					'deep' => true))) {
 				$this->Session->setFlash(__('The trade has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
