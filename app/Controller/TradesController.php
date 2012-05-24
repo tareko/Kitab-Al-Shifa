@@ -14,7 +14,7 @@ class TradesController extends AppController {
  *
  * @var array
  */
-	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker');
+	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time');
 	public $components = array('RequestHandler', 'Search.Prg');
 	var $paginate = array(
 			'recursive' => '2',
@@ -114,12 +114,12 @@ class TradesController extends AppController {
 	}
 
 	public function startUnprocessed() {
-		$this->loadModel('TradesDetail');
+		App::import('Lib', 'TradeRequest');
+		$this->_TradeRequest = new TradeRequest();
+		
 		$unprocessedTrades = $this->Trade->getUnprocessedTrades();
-		foreach ($unprocessedTrades as $tradeId) {
-			$this->TradesDetail->processTrade($tradeId);
-			//TOWRITE: If successful, then update the status of the column to 1
-		}
+		$this->_TradeRequest->process($unprocessedTrades);
+		
 	}
 	
 }

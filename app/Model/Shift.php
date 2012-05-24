@@ -78,6 +78,20 @@ class Shift extends AppModel {
 			'order' => ''
 		)
 	);
+/**
+ * HasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+			'Trade' => array(
+					'className' => 'Trade',
+					'foreignKey' => 'shift_id',
+					'conditions' => '',
+					'fields' => '',
+					'order' => ''
+			),
+	);
 
 	//public $order = array("Shift.date" => "ASC", "ShiftsType.location_id" => "ASC", "ShiftsType.shift_start" => "ASC", "ShiftsType.shift_end" => "ASC");
 	public $order = array("Shift.date" => "ASC");

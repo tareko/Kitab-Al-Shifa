@@ -102,11 +102,10 @@ class Trade extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		));
-	public $hasOne = array(
+		),
 		'Shift' => array(
 			'className' => 'Shift',
-			'foreignKey' => 'id',
+			'foreignKey' => 'shift_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -122,7 +121,34 @@ class Trade extends AppModel {
 
 	public function getUnprocessedTrades($conditions = array()) {
 		return $this->find('all', array(
-				'recursive' => 0,
+				'recursive' => 3,
+				'contain' => array(
+						'Shift' => array(
+								'fields' => array(
+										'id',
+										'date'),
+								'ShiftsType' => array(
+										'fields' => array(
+												'times'),
+										'Location' => array(
+												'location')
+										)
+								),
+						'TradesDetail' => array(
+								'User' => array(
+										'fields' => array(
+												'id',
+												'name',
+												'email')
+										)
+								),
+						'User' => array(
+								'fields' => array(
+										'id',
+										'name',
+										'email'),
+								),
+						),
 				'conditions' => array_merge(
 						array('status' => 0),
 						$conditions),
