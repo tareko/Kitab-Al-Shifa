@@ -70,12 +70,20 @@ class TradesDetail extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
 
-	public function getUnprocessed($tradeId = NULL, $conditions = array()) {
+	public function getUnprocessedTradesDetail($tradeId = NULL, $conditions = array()) {
 		return $this->find('all', array(
 				'recursive' => 0,
+//				'contain' => array('User'),
 				'conditions' => array_merge(
 						array(
 							'TradesDetail.status' => 0,
@@ -92,20 +100,22 @@ class TradesDetail extends AppModel {
 	 */
 	public function processTrade ($tradeId = NULL) {
 		$this->User = new User();
+		App::import('Lib', 'TradeRequest');
+		$this->_TradeRequest = new TradeRequest();
 		//Return false if no $trade is given. We really don't want to process all trades
 		if (!isset($tradeId)) {
 			return false;
 		}
 		//Find unprocessed trade details within the trade
-		$tradeList = $this->getUnprocessed($tradeId);
+		$tradeList = $this->getUnprocessedTradesDetail($tradeId['Trade']['id']);
 		foreach ($tradeList as $trade) {
-			$toUser = $tradeId;
-			$fromUser = '';
+			$toUser = $trade['User'];
+			$fromUser = $tradeId['User'];
 			$method = 'email';
 			//Get communication method preference for receiving user
 			$method = $this->User->getCommunicationMethod($toUser);
 			//Send out communication to receiving user
-			sendTradeRequest($fromUser, $toUser, $method);
+			$this->_TradeRequest->send($fromUser, $toUser, $method);
 			//Assuming success, update Status to 1
 		}
 	}

@@ -115,7 +115,7 @@ class TradesController extends AppController {
 
 	public function startUnprocessed() {
 		$this->loadModel('TradesDetail');
-		$unprocessedTrades = $this->Trade->getUnprocessed();
+		$unprocessedTrades = $this->Trade->getUnprocessedTrades();
 		foreach ($unprocessedTrades as $tradeId) {
 			$this->TradesDetail->processTrade($tradeId);
 			//TOWRITE: If successful, then update the status of the column to 1

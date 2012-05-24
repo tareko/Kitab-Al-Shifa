@@ -120,8 +120,8 @@ class Trade extends AppModel {
 			'order' => ''
 		));
 
-	public function getUnprocessed($conditions = array()) {
-		return $this->find('list', array(
+	public function getUnprocessedTrades($conditions = array()) {
+		return $this->find('all', array(
 				'recursive' => 0,
 				'conditions' => array_merge(
 						array('status' => 0),

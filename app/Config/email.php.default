@@ -44,7 +44,7 @@ class EmailConfig {
 
 	public $default = array(
 		'transport' => 'Debug',
-		'from' => 'kitab@emlondon.ca',
+		'from' => 'kitab@kitab',
 		//'charset' => 'utf-8',
 		//'headerCharset' => 'utf-8',
 	);
