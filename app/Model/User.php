@@ -126,5 +126,14 @@ class User extends AppModel
 
  		return $userList;
  	}
+ 	
+ 	/**
+ 	 * Function will query user's preferred communication method and return it
+ 	 * @param integer $toUser
+ 	 */
+ 	public function getCommunicationMethod($toUser) {
+ 		//FIX: Stubbed for now
+ 		return 'email';
+ 	}
 }
 ?>

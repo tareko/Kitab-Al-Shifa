@@ -1,4 +1,5 @@
 /app/Config/core.php
+/app/Config/email.php
 /app/Config/database.php
 /app/tmp
 /app/webroot/pdf

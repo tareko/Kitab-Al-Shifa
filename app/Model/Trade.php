@@ -5,6 +5,13 @@ App::uses('AppModel', 'Model');
  *
  * @property Users $Users
  * @property Shifts $Shifts
+ * 
+ * Status legend:
+ * 	0 - Unprocessed
+ *  1 - In progress
+ *  2 - Complete
+ *  3 - Cancelled
+ * 
  */
 class Trade extends AppModel {
 
@@ -12,6 +19,7 @@ class Trade extends AppModel {
 	 * 	Search plugin initialization
 	 */
 	public $actsAs = array('Search.Searchable', 'Containable');
+	public $components = array('sendTradeRequest');
  	public $filterArgs = array(
 /* 			array('name' => 'month', 'type' => 'value', 'field' => 'MONTH(Shift.date)'),
 			array('name' => 'year', 'type' => 'value', 'field' => 'YEAR(Shift.date)'),
@@ -78,34 +86,6 @@ class Trade extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'status' => array(
-			'notempty' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'created' => array(
-			'datetime' => array(
-				'rule' => array('datetime'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
 	);
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -139,4 +119,13 @@ class Trade extends AppModel {
 			'fields' => '',
 			'order' => ''
 		));
+
+	public function getUnprocessed($conditions = array()) {
+		return $this->find('list', array(
+				'recursive' => 0,
+				'conditions' => array_merge(
+						array('status' => 0),
+						$conditions),
+		));		
+	}
 }

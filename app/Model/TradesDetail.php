@@ -6,6 +6,10 @@ App::uses('AppModel', 'Model');
  * @property User $User
  * @property Trade $Trade
  * @property User $User
+ * Status:	0 - Unprocessed
+ * 			1 - Request sent; awaiting reply
+ * 			2 - Rejected
+ * 			3 - Accepted
  */
 class TradesDetail extends AppModel {
 /**
@@ -20,19 +24,11 @@ class TradesDetail extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'trade_id' => array(
+ 		'trade_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
+				'message' => 'The linked trade must be known',
+				'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
@@ -41,16 +37,8 @@ class TradesDetail extends AppModel {
 		'user_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
+				'message' => 'A user being traded to is required',
+				'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
@@ -59,15 +47,7 @@ class TradesDetail extends AppModel {
 		'status' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
+				'message' => 'The format in which the status was submitted is incorrect',
 				//'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
@@ -79,7 +59,7 @@ class TradesDetail extends AppModel {
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
 /**
- * hasOne associations
+ * belongsTo associations
  *
  * @var array
  */
@@ -92,4 +72,42 @@ class TradesDetail extends AppModel {
 			'order' => ''
 		)
 	);
+
+	public function getUnprocessed($tradeId = NULL, $conditions = array()) {
+		return $this->find('all', array(
+				'recursive' => 0,
+				'conditions' => array_merge(
+						array(
+							'TradesDetail.status' => 0,
+							'TradesDetail.trade_id' => $tradeId),
+						$conditions),
+		));
+	}
+
+
+	/**
+	 * Function to process trades
+	 * @param array $trade
+	 * @return boolean
+	 */
+	public function processTrade ($tradeId = NULL) {
+		$this->User = new User();
+		//Return false if no $trade is given. We really don't want to process all trades
+		if (!isset($tradeId)) {
+			return false;
+		}
+		//Find unprocessed trade details within the trade
+		$tradeList = $this->getUnprocessed($tradeId);
+		foreach ($tradeList as $trade) {
+			$toUser = $tradeId;
+			$fromUser = '';
+			$method = 'email';
+			//Get communication method preference for receiving user
+			$method = $this->User->getCommunicationMethod($toUser);
+			//Send out communication to receiving user
+			sendTradeRequest($fromUser, $toUser, $method);
+			//Assuming success, update Status to 1
+		}
+	}
+
 }

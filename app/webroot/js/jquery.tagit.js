@@ -344,11 +344,11 @@
                 this._updateSingleTagsField(tags);
             } else {
                 if (tagLabel) {
-                    tag.append('<input type="hidden" style="display:none;" value="' + value + '" name="' + this.options.itemName + '[' + this.options.fieldName + '][]" />');
+                    tag.append('<input type="hidden" style="display:none;" value="' + value + '" name="' + this.options.itemName + '[][' + this.options.fieldName + ']" />');
                 }
                 else {
                     escapedValue = label.html();
-                    tag.append('<input type="hidden" style="display:none;" value="' + escapedValue + '" name="' + this.options.itemName + '[' + this.options.fieldName + '][]" />');
+                    tag.append('<input type="hidden" style="display:none;" value="' + escapedValue + '" name="' + this.options.itemName + '[][' + this.options.fieldName + ']" />');
                 }
             }
 

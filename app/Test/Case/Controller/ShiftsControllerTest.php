@@ -190,8 +190,8 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @expectedException NotFoundException
  */
 	public function testDeleteNoId() {
-		$result = $this->testAction('/shifts/delete');
 		$this->setExpectedException('NotFoundException');
+		$result = $this->testAction('/shifts/delete');
 	}
 	public function testDeleteId() {
 		$result = $this->testAction('/shifts/delete/52');

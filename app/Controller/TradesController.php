@@ -5,6 +5,7 @@ App::uses('AppController', 'Controller', 'Sanitize', 'Utility');
  * Trades Controller
  *
  * @property Trade $Trade
+ * 
  */
 class TradesController extends AppController {
 
@@ -70,13 +71,9 @@ class TradesController extends AppController {
 		$shiftOptions[] = array();
 		$this->loadModel('Calendar');
 		if ($this->request->is('post')) {
-			$this->request->data['Trade']['created'] = date('Y-m-d H:i:s', time());
-debug($this->RelatedModel->id);
-			debug($this->request);
 			$this->Trade->create();
-			if ($this->Trade->saveAssociated(array($this->request->data,
-					'deep' => true))) {
-				$this->Session->setFlash(__('The trade has been saved'));
+			if ($this->Trade->saveAssociated($this->request->data)) {
+					$this->Session->setFlash(__('The trade has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
@@ -116,116 +113,13 @@ debug($this->RelatedModel->id);
 		$this->set(compact('users', 'shifts'));
 	}
 
-/**
- * delete method
- *
- * @param string $id
- * @return void
- */
-	public function delete($id = null) {
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
+	public function startUnprocessed() {
+		$this->loadModel('TradesDetail');
+		$unprocessedTrades = $this->Trade->getUnprocessed();
+		foreach ($unprocessedTrades as $tradeId) {
+			$this->TradesDetail->processTrade($tradeId);
+			//TOWRITE: If successful, then update the status of the column to 1
 		}
-		$this->Trade->id = $id;
-		if (!$this->Trade->exists()) {
-			throw new NotFoundException(__('Invalid trade'));
-		}
-		if ($this->Trade->delete()) {
-			$this->Session->setFlash(__('Trade deleted'));
-			$this->redirect(array('action' => 'index'));
-		}
-		$this->Session->setFlash(__('Trade was not deleted'));
-		$this->redirect(array('action' => 'index'));
 	}
-/**
- * admin_index method
- *
- * @return void
- */
-	public function admin_index() {
-		$this->Trade->recursive = 0;
-		$this->set('trades', $this->paginate());
-	}
-
-/**
- * admin_view method
- *
- * @param string $id
- * @return void
- */
-	public function admin_view($id = null) {
-		$this->Trade->id = $id;
-		if (!$this->Trade->exists()) {
-			throw new NotFoundException(__('Invalid trade'));
-		}
-		$this->set('trade', $this->Trade->read(null, $id));
-	}
-
-/**
- * admin_add method
- *
- * @return void
- */
-	public function admin_add() {
-		if ($this->request->is('post')) {
-			$this->Trade->create();
-			if ($this->Trade->save($this->request->data)) {
-				$this->Session->setFlash(__('The trade has been saved'));
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
-			}
-		}
-		$users = $this->Trade->User->find('list');
-		$shifts = $this->Trade->Shift->find('list');
-		$this->set(compact('users', 'shifts'));
-	}
-
-/**
- * admin_edit method
- *
- * @param string $id
- * @return void
- */
-	public function admin_edit($id = null) {
-		$this->Trade->id = $id;
-		if (!$this->Trade->exists()) {
-			throw new NotFoundException(__('Invalid trade'));
-		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Trade->save($this->request->data)) {
-				$this->Session->setFlash(__('The trade has been saved'));
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
-			}
-		} else {
-			$this->request->data = $this->Trade->read(null, $id);
-		}
-		$users = $this->Trade->User->find('list');
-		$shifts = $this->Trade->Shift->find('list');
-		$this->set(compact('users', 'shifts'));
-	}
-
-/**
- * admin_delete method
- *
- * @param string $id
- * @return void
- */
-	public function admin_delete($id = null) {
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}
-		$this->Trade->id = $id;
-		if (!$this->Trade->exists()) {
-			throw new NotFoundException(__('Invalid trade'));
-		}
-		if ($this->Trade->delete()) {
-			$this->Session->setFlash(__('Trade deleted'));
-			$this->redirect(array('action' => 'index'));
-		}
-		$this->Session->setFlash(__('Trade was not deleted'));
-		$this->redirect(array('action' => 'index'));
-	}
+	
 }

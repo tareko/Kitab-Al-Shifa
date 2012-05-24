@@ -1,5 +1,6 @@
 <?php
 App::uses('TradesController', 'Controller');
+App::uses('Controller', 'Controller');
 
 /**
  * TestTradesController *
@@ -29,7 +30,7 @@ class TestTradesController extends TradesController {
  * TradesController Test Case
  *
  */
-class TradesControllerTestCase extends CakeTestCase {
+class TradesControllerTestCase extends ControllerTestCase {
 /**
  * Fixtures
  *
@@ -48,16 +49,6 @@ class TradesControllerTestCase extends CakeTestCase {
 		$this->Trades->constructClasses();
 	}
 
-/**
- * tearDown method
- *
- * @return void
- */
-	public function tearDown() {
-		unset($this->Trades);
-
-		parent::tearDown();
-	}
 
 /**
  * testIndex method
@@ -65,7 +56,8 @@ class TradesControllerTestCase extends CakeTestCase {
  * @return void
  */
 	public function testIndex() {
-
+		$result = $this->testAction('/trades/index');
+		debug($result);
 	}
 /**
  * testView method
@@ -91,52 +83,15 @@ class TradesControllerTestCase extends CakeTestCase {
 	public function testEdit() {
 
 	}
+
 /**
- * testDelete method
+ * tearDown method
  *
  * @return void
  */
-	public function testDelete() {
+public function tearDown() {
+	unset($this->Trades);
 
-	}
-/**
- * testAdminIndex method
- *
- * @return void
- */
-	public function testAdminIndex() {
-
-	}
-/**
- * testAdminView method
- *
- * @return void
- */
-	public function testAdminView() {
-
-	}
-/**
- * testAdminAdd method
- *
- * @return void
- */
-	public function testAdminAdd() {
-
-	}
-/**
- * testAdminEdit method
- *
- * @return void
- */
-	public function testAdminEdit() {
-
-	}
-/**
- * testAdminDelete method
- *
- * @return void
- */
-	public function testAdminDelete() {
-
-	}
+	parent::tearDown();
+}
 }
