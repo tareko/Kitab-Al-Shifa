@@ -116,10 +116,33 @@ class TradesController extends AppController {
 	public function startUnprocessed() {
 		App::import('Lib', 'TradeRequest');
 		$this->_TradeRequest = new TradeRequest();
-		
+
+
 		$unprocessedTrades = $this->Trade->getUnprocessedTrades();
-		$this->_TradeRequest->process($unprocessedTrades);
-		
+
+		//Find unprocessed trade details within the trade
+		foreach ($unprocessedTrades as $trade) {
+			foreach ($trade['TradesDetail'] as $tradesDetail) {
+				$toUser = $tradesDetail['User'];
+				$fromUser = $trade['User'];
+				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
+				$method = 'email';
+				//Get communication method preference for receiving user
+				$method = $this->User->getCommunicationMethod($toUser['id']);
+				//Send out communication to receiving user
+				if ($this->_TradeRequest->send($tradesDetail['id'], $fromUser, $toUser, $trade['Shift'], $method)) {
+					//TODO: Assuming success, update Status of TradesDetail to 1
+				}
+			}
+		//TODO: Assuming success, update Status of Trade to 1
+		//			$this->request->data = $this->Trade->read(null, $id);
+		//				if ($this->Trade->save($this->request->data)) {
+		//					$this->Session->setFlash(__('The trade has been saved'));
+		//					$this->redirect(array('action' => 'index'));
+		//				} else {
+		//					$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
+		//				}
+		}
 	}
 	
 }

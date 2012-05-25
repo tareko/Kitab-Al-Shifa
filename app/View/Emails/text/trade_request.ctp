@@ -18,8 +18,8 @@ To *ACCEPT*, click here:\n
 		'controller' => 'trades',
 		'action' => 'accept',
 		'?' => array(
-				'trade_id' => 'TRADEID',
-				'token' => 'TOKEN'
+				'tradesDetail_id' => $tradesDetailId,
+				'token' => $token
 				)
 		), true
 	)?>\n\n
@@ -29,8 +29,8 @@ To *REJECT*, click here:\n
 		'controller' => 'trades',
 		'action' => 'reject',
 		'?' => array(
-				'trade_id' => 'TRADEID',
-				'token' => 'TOKEN'
+				'tradesDetail_id' => $tradesDetailId,
+				'token' => $token
 				)
 		), true
 	)?>\n\n
