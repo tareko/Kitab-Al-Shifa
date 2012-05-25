@@ -30,50 +30,29 @@ class TradeRequest {
 				}
 			}
 			//TODO: Assuming success, update Status of Trade to 1
-			$this->request->data = $this->Trade->read(null, $id);
-				if ($this->Trade->save($this->request->data)) {
-					$this->Session->setFlash(__('The trade has been saved'));
-					$this->redirect(array('action' => 'index'));
-				} else {
-					$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
-				}
+//			$this->request->data = $this->Trade->read(null, $id);
+//				if ($this->Trade->save($this->request->data)) {
+//					$this->Session->setFlash(__('The trade has been saved'));
+//					$this->redirect(array('action' => 'index'));
+//				} else {
+//					$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
+//				}
 			}
 		}	
-	
-	
+
+
 	public function send($fromUser, $toUser, $shift, $method) {
 		App::uses('CakeEmail', 'Network/Email');
-		App::uses('AppHelper', 'View/Helper');
 		App::uses('TimeHelper', 'View/Helper');
-		App::uses('HtmlHelper', 'View/Helper');
-		$this->Html = new HtmlHelper('Default');
-		$this->Time = new TimeHelper('Default');
-
-		$fromShift = $this->Time->nice($shift['date']) .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times'];
 		if ($method == 'email') {
-		$message = 'Dear '. $toUser['name'].',\n\n
-You have received a trade request from '.$fromUser['name'].'.\n\n
-The proposed trade is as follows:\n
-You take: '. $fromShift .'\n'
-//TODO: Two-way trades
-//.$fromUser['name'].' takes '
-//.'YOUR SHIFT\n\n'
-.'Please review this trade carefully.\n\n
-To *ACCEPT*, click here:\n'
-.$this->Html->url('accept')
-		//AGREE LINK
-
-.'\n\n
-To *REJECT*, click here:\n'
-.$this->Html->url('reject')
-//REJECT LINK\n\n
-.'Thank you for your consideration,\n\n
-Kitab Al Shifa Mail Bot : )';
-
 			$email = new CakeEmail('default');
-			$email->to($toUser['email'])
+			$email->template('tradeRequest')
+				->to($toUser['email'])
 				->subject('[Kitab] Shift trade request by ' .$fromUser['name'])
-				->send($message);
+				->viewVars(array('fromUser' => $fromUser, 
+						'toUser' => $toUser, 
+						'shift' => $shift))
+				->send();
 		}
 	}
 }
