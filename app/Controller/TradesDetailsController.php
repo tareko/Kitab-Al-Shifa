@@ -6,4 +6,5 @@ App::uses('AppController', 'Controller');
  * @property TradesDetail $TradesDetail
  */
 class TradesDetailsController extends AppController {
+	public $scaffold;
 }

@@ -7,8 +7,7 @@ App::uses('AppController', 'Controller', 'Sanitize', 'Utility');
  * @property Trade $Trade
  * 
  */
-class TradesController extends AppController {
-
+class TradesController extends AppController {	
 /**
  * Helpers
  *
@@ -16,6 +15,7 @@ class TradesController extends AppController {
  */
 	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time');
 	public $components = array('RequestHandler', 'Search.Prg');
+	public $scaffold = 'admin';
 	var $paginate = array(
 			'recursive' => '2',
 	);
@@ -48,6 +48,26 @@ class TradesController extends AppController {
 		}
 	}
 
+	/**
+	 * Admin method
+	 * Method for displaying trades for administrator
+	 */
+
+	public function admin() {
+		$this->loadModel('Shift');
+		$this->loadModel('User');
+		$this->Prg->commonProcess();
+		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
+		$this->Trade->recursive = 0;
+	
+	
+		if (isset($this->request->params['named']['id'])) {
+			$this->set('trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
+		}
+		else {
+			$this->set('trades', $this->paginate(array('status' => 1)));
+		}
+	}
 /**
  * view method
  *
@@ -113,6 +133,12 @@ class TradesController extends AppController {
 		$this->set(compact('users', 'shifts'));
 	}
 
+	/**
+	 * 
+	 * Deal with unprocessed shift trade requests.
+	 * Meant for a cron job.
+	 * 
+	 */
 	public function startUnprocessed() {
 		App::import('Lib', 'TradeRequest');
 		$this->_TradeRequest = new TradeRequest();
@@ -130,19 +156,28 @@ class TradesController extends AppController {
 				//Get communication method preference for receiving user
 				$method = $this->User->getCommunicationMethod($toUser['id']);
 				//Send out communication to receiving user
-				if ($this->_TradeRequest->send($tradesDetail['id'], $fromUser, $toUser, $trade['Shift'], $method)) {
-					//TODO: Assuming success, update Status of TradesDetail to 1
+				$token = bin2hex(openssl_random_pseudo_bytes(16));
+				
+				if ($this->_TradeRequest->send($tradesDetail['id'], $fromUser, $toUser, $trade['Shift'], $method, $token)) {
+					// Assuming success, update Status of TradesDetail to 1
+					$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
+					$this->Trade->TradesDetail->set('status', 1);
+					$this->Trade->TradesDetail->set('token', $token);
+					$this->Trade->TradesDetail->save();
+
+					// Write log indicating trade detail was done
+					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $toUser['name']);
 				}
 			}
-		//TODO: Assuming success, update Status of Trade to 1
-		//			$this->request->data = $this->Trade->read(null, $id);
-		//				if ($this->Trade->save($this->request->data)) {
-		//					$this->Session->setFlash(__('The trade has been saved'));
-		//					$this->redirect(array('action' => 'index'));
-		//				} else {
-		//					$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
-		//				}
+		// Assuming success, update Status of Trade to 1
+			$this->Trade->read(null, $trade['Trade']['id']);
+			$this->Trade->set('status', 1);
+			if ($this->Trade->save()) {
+				// Write log indicating trade was done
+				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
+			} else {
+				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Failed to process trade');
+			}
 		}
 	}
-	
 }

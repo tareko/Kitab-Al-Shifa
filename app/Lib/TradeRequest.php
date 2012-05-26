@@ -1,10 +1,9 @@
 <?php
 
 class TradeRequest {
-	public function send($tradesDetailId, $fromUser, $toUser, $shift, $method) {
+	public function send($tradesDetailId, $fromUser, $toUser, $shift, $method, $token) {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
-		$token = bin2hex(openssl_random_pseudo_bytes(16));
 		if ($method == 'email') {
 			$email = new CakeEmail('default');
 			$email->template('tradeRequest')
@@ -19,5 +18,6 @@ class TradeRequest {
 						'token' => $token))
 				->send();
 		}
+		return true;
 	}
 }
