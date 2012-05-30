@@ -180,4 +180,20 @@ class TradesController extends AppController {
 			}
 		}
 	}
+	
+	
+	public function accept() {
+		$this->loadModel('TradesDetail');
+		$token = $this->request->query['token'];
+		$tradesDetail_id = $this->request->query['tradesDetail_id'];
+		$tradesDetail = $this->TradesDetail->findById($tradesDetail_id, array('TradesDetail.token'));
+
+		if ($token = $tradesDetail['TradesDetail']['token']) {
+			
+		}
+	}
+	 
+	public function reject() {
+		
+	} 
 }
