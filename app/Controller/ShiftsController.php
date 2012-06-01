@@ -74,7 +74,7 @@ class ShiftsController extends AppController {
 		# If no data, present an add form
 		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
 		$this->set('shifts', $this->paginate());
-		$this->set('users', $this->Shift->User->getList());
+		$this->set('users', $this->Shift->User->getList(NULL, NULL, true));
 		
 		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
 			'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
@@ -339,7 +339,7 @@ class ShiftsController extends AppController {
 				$this->Session->setFlash(__('The shift could not be saved. Please, try again.'));
 			}
 		} else {
-			$this->set('physicians', $this->Shift->User->getList());
+			$this->set('physicians', $this->Shift->User->getList(NULL, NULL, true));
 			$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
 			$this->request->data = $this->Shift->read(null, $id);
 		}

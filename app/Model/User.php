@@ -50,7 +50,7 @@ class User extends AppModel
 	);
 
 	
-	public function getList($conditions = array(), $full = NULL) {
+	public function getList($conditions = array(), $full = NULL, $list = false) {
 		$userList = array();
 		if ($full) {
 			$userFields = array('Profile.firstname', 'Profile.lastname', 'User.id');
@@ -68,23 +68,37 @@ class User extends AppModel
 			'conditions' => $conditions
 		));
 
-		foreach ($users as $id => $fullname) {
-			foreach ($fullname as $firstname => $lastname) {
+		if ($list == false) {
+			foreach ($users as $id => $fullname) {
 				$userList[$id]['User']['id'] = $id;
 				if ($full) {
-					$userList[$id]['Profile']['firstname'] = $firstname;
-					$userList[$id]['Profile']['lastname'] = $lastname;
+					foreach ($fullname as $firstname => $lastname) {
+						$userList[$id]['Profile']['firstname'] = $firstname;
+						$userList[$id]['Profile']['lastname'] = $lastname;
+					}
 				}
 				else {
 					$userList[$id]['Profile']['cb_displayname'] = $fullname;
 				}
 			}
 		}
+		else {
+			if ($full) {
+				foreach ($users as $id => $fullname) {
+					foreach ($fullname as $firstname => $lastname) {
+						$userList[$id] = $firstname . ' ' . $lastname;
+					}
+				}
+			}
+			else {
+				$userList = $users;
+			}
+		}
 
 		return $userList;
 	}
 
-	
+
  	public function getActiveUsersForGroup($group, $full = null, $conditions = array()) {
  		if ($full) {
  			$userFields = array('Profile.firstname', 'Profile.lastname');
