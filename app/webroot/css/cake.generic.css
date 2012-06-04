@@ -46,7 +46,7 @@
 
 /** General Style Info **/
 body {
-	background: #ccc;
+	background: #fff;
 	color: #fff;
 	font-family:'lucida grande',verdana,helvetica,arial,sans-serif;
 	font-size:90%;
@@ -190,7 +190,7 @@ nav li a.menu-current {
 	clear: both;
 	color: #333;
 	padding: 10px 20px 40px 20px;
-	overflow: auto;
+//	overflow: auto;
 }
 #footer {
 	clear: both;
@@ -250,7 +250,7 @@ table tr td {
 	border-bottom:1px solid #ddd;
 }
 table tr:nth-child(even) {
-	background: #f9f9f9;
+	background: #eee;
 }
 td.actions {
 	text-align: center;
