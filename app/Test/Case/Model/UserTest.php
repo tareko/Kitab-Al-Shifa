@@ -11,7 +11,7 @@ class UserTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map');
+	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.user_usergroup_map_j17', 'app.usergroup_j17');
 
 /**
  * setUp method
@@ -78,15 +78,53 @@ class UserTestCase extends CakeTestCase {
  *
  * @return void
  */
-	public function testGetActiveUsersForGroup() {
-
+	public function testGetActiveUsersForGroupNoArgs() {
+		$this->setExpectedException('BadRequestException');
+		$result = $this->User->getActiveUsersForGroup();
 	}
+
+	public function testGetActiveUsersForGroup() {
+		$result = $this->User->getActiveUsersForGroup('2');
+		$expected = array(
+				'0' => array('User' => array('id' => 1), 'Profile' => array('cb_displayname' => 'Bynum'))
+		);
+		$this->assertEquals($expected, $result);
+	}
+	public function testGetActiveUsersForGroupFull() {
+		$result = $this->User->getActiveUsersForGroup('2', true);
+		$expected = array(
+			'0' => array('User' => array('id' => 1), 'Profile' => array('firstname' => 'James', 'lastname' => 'Bynum')),
+		);
+		$this->assertEquals($expected, $result);
+	}
+	// TODO put in some conditions
+	public function testGetActiveUsersForGroupFullConditions() {
+		$result = $this->User->getActiveUsersForGroup('2', true, array());
+		$expected = array(
+			'0' => array('User' => array('id' => 1), 'Profile' => array('firstname' => 'James', 'lastname' => 'Bynum')),
+		);
+		$this->assertEquals($expected, $result);
+	}
+	public function testGetActiveUsersForGroupFullConditionsList() {
+		$result = $this->User->getActiveUsersForGroup('2', true, array(), true);
+		$expected = array('1' => 'James Bynum');
+		$this->assertEquals($expected, $result);
+	}
+	public function testGetActiveUsersForGroupNotFullConditionsList() {
+		$result = $this->User->getActiveUsersForGroup('2', false, array(), true);
+		$expected = array('1' => 'Bynum');
+		$this->assertEquals($expected, $result);
+	}
+	
+
 /**
  * testGetCommunicationMethod method
  *
  * @return void
  */
 	public function testGetCommunicationMethod() {
-
+		$result = $this->User->getCommunicationMethod('1');
+		$expected = 'email';
+		$this->assertEquals($expected, $result);
 	}
 }

@@ -99,7 +99,10 @@ class User extends AppModel
 	}
 
 
- 	public function getActiveUsersForGroup($group, $full = null, $conditions = array()) {
+ 	public function getActiveUsersForGroup($group = null, $full = false, $conditions = array(), $list = false) {
+ 		if (!isset($group)) {
+ 			throw new BadRequestException();
+ 		}
  		if ($full) {
  			$userFields = array('Profile.firstname', 'Profile.lastname');
  		}
@@ -132,11 +135,24 @@ class User extends AppModel
  						)
 				),
  				'contain' => array('Profile' => array(
- 						'fields' => array('Profile.firstname', 'Profile.lastname')
+ 						'fields' => $userFields
  						)
  				)
 			)
  		);
+ 		
+ 		if ($list == true) {
+ 			$newUserList = array();
+ 			foreach ($userList as $user) {
+ 				if ($full == true) {
+ 					$newUserList[$user['User']['id']] = $user['Profile']['firstname'] . ' ' . $user['Profile']['lastname'];
+ 				}
+ 				else {
+ 					$newUserList[$user['User']['id']] = $user['Profile']['cb_displayname'];
+ 				}
+ 			}
+ 			$userList = $newUserList ;
+ 		}
 
  		return $userList;
  	}

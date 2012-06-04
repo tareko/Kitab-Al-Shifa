@@ -174,8 +174,8 @@ class ShiftsController extends AppController {
 		foreach ($shiftList as $shift) {
 			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
 		}
-		
-		$this->set('users', $this->User->getActiveUsersForGroup($masterSet['calendar']['Calendar']['usergroups_id']));
+
+		$this->set('users', $this->User->getActiveUsersForGroup($masterSet['calendar']['Calendar']['usergroups_id'], false, array(), true));
 		$this->set('masterSet', $masterSet);
 	}
 
