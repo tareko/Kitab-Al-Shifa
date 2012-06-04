@@ -27,6 +27,23 @@ class TestCalendarsController extends CalendarsController {
 	}
 }
 
+class UrlEncodeTestCase extends ControllerTestCase {
+
+	/**
+	 * Test that a request with urlencoded bits in the main GET parameter are filtered out.
+	 *
+	 * @return void
+	 */
+	public function testGetParamWithUrlencodedElement() {
+		$_GET = array();
+		$_GET['/shifts/calendarView/id:1'] = '';
+		$_SERVER['REQUEST_URI'] = '/shifts/calendarView/id%3A1';
+
+		$request = new CakeRequest();
+		$this->assertEquals(array(), $request->query);
+	}
+}
+
 /**
  * CalendarsController Test Case
  *
