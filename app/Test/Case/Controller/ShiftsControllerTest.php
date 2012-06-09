@@ -37,7 +37,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.calendar', 'app.trade', 'app.user_usergroup_map_j17', 'app.usergroup_j17');
+	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.calendar', 'app.trade', 'app.user_usergroup_map_j17', 'app.usergroup_j17', 'app.trades_detail');
 
 /**
  * setUp method
@@ -49,6 +49,16 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 		$this->Shifts = new TestShiftsController();
 		$this->Shifts->constructClasses();
+		$Shifts = $this->generate('Shifts', array(
+				'methods' => array(
+						'_requestAllowed'
+				),
+		));
+		
+		$Shifts->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		
 	}
 
 /**
