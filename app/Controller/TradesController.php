@@ -94,7 +94,7 @@ class TradesController extends AppController {
 			$this->Trade->create();
 			if ($this->Trade->saveAssociated($this->request->data)) {
 					$this->Session->setFlash(__('The trade has been saved'));
-				$this->redirect(array('action' => 'index'));
+				return $this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
 			}

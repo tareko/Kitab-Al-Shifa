@@ -358,10 +358,10 @@ class ShiftsController extends AppController {
 
 			if (isset($this->request->params['named']['output'])) {
 				if ($this->request->params['named']['output'] == 'webcal') {
-					return $this->setAction('calendarView');
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'calendarView') + $this->request->params['named']);
 				}
 				elseif ($this->request->params['named']['output'] == 'list') {
-					return $this->setAction('index');
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'index') + $this->request->params['named']);
 				}
 				elseif ($this->request->params['named']['output'] == 'print') {
 					if ($this->request->params['named']['list'] == 'mine' || $this->request->params['named']['list'] == 'some') {
@@ -369,11 +369,11 @@ class ShiftsController extends AppController {
 					}
 					else {
 						$this->Session->setFlash('Please select which calendar you would like to see');
-						return $this->setAction('pdfView');
+						return $this->redirect(array('controller' => 'shifts', 'action' => 'pdfView') + $this->request->params['named']);
 					}
 				}
 				elseif ($this->request->params['named']['output'] == 'ics') {
-					return $this->setAction('icsView');
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'icsView') + $this->request->params['named']);
 				}
 			}
 		}
