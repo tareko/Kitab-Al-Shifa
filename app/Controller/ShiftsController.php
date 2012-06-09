@@ -228,6 +228,7 @@ class ShiftsController extends AppController {
 		}
 		
 		$this->set('masterSet', $masterSet);
+		$this->render();
 	}
 	
 	function pdfView() {
@@ -345,26 +346,6 @@ class ShiftsController extends AppController {
 		}
 	}
 
-	function tradeView() {	}
-	function tradeCompare() {
-		$this->Prg->commonProcess();
-		$this->loadModel('Calendar');
-
- 		if (isset($this->request->params['named']['calendar'])) {
-			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
-		}
-		else {
-			return $this->setAction('calendarList', 'tradeCompare');
-		}
-	
-		if (!isset($this->request->params['named']['id'])) {
-			return $this->setAction('physicianList', 'tradeCompare', $masterSet['calendar']['Calendar']['usergroups_id']);
-		}
-
-		else {
-			return $this->setAction('calendarView');
-		}
-	}
 	function wizard() {
 		if (isset($this->request->params['named']['list'])) {
 			if ($this->request->params['named']['list'] == 'all') {

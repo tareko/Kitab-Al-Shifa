@@ -24,7 +24,7 @@ class AppController extends Controller {
 		$this->Auth->allow('pdfCreate', 'icsView');
 		
   		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
-			$this->Session->setFlash('Access denied. You do not have permission to access this page');
+  			$this->Session->setFlash('Access denied. You do not have permission to access this page');
 			header('HTTP/1.1 401 Unauthorized');
 			$this->viewPath = 'Errors';
 			$this->render('permission_denied');

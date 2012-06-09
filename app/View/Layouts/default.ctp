@@ -46,7 +46,7 @@
     			</li>
     			<li><?php 
 	    			$isLive = '';
-	    			if ($currentPage == Router::url('/shifts/tradeView') || $currentPage == Router::url('/shifts/tradeCompare') || $currentPage == Router::url('/shifts/tradeMake')) {
+	    			if ($currentPage == Router::url('/shifts/tradeView') || $currentPage == Router::url('/trades/compare') || $currentPage == Router::url('/trades/add')) {
 	    				$isLive = array('class' => 'menu-current');
 	    			}
     				echo $this->Html->link('Shift trading', array('controller' => 'shifts', 'action' => 'tradeView'), $isLive); ?>
@@ -70,7 +70,7 @@
 			</ul>
     		<div class="clear"></div>
     	</nav>
-		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/shifts/tradeView') && $currentPage != Router::url('/shifts/tradeCompare') && $currentPage != Router::url('/shifts/tradeMake')) {echo 'style="display: none;"';}?>>
+		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/shifts/tradeView') && $currentPage != Router::url('/trades/compare') && $currentPage != Router::url('/trades/add')) {echo 'style="display: none;"';}?>>
 		<ul>
 			<li><?php
 				$isLive = '';
@@ -81,17 +81,17 @@
 			</li>
 			<li><?php 
 				$isLive = '';
-				if ($currentPage == Router::url('/shifts/tradeCompare')) {
+				if ($currentPage == Router::url('/trades/compare')) {
 					$isLive = array('class' => 'menu-current');
 				}
-				echo $this->Html->link('Compare schedules', array('controller' => 'shifts', 'action' => 'tradeCompare'), $isLive) ?>
+				echo $this->Html->link('Compare schedules', array('controller' => 'trades', 'action' => 'compare'), $isLive) ?>
 			</li>
 			<li><?php
 				$isLive = '';
-				if ($currentPage == Router::url('/shifts/tradeMake')) {
+				if ($currentPage == Router::url('/trades/add')) {
 					$isLive = array('class' => 'menu-current');
 				}
-				echo $this->Html->link('Make a trade', array('controller' => 'shifts', 'action' => 'tradeMake'), $isLive) ?>
+				echo $this->Html->link('Make a trade', array('controller' => 'trades', 'action' => 'add'), $isLive) ?>
 			</li>
 			</ul>
 		<div class="clear"></div>

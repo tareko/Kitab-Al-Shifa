@@ -133,6 +133,26 @@ class TradesController extends AppController {
 		$this->set(compact('users', 'shifts'));
 	}
 
+	function compare() {
+		$params = array();
+		$this->loadModel('Calendar');
+		if ($this->request->is('post')) {
+			if (isset($this->request->data['User']) && isset($this->request->data['Calendar'])) {
+				$i = 0;
+				$masterSet['calendar'] = $this->Calendar->findById($this->request->data['Calendar']['id']);
+					foreach ($this->request->data['User'] as $users) {
+						$params = array_merge($params, array('id[' .$i. ']' => $users['id']));
+						$i++;
+					}
+					$params = array_merge ($params, array('calendar' => $this->request->data['Calendar']['id']));
+					$redirect = array_merge(array('controller' => 'shifts', 'action' => 'calendarView'), $params);
+				return $this->redirect($redirect);
+			}
+		}
+		$this->set('calendars', $this->Calendar->find('list'));
+		$this->render();
+	}
+	
 	/**
 	 * 
 	 * Deal with unprocessed shift trade requests.
@@ -189,11 +209,24 @@ class TradesController extends AppController {
 		$tradesDetail = $this->TradesDetail->findById($tradesDetail_id, array('TradesDetail.token'));
 
 		if ($token = $tradesDetail['TradesDetail']['token']) {
-			
+			//TODO: Accept
+		}
+		else {
+			//TODO: Token isn't right
 		}
 	}
 	 
 	public function reject() {
+		$this->loadModel('TradesDetail');
+		$token = $this->request->query['token'];
+		$tradesDetail_id = $this->request->query['tradesDetail_id'];
+		$tradesDetail = $this->TradesDetail->findById($tradesDetail_id, array('TradesDetail.token'));
 		
+		if ($token = $tradesDetail['TradesDetail']['token']) {
+			//TODO: Reject
+		}
+		else {
+			//TODO: Token isn't right
+		}
 	} 
 }
