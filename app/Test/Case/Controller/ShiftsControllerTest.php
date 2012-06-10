@@ -95,9 +95,16 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/users/view/1">James Bynum</a>&nbsp;</td>
 		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
 	}
+	
+	//TODO: This is probably wrong. Calendar #1 doesn't include the dates shown.
 	public function testIndexCalendar() {
 		$result = $this->testAction('/shifts/index/calendar:1');
-		$this->assertContains('<td>2013-12-30&nbsp;</td>
+		$this->assertContains('<td>2011-12-11&nbsp;</td>
+		<td><a href="/kitab/locations/view/3">Come on pretty mama</a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/10">08-15 </a>&nbsp;</td>
+		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
+		<td>2011-10-19 10:35:51&nbsp;</td>', $result);
+		$this->assertTextNotContains('<td>2013-12-30&nbsp;</td>
 		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
 		<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>
 		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>

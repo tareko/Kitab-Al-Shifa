@@ -42,7 +42,7 @@ class ShiftsController extends AppController {
         			+ $conditions));
         }
         else {
-        	$this->set('shifts', $this->paginate());
+        	$this->set('shifts', $this->paginate($conditions));
         }
         $this->render();
 	}
