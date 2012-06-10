@@ -141,11 +141,11 @@ class TradesController extends AppController {
 				$i = 0;
 				$masterSet['calendar'] = $this->Calendar->findById($this->request->data['Calendar']['id']);
 					foreach ($this->request->data['User'] as $users) {
-						$params = array_merge($params, array('id[' .$i. ']' => $users['id']));
+						$params = $params + array('id[' .$i. ']' => $users['id']);
 						$i++;
 					}
-					$params = array_merge ($params, array('calendar' => $this->request->data['Calendar']['id']));
-					$redirect = array_merge(array('controller' => 'shifts', 'action' => 'calendarView'), $params);
+					$params = $params + array('calendar' => $this->request->data['Calendar']['id']);
+					$redirect = array('controller' => 'shifts', 'action' => 'calendarView') + $params;
 				return $this->redirect($redirect);
 			}
 		}

@@ -98,5 +98,75 @@ class ShiftFixture extends CakeTestFixture {
 			'shifts_type_id' => '12',
 			'updated' => '2011-10-19 16:55:23'
 		),
+		array(
+			'id' => '514',
+			'user_id' => '1',
+			'date' => '2013-12-28',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+		array(
+			'id' => '515',
+			'user_id' => '2',
+			'date' => '2013-12-29',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+		array(
+			'id' => '516',
+			'user_id' => '3',
+			'date' => '2013-12-30',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+		array(
+			'id' => '517',
+			'user_id' => '4',
+			'date' => '2013-11-20',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+		array(
+			'id' => '518',
+			'user_id' => '5',
+			'date' => '2013-11-21',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+		array(
+			'id' => '519',
+			'user_id' => '1',
+			'date' => '2013-11-22',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+			array(
+			'id' => '520',
+			'user_id' => '2',
+			'date' => '2013-11-23',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+			array(
+			'id' => '521',
+			'user_id' => '3',
+			'date' => '2013-11-24',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+			array(
+			'id' => '522',
+			'user_id' => '4',
+			'date' => '2013-11-25',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
+			array(
+			'id' => '523',
+			'user_id' => '5',
+			'date' => '2013-11-26',
+			'shifts_type_id' => '12',
+			'updated' => '2011-10-19 16:55:23'
+		),
 	);
 }

@@ -19,19 +19,32 @@ class ShiftsController extends AppController {
 		);
 
 	function index() {
+		$this->Prg->commonProcess();
+		$this->loadModel('Calendar');
+		$conditions = array();
+		if (isset($this->request->params['named']['calendar'])) {
+			$calendar = $this->Calendar->findById($this->request->params['named']['calendar']);
+			$conditions =  array(
+					'Shift.date >=' => $calendar['Calendar']['start_date'],
+					'Shift.date <=' => $calendar['Calendar']['end_date'],
+					);
+		}
+		
 		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
 			'fields' => array('Location.location'),
 //			'order' => array('ShiftsType.location_id ASC', 'ShiftsType.shift_start ASC'),
 			)));
-		$this->Prg->commonProcess();
         $this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
 
         if (isset($this->request->params['named']['id'])) {
-        	$this->set('shifts', $this->paginate(array('Shift.user_id' => $this->request->params['named']['id'])));
+        	$this->set('shifts', $this->paginate(array(
+        			'Shift.user_id' => $this->request->params['named']['id'])
+        			+ $conditions));
         }
         else {
         	$this->set('shifts', $this->paginate());
         }
+        $this->render();
 	}
 	
 	function home() {
@@ -277,7 +290,7 @@ class ShiftsController extends AppController {
 			$masterSet[$i]['display_name'] = $shift['User']['Profile']['cb_displayname'];
 			$i++;
 		}
-		
+
 		$this->set('masterSet', $masterSet);
 	}
 
@@ -347,6 +360,13 @@ class ShiftsController extends AppController {
 	}
 
 	function wizard() {
+		$params = array();
+		$this->loadModel('Calendar');
+		$this->Prg->commonProcess();
+		$this->set('physicians', $this->User->getList(null, true, true));
+		$this->set('calendars', $this->Calendar->find('list'));
+		
+		
 		if (isset($this->request->params['named']['list'])) {
 			if ($this->request->params['named']['list'] == 'all') {
 				unset($this->request->params['named']['id']);
@@ -354,34 +374,44 @@ class ShiftsController extends AppController {
 			if ($this->request->params['named']['list'] == 'mine') {
 				$this->request->params['named']['id'] = $this->_usersId();
 			}
+			
+			//TODO: Needs fixing so that the 'some users' category can be selected
+			if ($this->request->params['named']['list'] == 'some') {
+				return $this->Session->setFlash('Apologies. That option is not available currently');
+				if (isset($this->request->data['User'])) {
+					$i = 0;
+					foreach ($this->request->data['User'] as $users) {
+						$params = $params + array('id[' .$i. ']' => $users['id']);
+						$i++;
+					}
+				}
+			}
+				
 				
 
 			if (isset($this->request->params['named']['output'])) {
 				if ($this->request->params['named']['output'] == 'webcal') {
-					return $this->redirect(array('controller' => 'shifts', 'action' => 'calendarView') + $this->request->params['named']);
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'calendarView') + $this->request->params['named'] + $params);
 				}
 				elseif ($this->request->params['named']['output'] == 'list') {
-					return $this->redirect(array('controller' => 'shifts', 'action' => 'index') + $this->request->params['named']);
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'index') + $this->request->params['named'] + $params);
 				}
 				elseif ($this->request->params['named']['output'] == 'print') {
 					if ($this->request->params['named']['list'] == 'mine' || $this->request->params['named']['list'] == 'some') {
-						$this->Session->setFlash('Apologies. That option is not available currently');
+						return $this->Session->setFlash('Apologies. That option is not available currently');
 					}
 					else {
 						$this->Session->setFlash('Please select which calendar you would like to see');
-						return $this->redirect(array('controller' => 'shifts', 'action' => 'pdfView') + $this->request->params['named']);
+						return $this->redirect(array('controller' => 'shifts', 'action' => 'pdfView') + $this->request->params['named'] + $params);
 					}
 				}
 				elseif ($this->request->params['named']['output'] == 'ics') {
-					return $this->redirect(array('controller' => 'shifts', 'action' => 'icsView') + $this->request->params['named']);
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'icsView') + $this->request->params['named'] + $params);
 				}
 			}
 		}
 
-		$this->Prg->commonProcess();
-		$this->loadModel('Calendar');
-		$this->set('physicians', $this->User->getList(null, true, true));
-		$this->set('calendars', $this->Calendar->find('list'));
+		$this->render();
 	}
 	
 	public function listShifts() {

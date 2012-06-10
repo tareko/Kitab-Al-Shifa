@@ -43,7 +43,7 @@ $(document).ready(function() {
 </div>
 
 <div id="pick-doctor" style="display:none">
-	<?= $this->PhysicianPicker->makePhysicianPicker($physicians); ?>
+	<?= $this->PhysicianPicker->makePhysicianPicker($physicians, 'data[Shift]'); ?>
 </div>
 
 <fieldset>

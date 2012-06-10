@@ -74,19 +74,41 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 /**
  * testIndex method
+ * Make sure a list that is specific to one person, contains all people, or is date limited is present.
  *
  * @return void
  */
 	public function testIndex() {
 		$result = $this->testAction('/shifts/index');
-		debug($result);
+		$this->assertContains('<td>2011-12-02&nbsp;</td>
+		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/3">10-16 U45</a>&nbsp;</td>
+		<td><a href="/kitab/users/view/2">Harold Morrissey</a>&nbsp;</td>
+		<td>2011-10-19 08:23:49&nbsp;</td>', $result);
 	}
 
-	public function testIndexNamed() {
-		$result = $this->testAction('/shifts/index/id:294');
-		debug($result);
+	public function testIndexId() {
+		$result = $this->testAction('/shifts/index/id:1');
+		$this->assertContains('<td>2013-12-28&nbsp;</td>
+		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>
+		<td><a href="/kitab/users/view/1">James Bynum</a>&nbsp;</td>
+		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
+	}
+	public function testIndexCalendar() {
+		$result = $this->testAction('/shifts/index/calendar:1');
+		$this->assertContains('<td>2013-12-30&nbsp;</td>
+		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>
+		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
+		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
 	}
 	
+
+	public function testIndexCalendarId() {
+		$result = $this->testAction('/shifts/index/calendar:1/id:1');
+		$this->assertContains('Page 1 of 1, showing 2 records out of 2 total, starting on record 1, ending on 2	</p>', $result);
+	}
 /**
  * testAdd method
  *
@@ -215,12 +237,11 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @expectedException NotFoundException
  */
  	public function testEditNoId() {
-		$result = $this->testAction('/shifts/edit');
 		$this->setExpectedException('NotFoundException');
+ 		$result = $this->testAction('/shifts/edit');
 	}
 	public function testEditId() {
 		$result = $this->testAction('/shifts/edit/16');
 		debug($result);
-	}
-	
+	}	
 }
