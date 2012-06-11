@@ -11,7 +11,13 @@ App::uses('AppModel', 'Model');
  *  1 - In progress
  *  2 - Complete
  *  3 - Cancelled
- * 
+ *  
+ * User_status legend:
+ * 	0 - Unprocessed
+ *  1 - Email sent
+ *  2 - Accepted
+ *  3 - Rejected
+ *  
  */
 class Trade extends AppModel {
 

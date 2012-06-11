@@ -90,7 +90,7 @@ class TradesController extends AppController {
 	public function add() {
 		$shiftOptions[] = array();
 		$this->loadModel('Calendar');
-		if ($this->request->is('post')) {
+		if ($this->request->is('post') && $this->request->data) {
 			$this->Trade->create();
 			if ($this->Trade->saveAssociated($this->request->data)) {
 					$this->Session->setFlash(__('The trade has been saved'));
@@ -105,6 +105,7 @@ class TradesController extends AppController {
 		else {
 			$this->set('usersId', $this->_usersId());
 		}
+		$this->render();
 	}
 
 /**
@@ -163,40 +164,51 @@ class TradesController extends AppController {
 		App::import('Lib', 'TradeRequest');
 		$this->_TradeRequest = new TradeRequest();
 
-
 		$unprocessedTrades = $this->Trade->getUnprocessedTrades();
 
 		//Find unprocessed trade details within the trade
 		foreach ($unprocessedTrades as $trade) {
-			foreach ($trade['TradesDetail'] as $tradesDetail) {
-				$toUser = $tradesDetail['User'];
-				$fromUser = $trade['User'];
+			//Has the trade been approved by the originator?
+			if ($trade['Trade']['user_status'] < 1) {
 				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
-				$method = 'email';
 				//Get communication method preference for receiving user
-				$method = $this->User->getCommunicationMethod($toUser['id']);
-				//Send out communication to receiving user
-				$token = bin2hex(openssl_random_pseudo_bytes(16));
+				$method = $this->User->getCommunicationMethod($trade['User']['id']);
 				
-				if ($this->_TradeRequest->send($tradesDetail['id'], $fromUser, $toUser, $trade['Shift'], $method, $token)) {
+				$sendOriginator = $this->_TradeRequest->sendOriginator($trade['Trade']['id'], $trade['User'], $trade['Shift'], $method);
+				if ($sendOriginator['return'] == true) {
+					//TODO: How do we get a failure message from here?
 					// Assuming success, update Status of TradesDetail to 1
-					$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
-					$this->Trade->TradesDetail->set('status', 1);
-					$this->Trade->TradesDetail->set('token', $token);
-					$this->Trade->TradesDetail->save();
-
+					$this->Trade->read(null, $trade['Trade']['id']);
+					$this->Trade->set('user_status', 1);
+					$this->Trade->set('token', $sendOriginator['token']);
+					$this->Trade->save();
+				
 					// Write log indicating trade detail was done
-					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $toUser['name']);
+					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+				}
+				else {
+					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
 				}
 			}
-		// Assuming success, update Status of Trade to 1
-			$this->Trade->read(null, $trade['Trade']['id']);
-			$this->Trade->set('status', 1);
-			if ($this->Trade->save()) {
-				// Write log indicating trade was done
-				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
-			} else {
-				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Failed to process trade');
+			else {
+				foreach ($trade['TradesDetail'] as $tradesDetail) {
+					//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
+					//Get communication method preference for receiving user
+					$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
+					if ($this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method) != true) {
+						return $this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
+					}
+				}
+	
+				// Assuming success, update Status of Trade to 1
+				$this->Trade->read(null, $trade['Trade']['id']);
+				$this->Trade->set('status', 1);
+				if ($this->Trade->save()) {
+					// Write log indicating trade was done
+					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
+				} else {
+					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Failed to process trade');
+				}
 			}
 		}
 	}
