@@ -268,21 +268,251 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testStartUnprocessedWithFailedTradeRequest() {
-		//TODO: Broken test
+		//TODO: Fix Broken test
+		
+		App::import('Lib', 'TradeRequest');
 
-/* 		$Trades->_TradeRequest = $this->generate('_TradeRequest', array(
-				'methods' => array(
-						'send')
-		));
-
+		$Trades->_TradeRequest = new TradeRequest();
+		
+		$Trades->_TradeRequest = $this->getMockBuilder('_TradeRequest')
+			->setMethods(array('send'))
+			->disableOriginalConstructor()
+			->getMock();
+		
 		$Trades->_TradeRequest->expects($this->any())
 		->method('send')
-		->will($this->returnValue(false));
- */
+ 		->will($this->returnValue(array(
+  			'return' => false,
+  			'token' => 'abcdefghijklmnopqrstuvwxyzabcdef'
+  		)));
+ 			
 		$result = $this->testAction('/trades/startUnprocessed');
 		debug($result);
 	}
 
+/**
+ * test Accept method
+ * 
+ */	
+	public function testAcceptNoParams() {
+		$this->setExpectedException('NotFoundException');
+		
+		$Trades = $this->generate('Trades', array(
+						'methods' => array(
+								'_requestAllowed'
+		),
+		));
+		
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/trades/accept');
+	}
+
+	public function testAcceptNoId() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+							'methods' => array(
+									'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/accept?token=abcdefghijklmnopqrstuvwxyzabcdef');
+	}
+	
+		public function testAcceptNoToken() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+							'methods' => array(
+									'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/accept?id=8');
+	}
+	
+	public function testAcceptWrongToken() {
+		$Trades = $this->generate('Trades', array(
+							'methods' => array(
+									'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/accept?id=12&token=abcdefghijklmnopqrstuvwxyzabcdef');
+	}
+
+	public function testAcceptIdNotFound() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+								'methods' => array(
+										'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/trades/accept?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef');
+	}
+	
+	public function testAcceptCorrectIdAndToken() {
+		$Trades = $this->generate('Trades', array(
+								'methods' => array(
+										'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/accept?id=12&token=a50e7ad2e87fe32ef46d9bb84db20012');
+	}
+
+	public function testAcceptWrongStatus() {
+		$this->setExpectedException('NotFoundException');
+		
+		$Trades = $this->generate('Trades', array(
+									'methods' => array(
+											'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/accept?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
+	}
+	
+	/**
+	* test Reject method
+	*
+	*/
+	public function testRejectNoParams() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+							'methods' => array(
+									'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject');
+	}
+	
+	public function testRejectNoId() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+								'methods' => array(
+										'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject?token=abcdefghijklmnopqrstuvwxyzabcdef');
+	}
+	
+	public function testRejectNoToken() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+								'methods' => array(
+										'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject?id=8');
+	}
+	
+	public function testRejectWrongToken() {
+		$Trades = $this->generate('Trades', array(
+								'methods' => array(
+										'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject?id=12&token=abcdefghijklmnopqrstuvwxyzabcdef');
+	}
+	
+	public function testRejectIdNotFound() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+									'methods' => array(
+											'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef');
+	}
+	
+	public function testRejectCorrectIdAndToken() {
+		$Trades = $this->generate('Trades', array(
+									'methods' => array(
+											'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject?id=12&token=a50e7ad2e87fe32ef46d9bb84db20012');
+	}
+	
+	public function testRejectWrongStatus() {
+		$this->setExpectedException('NotFoundException');
+	
+		$Trades = $this->generate('Trades', array(
+										'methods' => array(
+												'_requestAllowed'
+		),
+		));
+	
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/trades/reject?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
+	}
 /**
  * tearDown method
  *

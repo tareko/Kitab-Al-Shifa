@@ -15,10 +15,10 @@ Please review this trade carefully.\n\n
 
 To *ACCEPT*, click here:\n
 <?=$this->Html->url(array(
-		'controller' => 'trades',
+		'controller' => 'trades_details',
 		'action' => 'accept',
 		'?' => array(
-				'tradesDetail_id' => $tradesDetailId,
+				'id' => $tradesDetailId,
 				'token' => $token
 				)
 		), true
@@ -26,10 +26,10 @@ To *ACCEPT*, click here:\n
 
 To *REJECT*, click here:\n
 <?=$this->Html->url(array(
-		'controller' => 'trades',
+		'controller' => 'trades_details',
 		'action' => 'reject',
 		'?' => array(
-				'tradesDetail_id' => $tradesDetailId,
+				'id' => $tradesDetailId,
 				'token' => $token
 				)
 		), true

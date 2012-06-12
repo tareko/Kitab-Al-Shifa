@@ -48,40 +48,6 @@ class TradesController extends AppController {
 		}
 	}
 
-	/**
-	 * Admin method
-	 * Method for displaying trades for administrator
-	 */
-
-	public function admin() {
-		$this->loadModel('Shift');
-		$this->loadModel('User');
-		$this->Prg->commonProcess();
-		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
-		$this->Trade->recursive = 0;
-	
-	
-		if (isset($this->request->params['named']['id'])) {
-			$this->set('trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
-		}
-		else {
-			$this->set('trades', $this->paginate(array('status' => 1)));
-		}
-	}
-/**
- * view method
- *
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
-		$this->Trade->id = $id;
-		if (!$this->Trade->exists()) {
-			throw new NotFoundException(__('Invalid trade'));
-		}
-		$this->set('trade', $this->Trade->read(null, $id));
-	}
-
 /**
  * add method
  *
@@ -106,32 +72,6 @@ class TradesController extends AppController {
 			$this->set('usersId', $this->_usersId());
 		}
 		$this->render();
-	}
-
-/**
- * edit method
- *
- * @param string $id
- * @return void
- */
-	public function edit($id = null) {
-		$this->Trade->id = $id;
-		if (!$this->Trade->exists()) {
-			throw new NotFoundException(__('Invalid trade'));
-		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Trade->save($this->request->data)) {
-				$this->Session->setFlash(__('The trade has been saved'));
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
-			}
-		} else {
-			$this->request->data = $this->Trade->read(null, $id);
-		}
-		$users = $this->Trade->User->find('list');
-		$shifts = $this->Trade->Shift->find('list');
-		$this->set(compact('users', 'shifts'));
 	}
 
 	function compare() {
@@ -190,14 +130,27 @@ class TradesController extends AppController {
 					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
 				}
 			}
-			else {
+			if ($trade['Trade']['user_status'] == 2) {
 				foreach ($trade['TradesDetail'] as $tradesDetail) {
 					//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
 					//Get communication method preference for receiving user
 					$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
-					if ($this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method) != true) {
+					$sendDetails = $this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method);
+					if ($sendDetails['return'] == true) {
+						//TODO: How do we get a failure message from here?
+						// Assuming success, update Status of TradesDetail to 1
+						$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
+						$this->Trade->TradesDetail->set('status', 1);
+						$this->Trade->TradesDetail->set('token', $sendDetails['token']);
+						$this->Trade->TradesDetail->save();
+						
+						// Write log indicating trade detail was done
+						CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
+					}
+					else {
 						return $this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
 					}
+						
 				}
 	
 				// Assuming success, update Status of Trade to 1
@@ -215,30 +168,66 @@ class TradesController extends AppController {
 	
 	
 	public function accept() {
-		$this->loadModel('TradesDetail');
-		$token = $this->request->query['token'];
-		$tradesDetail_id = $this->request->query['tradesDetail_id'];
-		$tradesDetail = $this->TradesDetail->findById($tradesDetail_id, array('TradesDetail.token'));
-
-		if ($token = $tradesDetail['TradesDetail']['token']) {
-			//TODO: Accept
+		$return = $this->changeStatus($this->request, 2);
+		if ($return == true) {
+			return $this->Session->setFlash(__('You have successfully accepted the trade.'));
 		}
 		else {
-			//TODO: Token isn't right
+			return $return;
 		}
+		$this->render();
 	}
 	 
 	public function reject() {
-		$this->loadModel('TradesDetail');
-		$token = $this->request->query['token'];
-		$tradesDetail_id = $this->request->query['tradesDetail_id'];
-		$tradesDetail = $this->TradesDetail->findById($tradesDetail_id, array('TradesDetail.token'));
-		
-		if ($token = $tradesDetail['TradesDetail']['token']) {
-			//TODO: Reject
+		$return = $this->changeStatus($this->request, 3);
+		if ($return == true) {
+			return $this->Session->setFlash(__('You have rejected this trade.'));
 		}
 		else {
-			//TODO: Token isn't right
+			return $return;
 		}
-	} 
+		$this->render();
+	}
+	
+	
+	public function changeStatus($request, $status) {
+		if (!isset($this->request) || !isset($this->request->query['id']) || !isset($this->request->query['token'])) {
+			throw new NotFoundException(__('Invalid trade or trade parameters missing'));
+		}
+		
+		$token = $request->query['token'];
+		$id = $request->query['id'];
+		
+		$trade = $this->Trade->find('all', array(
+					'fields' => array(
+						'Trade.token'),
+					'conditions' => array(
+						'Trade.id' => $id,
+						'Trade.status' => 1,
+						'Trade.user_status' => 1)
+		)
+		);
+		
+		if (empty($trade)) {
+			throw new NotFoundException(__('Trade not found or already acted upon'));
+		}
+		
+		
+		if ($token == $trade['0']['Trade']['token']) {
+			$this->Trade->read(null, $id);
+			$this->Trade->set('user_status', $status);
+			if ($this->Trade->save()) {
+				return true;
+				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed user_status to '. $status);
+			}
+			else {
+				return $this->Session->setFlash(__('An error has occured during your request.'));
+				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Error changing user_status');
+			}
+		}
+		else {
+			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
+			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Wrong token');
+		}
+	}
 }

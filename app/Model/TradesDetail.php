@@ -8,8 +8,8 @@ App::uses('AppModel', 'Model');
  * @property User $User
  * Status:	0 - Unprocessed
  * 			1 - Request sent; awaiting reply
- * 			2 - Rejected
- * 			3 - Accepted
+ * 			2 - Accepted
+ * 			3 - Rejected
  */
 class TradesDetail extends AppModel {
 	public $actsAs = array('Search.Searchable', 'Containable');

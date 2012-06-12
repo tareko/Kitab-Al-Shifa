@@ -14,10 +14,11 @@ class TradesDetailFixture extends CakeTestFixture {
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary'),
 		'trade_id' => array('type' => 'integer', 'null' => false, 'default' => NULL),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => NULL),
-		'status' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'token' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'status' => array('type' => 'integer', 'null' => false, 'default' => NULL),
 		'timestamp' => array('type' => 'timestamp', 'null' => false, 'default' => 'CURRENT_TIMESTAMP'),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'MyISAM')
+		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'MyISAM')
 	);
 
 /**

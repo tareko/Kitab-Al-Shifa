@@ -32,18 +32,12 @@ class TradeRequest {
 						'token' => $token))
 				->send();
 		}
-
-		//TODO: How do we get a failure message from here?
-		// Assuming success, update Status of TradesDetail to 1
-		$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
-		$this->Trade->TradesDetail->set('status', 1);
-		$this->Trade->TradesDetail->set('token', $token);
-		$this->Trade->TradesDetail->save();
+		$returnArray = array(
+						'return' => true,
+						'token' => $token
+		);
 		
-		// Write log indicating trade detail was done
-		CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $toUser['name']);
-
-		return true;
+		return $returnArray;
 	}
 
 
