@@ -40,6 +40,14 @@
 
 	<script>
 	$(document).ready(function(){
+		//Prevent enter from submitting form
+		 $(window).keydown(function(event){
+			    if(event.keyCode == 13) {
+			      event.preventDefault();
+			      return false;
+			    }
+			  });
+
 		$('#TradeFromUserId').autocomplete({
 			minLength: 3, 
 			source: '<?= $this->Html->url(array(
@@ -93,6 +101,5 @@
 		});
         return false;
 	}
-	
 	</script>
 	<?echo $this->Js->writeBuffer();?>
