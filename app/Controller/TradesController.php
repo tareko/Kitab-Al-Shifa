@@ -214,7 +214,7 @@ class TradesController extends AppController {
 						'Trade.shift_id'),
 					'conditions' => array(
 						'Trade.id' => $id,
-						'Trade.status' => 1,
+						'Trade.status' => 0,
 						'Trade.user_status' => 1),
 					'contain' => array(
 						'Shift' => array(

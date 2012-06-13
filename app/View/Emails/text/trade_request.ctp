@@ -18,23 +18,18 @@ To *ACCEPT*, click here:
 <?=$this->Html->url(array(
 		'controller' => 'trades_details',
 		'action' => 'accept',
-		'?' => array(
-				'id' => $tradesDetailId,
-				'token' => $token
-				)
 		), true
-	)?>
+	) . '?id=' .$tradesDetailId .'&token=' .$token
+?>
 
 To *REJECT*, click here:
 <?=$this->Html->url(array(
 		'controller' => 'trades_details',
 		'action' => 'reject',
-		'?' => array(
-				'id' => $tradesDetailId,
-				'token' => $token
-				)
 		), true
-	)?>
+	) . '?id=' .$tradesDetailId .'&token=' .$token
+?>
+
 
 Thank you for your consideration,
 
