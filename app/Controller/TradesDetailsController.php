@@ -43,28 +43,59 @@ class TradesDetailsController extends AppController {
 			throw new NotFoundException(__('Invalid trade or trade parameters missing'));
 		}
 		
+		App::import('Lib', 'TradeRequest');
+		$this->_TradeRequest = new TradeRequest();
+		
 		$token = $request->query['token'];
 		$id = $request->query['id'];
 		
-		$tradesDetail = $this->TradesDetail->find('all', array(
+		$tradesDetail = $this->TradesDetail->find('first', array(
 					'fields' => array(
+						'TradesDetail.id',
 						'TradesDetail.token',
-						'TradesDetail.trade_id'),
+						'TradesDetail.trade_id',
+						'TradesDetail.user_id'),
 					'conditions' => array(
 						'TradesDetail.id' => $id,
 						'TradesDetail.status' => 1),
 					'contain' => array(
+						'User' => array(
+							'fields' => array(
+								'id',
+								'name',
+								'email'
+							)
+						),
 						'Trade' => array(
 							'fields' => array(
 								'status',
-								'user_status'),
+								'user_status',
+								'shift_id'),
 							'TradesDetail' => array(
-									'fields' => array('status')
+								'fields' => array('status')
+							),
+							'Shift' => array(
+								'fields' => array(
+									'id',
+									'date'),
+								'ShiftsType' => array(
+									'fields' => array(
+										'times'),
+									'Location' => array(
+										'location'
+									)
+								)
+							),
+							'User' => array(
+								'fields' => array(
+									'id',
+									'name',
+									'email'
+								)
 							)
 						)
 					)
-				)
-		);
+		));
 		
 		if (empty($tradesDetail)) {
 			throw new NotFoundException(__('Trade not found or already acted upon'));
@@ -77,16 +108,17 @@ class TradesDetailsController extends AppController {
 			return $this->render('alreadyTaken');
 		}
 		
-		if ($token == $tradesDetail['0']['TradesDetail']['token']) {
+		if ($token == $tradesDetail['TradesDetail']['token']) {
 			$this->TradesDetail->read(null, $id);
 			$this->TradesDetail->set('status', $status);
 			if ($this->TradesDetail->save()) {
-				return true;
+				$this->_TradeRequest->sendRecipientStatusChange($status, $tradesDetail);
 				CakeLog::write('TradeRequest', '[TradesDetail][id]: ' .$tradesDetail['TradesDetail']['id'] . '; Changed status to '. $status);
+				return true;
 			}
 			else {
-				return $this->Session->setFlash(__('An error has occured during your request.'));
 				CakeLog::write('TradeRequest', '[TradesDetail][id]: ' .$tradesDetail['TradesDetail']['id'] . '; Error changing status');
+				return $this->Session->setFlash(__('An error has occured during your request.'));
 			}
 		}
 		else {
@@ -97,11 +129,11 @@ class TradesDetailsController extends AppController {
 	
 	public function alreadyTaken($tradesDetail) {
 
-		if ($tradesDetail['0']['Trade']['status'] !=  1
-			|| $tradesDetail['0']['Trade']['user_status'] !=  2) {
+		if ($tradesDetail['Trade']['status'] !=  1
+			|| $tradesDetail['Trade']['user_status'] !=  2) {
 			return true;
 		}
-		foreach ($tradesDetail['0']['Trade']['TradesDetail'] as $detail) {
+		foreach ($tradesDetail['Trade']['TradesDetail'] as $detail) {
 			if ($detail['status'] == 2) {
 				return true;
 			} 

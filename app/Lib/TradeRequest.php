@@ -71,4 +71,94 @@ class TradeRequest {
 		return $returnArray;
 	}
 
+	
+	/**
+	 * sendOriginatorStatusChange method
+	 * This method will send the originator of a trade a communication advising of a change in
+	 * status of the trade, usually accepted or rejected.
+	 * 
+	 * @param integer $status
+	 * @param array $trade
+	 * @param string $method
+	 */
+	public function sendOriginatorStatusChange ($status, $trade, $method = 'email') {
+		App::uses('CakeEmail', 'Network/Email');
+		App::uses('TimeHelper', 'View/Helper');
+	
+		//Send out communication to originating user
+		$statusWord = 'ERROR';
+		if ($status == 2) {
+			$statusWord = 'ACCEPTED';
+		}
+		if ($status == 3) {
+			$statusWord = 'REJECTED';
+		}
+		
+		if ($method == 'email') {
+			$email = new CakeEmail('default');
+			$email->template('tradeRequestOriginatorStatusChange')
+			->emailFormat('text')
+			->to($trade['User']['email'])
+			->subject('[Kitab] Shift trade status update')
+			->viewVars(array(
+						'user' => $trade['User'],
+						'statusWord' => $statusWord,
+						'shift' => $trade['Shift']))
+			->send();
+		}
+		return true;
+	}
+
+	/**
+	* sendRecipientStatusChange method
+	* This method will send the recipient of a trade a communication advising of a change in
+	* status of the trade, usually accepted or rejected.
+	*
+	* @param integer $status
+	* @param array $trade
+	* @param string $method
+	*/
+	public function sendRecipientStatusChange ($status, $tradesDetail, $method = 'email') {
+		App::uses('CakeEmail', 'Network/Email');
+		App::uses('TimeHelper', 'View/Helper');
+	
+		//Send out communication to originating user
+		$statusWord = 'ERROR';
+		if ($status == 2) {
+			$statusWord = 'ACCEPTED';
+		}
+		if ($status == 3) {
+			$statusWord = 'REJECTED';
+		}
+	
+		if ($method == 'email') {
+			$email = new CakeEmail('default');
+			
+			//Send a message to the recipient about the decision
+			$email->template('tradeRequestRecipientStatusChange')
+				->emailFormat('text')
+				->to($tradesDetail['User']['email'])
+				->subject('[Kitab] Shift trade status update')
+				->viewVars(array(
+							'userOriginator' => $tradesDetail['Trade']['User'],
+							'userRecipient' => $tradesDetail['User'],
+							'statusWord' => $statusWord,
+							'shift' => $tradesDetail['Trade']['Shift']))
+				->send();
+			
+			//Send a message to the originator about the decision
+			$email = new CakeEmail('default');
+			$email->template('tradeRequestRecipientStatusChangeToOriginator')
+				->emailFormat('text')
+				->to($tradesDetail['Trade']['User']['email'])
+				->subject('[Kitab] Shift trade status update')
+				->viewVars(array(
+							'userOriginator' => $tradesDetail['Trade']['User'],
+							'userRecipient' => $tradesDetail['User'],
+							'statusWord' => $statusWord,
+							'shift' => $tradesDetail['Trade']['Shift']))
+				->send();
+		}
+		return true;
+	}
 }

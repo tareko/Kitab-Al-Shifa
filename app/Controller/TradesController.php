@@ -116,7 +116,6 @@ class TradesController extends AppController {
 				
 				$sendOriginator = $this->_TradeRequest->sendOriginator($trade['Trade']['id'], $trade['User'], $trade['Shift'], $method);
 				if ($sendOriginator['return'] == true) {
-					//TODO: How do we get a failure message from here?
 					// Assuming success, update Status of TradesDetail to 1
 					$this->Trade->read(null, $trade['Trade']['id']);
 					$this->Trade->set('user_status', 1);
@@ -137,7 +136,6 @@ class TradesController extends AppController {
 					$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
 					$sendDetails = $this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method);
 					if ($sendDetails['return'] == true) {
-						//TODO: How do we get a failure message from here?
 						// Assuming success, update Status of TradesDetail to 1
 						$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
 						$this->Trade->TradesDetail->set('status', 1);
@@ -166,6 +164,13 @@ class TradesController extends AppController {
 		}
 	}
 	
+	/**
+	 * Complete accepted 
+	 * Enter description here ...
+	 */
+	public function completeAccepted() {
+		
+	}
 	
 	public function accept() {
 		$return = $this->changeStatus($this->request, 2);
@@ -195,39 +200,66 @@ class TradesController extends AppController {
 			throw new NotFoundException(__('Invalid trade or trade parameters missing'));
 		}
 		
+		App::import('Lib', 'TradeRequest');
+		$this->_TradeRequest = new TradeRequest();
+		
 		$token = $request->query['token'];
 		$id = $request->query['id'];
 		
-		$trade = $this->Trade->find('all', array(
+		$trade = $this->Trade->find('first', array(
 					'fields' => array(
-						'Trade.token'),
+						'Trade.id',
+						'Trade.token',
+						'Trade.user_id',
+						'Trade.shift_id'),
 					'conditions' => array(
 						'Trade.id' => $id,
 						'Trade.status' => 1,
-						'Trade.user_status' => 1)
-		)
-		);
+						'Trade.user_status' => 1),
+					'contain' => array(
+						'Shift' => array(
+							'fields' => array(
+								'id',
+								'date'),
+							'ShiftsType' => array(
+								'fields' => array(
+									'times'),
+								'Location' => array(
+									'location'
+								)
+							)
+						),
+						'User' => array(
+							'fields' => array(
+								'id',
+								'name',
+								'email'
+							)
+						)
+					)
+		));
 		
 		if (empty($trade)) {
 			throw new NotFoundException(__('Trade not found or already acted upon'));
 		}
 		
 		
-		if ($token == $trade['0']['Trade']['token']) {
+		if ($token == $trade['Trade']['token']) {
 			$this->Trade->read(null, $id);
 			$this->Trade->set('user_status', $status);
 			if ($this->Trade->save()) {
-				return true;
+				$this->_TradeRequest->sendOriginatorStatusChange($status, $trade);
 				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed user_status to '. $status);
+				return true;
 			}
 			else {
-				return $this->Session->setFlash(__('An error has occured during your request.'));
 				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Error changing user_status');
+				return $this->Session->setFlash(__('An error has occured during your request.'));
 			}
 		}
 		else {
-			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
 			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Wrong token');
+			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
 		}
 	}
 }
