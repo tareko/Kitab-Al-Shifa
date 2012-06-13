@@ -2,7 +2,7 @@ Dear <?=$user['name']?>,
 
 You have <?=$statusWord?> your trade offer for the following shift:
 
-<?= $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times']; ?>\n\n
+<?= $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times']; ?>
 
 <?php 
 if ($statusWord == 'ACCEPTED') { ?>
