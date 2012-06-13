@@ -1,19 +1,20 @@
 Dear <?=$toUser['name']?>,
 
-You have received a trade request from <?=$fromUser['name']?>.\n\n
+You have received a trade request from <?=$fromUser['name']?>.
 
-The proposed trade is as follows:\n\n
-You take:\n <?php
+The proposed trade is as follows:
+
+You take: <?php
 		$fromShift = $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times'];
-		echo $fromShift?>\n\n
+		echo $fromShift?>
 
 <?php //TODO: Two-way trades
 //$fromUser['name'] takes 
 //YOUR SHIFT\n\n'?>
 
-Please review this trade carefully.\n\n
+Please review this trade carefully.
 
-To *ACCEPT*, click here:\n
+To *ACCEPT*, click here:
 <?=$this->Html->url(array(
 		'controller' => 'trades_details',
 		'action' => 'accept',
@@ -22,9 +23,9 @@ To *ACCEPT*, click here:\n
 				'token' => $token
 				)
 		), true
-	)?>\n\n
+	)?>
 
-To *REJECT*, click here:\n
+To *REJECT*, click here:
 <?=$this->Html->url(array(
 		'controller' => 'trades_details',
 		'action' => 'reject',
@@ -33,8 +34,8 @@ To *REJECT*, click here:\n
 				'token' => $token
 				)
 		), true
-	)?>\n\n
+	)?>
 
-Thank you for your consideration,\n\n
+Thank you for your consideration,
 
 Kitab Al Shifa Mail Bot : )

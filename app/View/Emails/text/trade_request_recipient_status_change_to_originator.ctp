@@ -1,4 +1,4 @@
-Dear <?=$userOriginator['name']?>,\n\n
+Dear <?=$userOriginator['name']?>,
 
 <?=$userRecipient['name']?> has <?=$statusWord?> the trade from you for the following shift:
 
@@ -7,14 +7,14 @@ Dear <?=$userOriginator['name']?>,\n\n
 
 <?php 
 if ($statusWord == 'ACCEPTED') { ?>
-This trade will now be automatically entered into the calendar, and should appear in the next 30 minutes.\n\n
+This trade will now be automatically entered into the calendar, and should appear in the next 30 minutes.
 <?php }
 
 if ($statusWord == 'REJECTED') { ?>
 <?php }?>
 
-If you did not send this request, or if something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.\n\n
+If you did not send this request, or if something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.
 
-Thank you,\n\n
+Thank you,
 
 Kitab Al Shifa Mail Bot : )

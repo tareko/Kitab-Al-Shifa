@@ -4,20 +4,18 @@ In theory, you have initiated a trade request for your shift:
 
 <?= $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times']; ?>
 
-\n\nwith:
+<?php //TODO: PEOPLE TO TRADE WITH
+//with:
 
-<?php //TODO: PEOPLE TO TRADE WITH?>
-.\n\n
-
-<?php //TODO: Two-way trades
+//TODO: Two-way trades
 //$fromUser['name'] takes 
-//YOUR SHIFT\n\n'?>
+//YOUR SHIFT'?>
 
-Please review this trade carefully. Once you accept, the people you would like to trade with will be contacted.\n\n
+Please review this trade carefully. Once you accept, the people you would like to trade with will be contacted.
 
-If you did not send this request, please hit 'Reject' or ignore this message and accept my sincere apologies.\n\n
+If you did not send this request, please hit 'Reject' or ignore this message and accept my sincere apologies.
 
-To *ACCEPT*, click here:\n
+To *ACCEPT*, click here:
 <?=$this->Html->url(array(
 		'controller' => 'trades',
 		'action' => 'accept',
@@ -26,9 +24,9 @@ To *ACCEPT*, click here:\n
 				'token' => $token
 				)
 		), true
-	)?>\n\n
+	)?>
 
-To *REJECT*, click here:\n
+To *REJECT*, click here:
 <?=$this->Html->url(array(
 		'controller' => 'trades',
 		'action' => 'reject',
@@ -37,8 +35,8 @@ To *REJECT*, click here:\n
 				'token' => $token
 				)
 		), true
-	)?>\n\n
+	)?>
 
-Thank you for your consideration,\n\n
+Thank you for your consideration,
 
 Kitab Al Shifa Mail Bot : )

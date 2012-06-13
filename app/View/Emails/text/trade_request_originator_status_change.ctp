@@ -1,4 +1,4 @@
-Dear <?=$user['name']?>,\n\n
+Dear <?=$user['name']?>,
 
 You have <?=$statusWord?> your trade offer for the following shift:
 
@@ -6,14 +6,14 @@ You have <?=$statusWord?> your trade offer for the following shift:
 
 <?php 
 if ($statusWord == 'ACCEPTED') { ?>
-This trade will now be sent to the people you have asked to consider this shift.\n\n
+This trade will now be sent to the people you have asked to consider this shift.
 <?php }
 if ($statusWord == 'REJECTED') { ?>
-This trade will now be removed, and you need not think about it any more.\n\n
+This trade will now be removed, and you need not think about it any more.
 <?php }?>
 
-If you did not send this request, or if something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.\n\n
+If you did not send this request, or if something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.
 
-Thank you,\n\n
+Thank you,
 
 Kitab Al Shifa Mail Bot : )
