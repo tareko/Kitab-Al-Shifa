@@ -843,3 +843,9 @@ input#TradeFromUserId, .ui-widget ul#tags {
 	float: left;
 	clear: none;
 }
+
+div.checkbox {
+	float:left;
+	clear:none;
+}
+}

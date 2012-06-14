@@ -166,9 +166,53 @@ class TradesController extends AppController {
 	
 	/**
 	 * Complete accepted 
-	 * Enter description here ...
+	 * Enter accepted shift trade into calendar
 	 */
 	public function completeAccepted() {
+		//TODO: Get shifts where the Originator has accepted and at least one (and hopefully only 
+		// one) Recipient has accepted
+
+		$trades = $this->Trade->find('all', array(
+					'fields' => array(
+						'Trade.id',
+						'Trade.user_id',
+						'Trade.shift_id'),
+					'conditions' => array(
+						'Trade.status' => 1,
+						'Trade.user_status' => 2),
+					'contain' => array(
+						'Shift' => array(
+							'fields' => array(
+								'id'
+							)
+						),
+						'TradesDetail' => array(
+							'fields' => array(
+								'trade_id',
+								'user_id'
+							),
+							'conditions' => array(
+								'status' => 2
+							)
+						)
+					)
+				));
+
+		//TODO: Save updated shift
+		foreach($trades as $trade) {
+			$this->Trade->Shift->read(null, $trade['Trade']['shift_id']);
+			$this->Trade->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
+			$this->Trade->Shift->save();
+
+			$this->Trade->read(null, $trade['Trade']['id']);
+			$this->Trade->set('status', 2);
+			$this->Trade->save();
+
+
+			CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['shift_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
+		}
+		
+		//TODO: Log successfully completed trade.
 		
 	}
 	

@@ -1,5 +1,4 @@
 <?php
-echo $this->Html->link('Add shift', array('action' => 'add'));
 echo $this->Html->script('jquery');
 
 $this->Paginator->options(array(
@@ -9,16 +8,20 @@ $this->Paginator->options(array(
 
 
 echo $this->Form->create('Shift', array(
-    'url' => array_merge(array('action' => 'index'), $this->params['pass'])
+    'url' => array('action' => 'index') + $this->request->params['named']
 ));
 echo $this->Form->month('month', array('default' => date('m'), 'empty' => false));
 echo $this->Form->year('year', '2011', date('Y') + 1, array('default' => date('Y'), 'empty' => false));
-echo $this->Form->input('location', array('div' => false, 'multiple' => 'checkbox', 'options' => $locations));
+echo $this->Form->input('location', array(
+	'div' => false,
+	'multiple' => 'checkbox',
+	'label' => false, 
+	'options' => $locations));
 echo $this->Form->submit(__('Search', true), array('div' => false));
 echo $this->Form->end();
 
 ?>
-
+<div style="clear:both"></div>
 <div class="shifts index">
 	<h2><?php echo __('Shifts');?></h2>
 	<table cellpadding="0" cellspacing="0">
@@ -42,8 +45,6 @@ echo $this->Form->end();
 
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $shift['Shift']['id'])); ?>
-			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $shift['Shift']['id'])); ?>
-			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $shift['Shift']['id']), null, __('Are you sure you want to delete # %s?', $shift['Shift']['id'])); ?>
 		</td>
 	</tr>
 <?php endforeach; ?>
