@@ -162,7 +162,6 @@ class TradesController extends AppController {
 				}
 			}
 		}
-		$this->completeAccepted();
 	}
 	
 	/**
@@ -203,6 +202,7 @@ class TradesController extends AppController {
 		foreach($trades as $trade) {
 			$this->Trade->Shift->read(null, $trade['Trade']['shift_id']);
 			$this->Trade->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
+			$this->Trade->Shift->set('updated', date("Y-m-d H:i:s",time()));
 			$this->Trade->Shift->save();
 
 			$this->Trade->read(null, $trade['Trade']['id']);
