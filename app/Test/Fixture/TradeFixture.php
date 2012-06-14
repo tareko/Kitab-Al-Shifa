@@ -122,7 +122,7 @@ class TradeFixture extends CakeTestFixture {
 			'id' => '11',
 			'user_id' => '5',
 			'shift_id' => '513',
-			'status' => '1',
+			'status' => '0',
 			'user_status' => '1',
 			'token' => '15b6a69f207d8f6cd29c66b4cb729d40',
 			'updated' => '2012-05-23 11:59:41'
@@ -131,7 +131,7 @@ class TradeFixture extends CakeTestFixture {
 			'id' => '12',
 			'user_id' => '4',
 			'shift_id' => '483',
-			'status' => '1',
+			'status' => '0',
 			'user_status' => '1',
 			'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 			'updated' => '2012-05-23 11:59:42'

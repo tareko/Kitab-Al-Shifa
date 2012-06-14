@@ -352,7 +352,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+				
 		$result = $this->testAction('/trades/accept?id=12&token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
 
@@ -382,7 +382,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
 		$result = $this->testAction('/trades/accept?id=12&token=a50e7ad2e87fe32ef46d9bb84db20012');
 	}
 
