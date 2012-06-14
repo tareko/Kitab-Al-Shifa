@@ -162,6 +162,7 @@ class TradesController extends AppController {
 				}
 			}
 		}
+		$this->completeAccepted();
 	}
 	
 	/**
