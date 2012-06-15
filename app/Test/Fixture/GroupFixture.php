@@ -29,7 +29,7 @@ class GroupFixture extends CakeTestFixture {
 		array(
 			'id' => '3',
 			'usergroups_id' => '11',
-			'acl' => '*:view,*:index,pages:display,*:*View'
+			'acl' => '*:view,*:index,pages:display,*:*View,Users:listUsers'
 		),
 		array(
 			'id' => '2',

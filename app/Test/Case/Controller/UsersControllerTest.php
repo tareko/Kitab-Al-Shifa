@@ -31,13 +31,13 @@ class TestUsersController extends UsersController {
  * UsersController Test Case
  *
  */
-class UsersControllerTestCase extends CakeTestCase {
+class UsersControllerTestCase extends ControllerTestCase {
 /**
  * Fixtures
  *
  * @var array
  */
-	public $fixtures = array('app.user', 'app.profile', 'app.shifts');
+	public $fixtures = array('app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.user_usergroup_map', 'app.group');
 
 /**
  * setUp method
@@ -151,5 +151,45 @@ class UsersControllerTestCase extends CakeTestCase {
 	public function testAdminDelete() {
 
 	}
+/**
+ * testListUsers method
+ * 
+ */
 
+	public function testListUsersPermissionDenied() {
+		$Users = $this->generate('Users', array(
+						'methods' => array(
+							'_requestAllowed'
+						),
+		));
+
+		$Users->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		
+		$result = $this->testAction('/users/listUsers');
+		$this->assertEqual($result, '');
+	}
+	
+	public function testListUsersPermissionGranted() {
+		$Users = $this->generate('Users', array(
+						'methods' => array(
+							'_requestAllowed',
+							'_usersId'
+						),
+		));
+	
+		$Users->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$Users->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		
+		$result = $this->testAction('/users/listUsers.json');
+		echo $result;
+		die;
+		$this->assertEqual($result, '');
+	}
 }
