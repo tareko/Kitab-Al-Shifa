@@ -212,7 +212,7 @@ class TradesController extends AppController {
 			$this->Trade->save();
 
 			//Log successfully completed trade.
-			CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['shift_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
+			CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['user_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
 		}
 		
 		$this->set('success', 1);
