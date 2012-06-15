@@ -250,5 +250,73 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 	public function testEditId() {
 		$result = $this->testAction('/shifts/edit/16');
 		debug($result);
-	}	
+	}
+
+	
+/**
+ * testCalendarViewProperFormURL method
+ *  Addresses Issue #61
+ */
+	
+	public function testCalendarViewProperFormURL() {
+		$result = $this->testAction('/shifts/calendarView/calendar:1');
+		$this->assertContains('form action="/kitab/shifts/calendarView/calendar:1', $result);
+	}
+
+/**
+ * testCalendarEditProperFormURL method
+ *  Addresses Issue #61
+ */
+	
+	public function testCalendarEditProperFormURL() {
+		$result = $this->testAction('/shifts/calendarEdit/calendar:1/id:1');
+		$this->assertContains('form action="/kitab/shifts/calendarEdit/calendar:1/id:1', $result);
+	}
+
+/**
+ * testIndexProperFormURL method
+ *  Addresses Issue #61
+ */
+	
+	public function testIndexViewProperFormURL() {
+		$result = $this->testAction('/shifts/index/calendar:1');
+		$this->assertContains('form action="/kitab/shifts/index/calendar:1', $result);
+	}
+	
+/**
+* testHome method
+*/
+	
+	public function testHome() {
+		$this->Shifts->constructClasses();
+		$Shifts = $this->generate('Shifts', array(
+						'methods' => array(
+								'_requestAllowed',
+								'_usersId'
+					),
+		));
+		
+		$Shifts->expects($this->any())
+			->method('_requestAllowed')
+			->will($this->returnValue(true));
+		$Shifts->expects($this->any())
+			->method('_usersId')
+			->will($this->returnValue(1));
+		
+
+		$result = $this->testAction('/shifts/home');
+		$this->assertContains('<tr>
+		<td>2013-11-22</td>
+		<td>Bermuda</td>
+		<td>04-10 </td>', $result);
+	}
+/**
+* testWizard method
+*/
+	
+	public function testWizard() {
+		$result = $this->testAction('/shifts/wizard');
+		$this->assertContains('<legend>Shifts To Show</legend>', $result);
+	}
+	
 }

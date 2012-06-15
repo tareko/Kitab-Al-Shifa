@@ -62,6 +62,7 @@ class ShiftsController extends AppController {
 				'Shift.date >=' => date('Y-m-d')
 				)));
 		$this->set('usersId', $this->_usersId());
+		$this->render();
 	}
 	
 	function add() {
@@ -191,6 +192,7 @@ class ShiftsController extends AppController {
 
 		$this->set('users', $this->User->getActiveUsersForGroup($masterSet['calendar']['Calendar']['usergroups_id'], false, array(), true));
 		$this->set('masterSet', $masterSet);
+		$this->render();
 	}
 
 	function calendarView() {
