@@ -72,6 +72,8 @@
             // created for tag-it.
             tabIndex: null,
 
+            // Whether to only create tags only from autocomplete suggestions
+          	requireAutocomplete: true,
 
             // Event callbacks.
             onTagAdded  : null,
@@ -105,19 +107,26 @@
                 this._tagInput.attr('placeholder', this.options.placeholderText);
             }
 
-            this.options.tagSource = this.options.tagSource || function(search, showChoices) {
-                var filter = search.term.toLowerCase();
-                var choices = $.grep(this.options.availableTags, function(element) {
-                    // Only match autocomplete options that begin with the search term.
-                    // (Case insensitive.)
-                    return (element.toLowerCase().indexOf(filter) === 0);
-                });
-                showChoices(this._subtractArray(choices, this.assignedTags()));
-            };
+            if (!this.options.tagSource && this.options.availableTags.length > 0) {
+            	this.options.tagSource = function(search, showChoices) {
+            		var filter = search.term.toLowerCase();
+            		var choices = $.grep(that.options.availableTags, function(element) {
+            			// Only match autocomplete options that begin with the search term.
+            			// (Case insensitive.)
+            			return (element.toLowerCase().indexOf(filter) === 0);
+            		});
+            		showChoices(that._subtractArray(choices, this.assignedTags()));
+            	};
+            }
 
             // Bind tagSource callback functions to this context.
             if ($.isFunction(this.options.tagSource)) {
                 this.options.tagSource = $.proxy(this.options.tagSource, this);
+            }
+
+            // cannot require autocomplete without an autocomplete source
+            if (!this.options.tagSource) {
+            	this.options.requireAutocomplete = false;
             }
 
             this.tagList
@@ -162,21 +171,21 @@
             }
 
             // Events.
-            this._tagInput
-                .keydown(function(event) {
-                    // Backspace is not detected within a keypress, so it must use keydown.
-                    if (event.which == $.ui.keyCode.BACKSPACE && that._tagInput.val() === '') {
-                        var tag = that._lastTag();
-                        if (!that.options.removeConfirmation || tag.hasClass('remove')) {
-                            // When backspace is pressed, the last tag is deleted.
-                            that.removeTag(tag);
-                        } else if (that.options.removeConfirmation) {
-                            tag.addClass('remove ui-state-highlight');
-                        }
-                    } else if (that.options.removeConfirmation) {
-                        that._lastTag().removeClass('remove ui-state-highlight');
+            this._tagInput.keydown(function(event) {
+            	// Backspace is not detected within a keypress, so it must use keydown.
+            	if (event.which == $.ui.keyCode.BACKSPACE && that._tagInput.val() === '') {
+            		var tag = that._lastTag();
+            		if (!that.options.removeConfirmation || tag.hasClass('remove')) {
+            			// When backspace is pressed, the last tag is deleted.
+            			that.removeTag(tag);
+            		} else if (that.options.removeConfirmation) {
+                        tag.addClass('remove ui-state-highlight');
                     }
+            	} else if (that.options.removeConfirmation) {
+            		that._lastTag().removeClass('remove ui-state-highlight');
+            	}
 
+            	if (that.options.requireAutocomplete !== true) {
                     // Comma/Space/Enter are all valid delimiters for new tags,
                     // except when there is an open quote or if setting allowSpaces = true.
                     // Tab will also create a tag, unless the tag input is empty, in which case it isn't caught.
@@ -207,14 +216,20 @@
                         // So let's ensure that it closes.
                         that._tagInput.autocomplete('close');
                     }
-                }).blur(function(e){
-                    // Create a tag when the element loses focus (unless it's empty).
+            	} else if (event.which == $.ui.keyCode.ENTER) {
+            		event.preventDefault();
+            	}
+            });
+            if (this.options.requireAutocomplete !== true) {
+            	this._tagInput.blur(function(e) {
+            		// Create a tag when the element loses focus (unless it's empty).
                     that.createTag(that._cleanedInput());
                 });
+        	}
                 
 
             // Autocomplete.
-            if (this.options.availableTags || this.options.tagSource) {
+            if (this.options.tagSource) {
                 this._tagInput.autocomplete({
                     source: this.options.tagSource,
                     select: function(event, ui) {
