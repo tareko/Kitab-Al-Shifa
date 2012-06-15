@@ -21,7 +21,7 @@ class AppController extends Controller {
 		$this->set('logged_in', $this->_loggedIn());
 		$this->set('users_username', $this->_usersUsername());
 		$this->set('users_id', $this->_usersId());
-		$this->Auth->allow('pdfCreate', 'icsView');
+		$this->Auth->allow('pdfCreate', 'icsView', 'startUnprocessed', 'completeAccepted');
 		
   		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
   			$this->Session->setFlash('Access denied. You do not have permission to access this page');

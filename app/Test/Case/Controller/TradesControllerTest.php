@@ -264,7 +264,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 
 		$result = $this->testAction('/trades/startUnprocessed');
-		debug($result);
+		$this->assertContains('Success', $result);
 	}
 
 	public function testStartUnprocessedWithFailedTradeRequest() {
