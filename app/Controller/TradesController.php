@@ -191,7 +191,8 @@ class TradesController extends AppController {
 						'TradesDetail' => array(
 							'fields' => array(
 								'trade_id',
-								'user_id'
+								'user_id',
+								'status'
 							),
 							'conditions' => array(
 								'status' => 2
@@ -202,17 +203,19 @@ class TradesController extends AppController {
 
 		//TODO: Save updated shift
 		foreach($trades as $trade) {
-			$this->Trade->Shift->read(null, $trade['Trade']['shift_id']);
-			$this->Trade->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
-			$this->Trade->Shift->set('updated', date("Y-m-d H:i:s",time()));
-			$this->Trade->Shift->save();
-
-			$this->Trade->read(null, $trade['Trade']['id']);
-			$this->Trade->set('status', 2);
-			$this->Trade->save();
-
-			//Log successfully completed trade.
-			CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['user_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
+			if (isset($trade['TradesDetail'][0]['status'])) {
+				$this->Trade->Shift->read(null, $trade['Trade']['shift_id']);
+				$this->Trade->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
+				$this->Trade->Shift->set('updated', date("Y-m-d H:i:s",time()));
+				$this->Trade->Shift->save();
+	
+				$this->Trade->read(null, $trade['Trade']['id']);
+				$this->Trade->set('status', 2);
+				$this->Trade->save();
+	
+				//Log successfully completed trade.
+				CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['user_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
+			}
 		}
 		
 		$this->set('success', 1);
