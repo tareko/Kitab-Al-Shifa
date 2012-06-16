@@ -1,15 +1,8 @@
 Dear <?=$user['name']?>,
 
-In theory, you have initiated a trade request for your shift:
+There has been a request to trade your shift:
 
 <?= $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times']; ?>
-
-<?php //TODO: PEOPLE TO TRADE WITH
-//with:
-
-//TODO: Two-way trades
-//$fromUser['name'] takes 
-//YOUR SHIFT'?>
 
 Please review this trade carefully. Once you accept, the people you would like to trade with will be contacted.
 
@@ -30,6 +23,22 @@ To *REJECT*, click here:
 		), true
 	) . '?id=' .$tradeId .'&token=' .$token
 ?>
+
+<?php //TODO: PEOPLE TO TRADE WITH
+//This shift is in consideration for: CASH/TRADE/ETC
+
+//Once you accept this trade, it will be sent to the following people:
+//<ul><li></li></ul>
+
+
+//TODO: Two-way trades
+//$fromUser['name'] takes 
+//YOUR SHIFT'
+
+//This request has been initiated by:
+
+?>
+
 
 Thank you for your consideration,
 
