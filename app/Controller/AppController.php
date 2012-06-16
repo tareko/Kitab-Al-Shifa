@@ -21,7 +21,7 @@ class AppController extends Controller {
 		$this->set('logged_in', $this->_loggedIn());
 		$this->set('users_username', $this->_usersUsername());
 		$this->set('users_id', $this->_usersId());
-		$this->Auth->allow('pdfCreate', 'icsView', 'startUnprocessed', 'completeAccepted');
+		$this->_defaultPermissions();
 		
   		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
   			$this->Session->setFlash('Access denied. You do not have permission to access this page');
@@ -45,16 +45,15 @@ class AppController extends Controller {
 	function _requestAllowed($object, $property, $rules, $default = FALSE) {
 		// The default value to return if no rule matching $object/$property can be found
 		$allowed = $default;
-		if (isset($rules) || $rules == '') {
-		}
+
 		if (!isset($rules) || $rules == '') {
 			$rules = $this->Group->find('first', array(
-        		'conditions' => array('Group.usergroups_id' => 0),
-        		'fields' => 'acl'
+		         'conditions' => array('Group.usergroups_id' => 0),
+		         'fields' => 'acl'
 			));
 			$rules = $rules['Group']['acl'];
 		}
-
+		
 		// This Regex converts a string of rules like "objectA:actionA,objectB:actionB,..." into the array $matches.
 		preg_match_all('/([^:,]+):([^,:]+)/is', $rules, $matches, PREG_SET_ORDER);
 		foreach ($matches as $match)
@@ -69,22 +68,27 @@ class AppController extends Controller {
 				$allowedObject = substr($allowedObject, 1);
 				$negativeCondition = true;
 			}
-			else
-			$negativeCondition = false;
+			else {
+				$negativeCondition = false;
+			}
 			 
 			if (preg_match('/^'.$allowedObject.'$/i', $object) &&
 			preg_match('/^'.$allowedProperty.'$/i', $property))
 			{
-				if ($negativeCondition)
-				$allowed = false;
-				else
-				$allowed = true;
+				if ($negativeCondition == true) {
+					$allowed = false;
+				}
+				else {
+					$allowed = true;
+				}
 			}
 		}
 		return $allowed;
 	}
 
 	function _getAclRules($userId) {
+		$acl = NULL;
+		
 		$rulesRaw = $this->User->find('all',
 		array(
 	  		'contain' => array(
@@ -96,7 +100,6 @@ class AppController extends Controller {
 			)
 		);
 
-		$acl = NULL;
 		foreach ($rulesRaw as $rule) {
 			$Usergroups = Set::sort($rule['Usergroup'], '{n}.lft', 'asc');
 			foreach ($Usergroups as $Usergroup) {
@@ -104,8 +107,6 @@ class AppController extends Controller {
 					$acl .= $Usergroup['Group']['acl'] . ',';
 				}
 			}
-				
-			//$people = Set::sort($people, '{n}.Person.birth_date', 'desc');
 		}
 		return $acl;
 	}
@@ -141,6 +142,27 @@ class AppController extends Controller {
 		if ($this->Auth->user()) {
 			return $this->Auth->user('username');
 		}
-	}	
+	}
+
+	/**
+	 * _defaultPermissions method
+	 * Set the default permissions for the Auth component based on the usergroup 0
+	 *
+	 */
+	function _defaultPermissions() {
+		$rulesRaw = $this->Group->find('first', array(
+						   'conditions' => array('Group.usergroups_id' => 0),
+						   'fields' => 'acl'
+			));
+		$rules = $rulesRaw['Group']['acl'];
+		preg_match_all('/([^:,]+):([^,:]+)/is', $rules, $matches, PREG_SET_ORDER);
+		$permitted = array();
+		foreach ($matches as $match)
+		{
+			list($rawMatch, $allowedObject, $allowedProperty) = $match;
+			$permitted[] = $allowedProperty;
+		}
+		$this->Auth->allow($permitted);
+	}
 }
 ?>
