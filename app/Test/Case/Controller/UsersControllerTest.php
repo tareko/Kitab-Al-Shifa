@@ -188,8 +188,6 @@ class UsersControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(1));
 		
 		$result = $this->testAction('/users/listUsers.json');
-		echo $result;
-		die;
 		$this->assertEqual($result, '');
 	}
 }

@@ -253,6 +253,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 
 
 	public function testStartUnprocessed() {
+		//TODO: Fix broken test
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_TradeRequest'
