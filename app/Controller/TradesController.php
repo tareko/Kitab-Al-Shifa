@@ -38,13 +38,16 @@ class TradesController extends AppController {
 		$this->Prg->commonProcess();
 		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
 		$this->Trade->recursive = 0;
+		$this->set('usersId', $this->_usersId());
 
 
 		if (isset($this->request->params['named']['id'])) {
-			$this->set('trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
+			$this->set('pending_trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'], 'Trade.status !=' => 2)));
+			$this->set('completed_trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'], 'Trade.status' => 2)));
 		}
 		else {
-			$this->set('trades', $this->paginate());
+			$this->set('pending_trades', $this->paginate(array('Trade.user_id' => $this->_usersId(), 'Trade.status !=' => 2)));
+			$this->set('completed_trades', $this->paginate(array('Trade.user_id' => $this->_usersId(), 'Trade.status' => 2)));
 		}
 	}
 
