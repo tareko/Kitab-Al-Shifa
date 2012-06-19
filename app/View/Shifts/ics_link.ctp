@@ -1,6 +1,6 @@
 <p>Here is the link that you can use for your calendar:<p>
 
-<ul><li><a href="<?php echo Router::url($this->here, true);?>"><?php echo Router::url($this->here, true);?></a></li></ul>
+<ul><li><a href="<? echo Router::url(array('controller' => 'shifts', 'action' => 'icsView', 'id' => $id), true);?>"><? echo Router::url(array('controller' => 'shifts', 'action' => 'icsView', 'id' => $id), true);?></a></li></ul>
 <br/>
 
 <p>Here are some tutorials that will help you get this schedule onto your electronic calendar:</p>
