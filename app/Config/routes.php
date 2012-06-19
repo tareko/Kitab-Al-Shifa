@@ -33,10 +33,9 @@
 
 	
 /**
- * Route /admin/users/login to go to /users/login and login properly.
+ * Redirect /admin/users/login to go to /users/login and login properly.
  */
-	
-	Router::connect('/admin/users/login', array('controller' => 'users', 'action' => 'login'));
+	Router::redirect('/admin/users/login', array('controller' => 'users', 'action' => 'login'));
 	
 /**
  * Load all plugin routes.  See the CakePlugin documentation on 
