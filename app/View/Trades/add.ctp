@@ -6,7 +6,7 @@
 		<?php
 		echo $this->Form->input('from_user_id', array(
 				'type' => 'text', 
-				'default' => $usersId,
+//				'default' => $usersId,
 				'label' => __('Person making the trade'),
 				'div' => 'TradeFromUserIdDiv'));
 		echo $this->Form->input('Trade.user_id', array(
