@@ -90,7 +90,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(1));
 		
 		$result = $this->testAction('/trades/add');
-		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="1" id="TradeFromUserId"/>', $result);
+		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" id="TradeFromUserId"/>', $result);
 		$this->assertContains('<div id="datepicker1"></div>', $result);
 		$this->assertContains('<select name="data[Trade][shift_id]" id="TradeShiftId">', $result);
 		$this->assertContains('<ul id="tags">
@@ -98,8 +98,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$this->assertContains('<div class="submit"><input  type="submit" value="Submit"/></div>', $result);
 	}
 
-	public function testAddQueryId() {
-	
+/*	public function testAddQueryId() {
+	//Deprecated for now
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed',
@@ -114,7 +114,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'get'));
 		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="2" id="TradeFromUserId"/>', $result);
 	}
-
+*/
 	public function testAddPost() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
