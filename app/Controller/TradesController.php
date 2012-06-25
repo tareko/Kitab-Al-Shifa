@@ -44,15 +44,20 @@ class TradesController extends AppController {
 
 		if (isset($this->request->params['named']['id'])) {
 			$this->paginate = array(
-				'recursive' => 3,
-				'order' => 'status ASC');
+				'recursive' => 3);
 			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->request->params['named']['id'])));
+			$this->paginate = array(
+				'recursive' => 3,
+				'order' => 'Trade.status ASC');
 			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
 		}
 		else {
 			$this->paginate = array(
 				'recursive' => 3);
 			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->_usersId())));
+			$this->paginate = array(
+				'recursive' => 3,
+				'order' => 'Trade.status ASC');
 			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->_usersId())));
 		}
 	}
