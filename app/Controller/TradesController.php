@@ -301,7 +301,7 @@ class TradesController extends AppController {
 			$this->Trade->read(null, $id);
 			$this->Trade->set('user_status', $status);
 			if ($this->Trade->save()) {
-				$this->_TradeRequest->sendOriginatorStatusChange($status, $trade);
+				//$this->_TradeRequest->sendOriginatorStatusChange($status, $trade);
 				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed user_status to '. $status);
 				return true;
 			}
