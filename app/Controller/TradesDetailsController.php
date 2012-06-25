@@ -112,7 +112,9 @@ class TradesDetailsController extends AppController {
 			$this->TradesDetail->read(null, $id);
 			$this->TradesDetail->set('status', $status);
 			if ($this->TradesDetail->save()) {
-				$this->_TradeRequest->sendRecipientStatusChange($status, $tradesDetail);
+
+				//No need for 
+				//$this->_TradeRequest->sendRecipientStatusChange($status, $tradesDetail);
 				CakeLog::write('TradeRequest', '[TradesDetail][id]: ' .$tradesDetail['TradesDetail']['id'] . '; Changed status to '. $status);
 				return true;
 			}
