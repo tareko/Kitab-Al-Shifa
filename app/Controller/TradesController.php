@@ -43,15 +43,17 @@ class TradesController extends AppController {
 
 
 		if (isset($this->request->params['named']['id'])) {
-			$this->set('pending_trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'], 'Trade.status !=' => 2)));
-			$this->set('completed_trades', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'], 'Trade.status' => 2)));
+			$this->paginate = array(
+				'recursive' => 3,
+				'order' => 'status ASC');
+			$this->set('tradesRecipient', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
+			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
 		}
 		else {
 			$this->paginate = array(
-			'recursive' => 3);
-			$this->set('test_trades', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->_usersId(), 'TradesDetail.status !=' => 2)));
-			$this->set('pending_trades', $this->paginate(array('Trade.user_id' => $this->_usersId(), 'Trade.status !=' => 2)));
-			$this->set('completed_trades', $this->paginate(array('Trade.user_id' => $this->_usersId(), 'Trade.status' => 2)));
+				'recursive' => 3);
+			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->_usersId())));
+			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->_usersId())));
 		}
 	}
 
