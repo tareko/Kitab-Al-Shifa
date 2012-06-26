@@ -42,9 +42,10 @@ class DatePickerHelper extends AppHelper {
 		function shiftsWorking(date) {
 		    for (i = 0; i < shiftDays.shiftList.length; i++) {
 		      dateDB = new Date(shiftDays.shiftList[i].Shift.date);
+		      dateDB.setDate (dateDB.getDate()+1);
 		      if (date.getYear() == dateDB.getYear()
 		          && date.getMonth() == dateDB.getMonth()
-		          && date.getDate() == dateDB.getDate() + 1) {
+		          && date.getDate() == dateDB.getDate()) {
 		        return [true, shiftDays.shiftList[i].Shift.date + '_day'];
 		      }
 		    }
