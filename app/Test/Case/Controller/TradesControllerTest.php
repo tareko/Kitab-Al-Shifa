@@ -90,7 +90,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(1));
 		
 		$result = $this->testAction('/trades/add');
-		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" id="TradeFromUserId"/>', $result);
+		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="me" id="TradeFromUserId"/>', $result);
 		$this->assertContains('<div id="datepicker1"></div>', $result);
 		$this->assertContains('<select name="data[Trade][shift_id]" id="TradeShiftId">', $result);
 		$this->assertContains('<ul id="tags">
@@ -116,6 +116,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 */
 	public function testAddPost() {
+		//Fix broken test
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed'
@@ -130,7 +131,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 				'Trade' => array(
 						'user_id' => 1,
 						'shift_id' => 16,
-						'status' => 0,
 				),
 				'TradesDetail' => array(
 						0 => array(
@@ -144,8 +144,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
 		debug($result);
 	}
-	public function testAddPostFailedSave() {
-		//TODO: Fix broken test
+	public function testAddPostFailedSaveBadDataNoRecipient() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed',
@@ -157,27 +156,43 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
-		$Trades->expects($this->any())
-		->method('saveAssociated')
-		->will($this->returnValue(false));
-
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
 						'shift_id' => 16,
-						'status' => 0,
 				),
-				'TradesDetail' => array(
-						0 => array(
-								'user_id' => 2
-						),
-						1 => array(
-								'user_id' => 3)
-				)
 		);
 	
 		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-//		$this->assertTrue($this->Comments->viewVars['success']);
+		$this->assertContains('<div class="error-message">Please enter at least one recipient</div>', $result);
+	}
+	
+	public function testAddPostFailedSaveBadDataNoShift() {
+	
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed'
+				),
+		));
+		
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		
+		$data = array(
+				'Trade' => array(
+						'user_id' => 1,
+			),
+				'TradesDetail' => array(
+						0 => array(
+							'user_id' => 2
+						),
+						1 => array(
+							'user_id' => 3)
+						)
+			);
+		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
+		$this->assertContains('<div class="error-message">Please select a proper shift (numeric)</div>', $result);
 	}
 
 /**
