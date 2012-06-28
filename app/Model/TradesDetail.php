@@ -31,7 +31,7 @@ class TradesDetail extends AppModel {
 				'rule' => array('numeric'),
 				'message' => 'The linked trade must be known',
 				'allowEmpty' => false,
-				//'required' => false,
+				'required' => true,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
@@ -41,7 +41,7 @@ class TradesDetail extends AppModel {
 				'rule' => array('numeric'),
 				'message' => 'A user being traded to is required',
 				'allowEmpty' => false,
-				//'required' => false,
+				'required' => true,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
