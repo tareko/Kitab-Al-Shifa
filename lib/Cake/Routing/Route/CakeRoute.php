@@ -287,12 +287,9 @@ class CakeRoute {
 				continue;
 			}
 
-                       $separator = strpos($param, $namedConfig['separator']) !== false ? $namedConfig['separator'] : null;
-                       if (!$separator && strpos($param, rawurlencode($namedConfig['separator'])) !== false) {
-                               $separator = rawurlencode($namedConfig['separator']);
-                       }
-                       if ((!isset($this->options['named']) || !empty($this->options['named'])) && $separator) {
-                               list($key, $val) = explode($separator, $param, 2);
+			$separatorIsPresent = strpos($param, $namedConfig['separator']) !== false;
+			if ((!isset($this->options['named']) || !empty($this->options['named'])) && $separatorIsPresent) {
+				list($key, $val) = explode($namedConfig['separator'], $param, 2);
 				$key = rawurldecode($key);
 				$val = rawurldecode($val);
 				$hasRule = isset($rules[$key]);
@@ -481,8 +478,11 @@ class CakeRoute {
  * @return string Composed route string.
  */
 	protected function _writeUrl($params) {
-		if (isset($params['prefix'], $params['action'])) {
-			$params['action'] = str_replace($params['prefix'] . '_', '', $params['action']);
+		if (isset($params['prefix'])) {
+			$prefixed = $params['prefix'] . '_';
+		}
+		if (isset($prefixed, $params['action']) && strpos($params['action'], $prefixed) === 0) {
+			$params['action'] = substr($params['action'], strlen($prefixed) * -1);
 			unset($params['prefix']);
 		}
 

@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  *	Licensed under The Open Group Test Suite License
  *	Redistributions of files must retain the above copyright notice.
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model.Datasource
  * @since         CakePHP(tm) v 1.2.0.4206
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -61,13 +61,6 @@ class DboTestSource extends DboSource {
 class DboSourceTest extends CakeTestCase {
 
 /**
- * debug property
- *
- * @var mixed null
- */
-	public $debug = null;
-
-/**
  * autoFixtures property
  *
  * @var bool false
@@ -102,7 +95,7 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
- * endTest method
+ * tearDown method
  *
  * @return void
  */
@@ -746,6 +739,10 @@ class DboSourceTest extends CakeTestCase {
 		$Article->schemaName = null;
 		$result = $noschema->fullTableName($Article, false, true);
 		$this->assertEquals('articles', $result);
+
+		$this->testDb->config['prefix'] = 't_';
+		$result = $this->testDb->fullTableName('post_tag', false, false);
+		$this->assertEquals('t_post_tag', $result);
 	}
 
 /**
@@ -835,5 +832,43 @@ class DboSourceTest extends CakeTestCase {
 		$expected = array('query' => 'ROLLBACK', 'params' => array(), 'affected' => '', 'numRows' => '', 'took' => '');
 		$log = $db->getLog();
 		$this->assertEquals($expected, $log['log'][0]);
+	}
+
+/**
+ * data provider for testBuildJoinStatement
+ *
+ * @return array
+ */
+	public static function joinStatements($schema) {
+		return array(
+			array(array(
+				'type' => 'LEFT',
+				'alias' => 'PostsTag',
+				'table' => 'posts_tags',
+				'conditions' => array('PostsTag.post_id = Post.id')
+			), 'LEFT JOIN cakephp.posts_tags AS PostsTag ON (PostsTag.post_id = Post.id)'),
+			array(array(
+				'type' => 'LEFT',
+				'alias' => 'Stock',
+				'table' => '(SELECT Stock.article_id, sum(quantite) quantite FROM stocks AS Stock GROUP BY Stock.article_id)',
+				'conditions' => 'Stock.article_id = Article.id'
+			), 'LEFT JOIN (SELECT Stock.article_id, sum(quantite) quantite FROM stocks AS Stock GROUP BY Stock.article_id) AS Stock ON (Stock.article_id = Article.id)')
+		);
+	}
+
+/**
+ * Test buildJoinStatement()
+ * ensure that schemaName is not added when table value is a subquery
+ *
+ * @dataProvider joinStatements
+ * @return void
+ */
+	public function testBuildJoinStatement($join, $expected) {
+		$db = $this->getMock('DboTestSource', array('getSchemaName'));
+		$db->expects($this->any())
+			->method('getSchemaName')
+			->will($this->returnValue('cakephp'));
+		$result = $db->buildJoinStatement($join);
+		$this->assertEquals($expected, $result);
 	}
 }

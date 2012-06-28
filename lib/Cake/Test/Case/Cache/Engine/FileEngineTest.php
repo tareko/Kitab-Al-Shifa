@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Cache.Engine
  * @since         CakePHP(tm) v 1.2.0.5434
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -107,11 +107,11 @@ class FileEngineTest extends CakeTestCase {
 		$result = Cache::read('rw', 'file_test');
 
 		Cache::write('rw', 'second write', 'file_test');
-		$result2 = Cache::read('rw', 'file_test');
+		$resultB = Cache::read('rw', 'file_test');
 
 		Cache::delete('rw', 'file_test');
 		$this->assertEquals('first write', $result);
-		$this->assertEquals('second write', $result2);
+		$this->assertEquals('second write', $resultB);
 	}
 
 /**
@@ -239,9 +239,9 @@ class FileEngineTest extends CakeTestCase {
 			'duration' => DAY
 		));
 
-		$data1 = $data2 = $expected = 'content to cache';
-		$FileOne->write('prefix_one_key_one', $data1, DAY);
-		$FileTwo->write('prefix_two_key_two', $data2, DAY);
+		$dataOne = $dataTwo = $expected = 'content to cache';
+		$FileOne->write('prefix_one_key_one', $dataOne, DAY);
+		$FileTwo->write('prefix_two_key_two', $dataTwo, DAY);
 
 		$this->assertEquals($expected, $FileOne->read('prefix_one_key_one'));
 		$this->assertEquals($expected, $FileTwo->read('prefix_two_key_two'));

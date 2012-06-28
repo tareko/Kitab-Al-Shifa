@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model
  * @since         CakePHP(tm) v 1.2.0.4206
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -5020,6 +5020,39 @@ class ModelReadTest extends BaseModelTest {
 	}
 
 /**
+ * testDeeperAssociationAfterFind method
+ *
+ * @return void
+ */
+	public function testDeeperAssociationAfterFind() {
+		$this->loadFixtures('Post', 'Author', 'Comment', 'Attachment', 'Article');
+
+		$Post = new Post();
+		$Post->bindModel(array(
+			'hasMany' => array(
+				'Comment' => array(
+					'className' => 'ModifiedComment',
+					'foreignKey' => 'article_id',
+				)
+		)));
+		$Post->Comment->bindModel(array(
+			'hasOne' => array(
+				'Attachment' => array(
+					'className' => 'ModifiedAttachment',
+				)
+		)));
+
+		$result = $Post->find('first', array(
+			'conditions' => array('Post.id' => 2),
+			'recursive' => 2
+		));
+		$this->assertTrue(isset($result['Comment'][0]['callback']));
+		$this->assertEquals('Fire', $result['Comment'][0]['callback']);
+		$this->assertTrue(isset($result['Comment'][0]['Attachment']['callback']));
+		$this->assertEquals('Fired', $result['Comment'][0]['Attachment']['callback']);
+	}
+
+/**
  * Tests that callbacks can be properly disabled
  *
  * @return void
@@ -7835,7 +7868,7 @@ class ModelReadTest extends BaseModelTest {
 		$Article = new CustomArticle();
 		$data = array('user_id' => 3, 'title' => 'Fourth Article', 'body' => 'Article Body, unpublished', 'published' => 'N');
 		$Article->create($data);
-		$Article->save();
+		$Article->save(null, false);
 		$this->assertEquals(4, $Article->id);
 
 		$result = $Article->find('published');
