@@ -1,14 +1,31 @@
 <?= $this->Form->create('Trade');?>
 
+<?php 
+$recipientError = '';
+$recipientErrorMessage = '';
+$originatorError = '';
+$originatorErrorMessage = '';
+
+	if ($recipientNotPresent) {
+		$recipientError = 'error';
+		$recipientErrorMessage = '<div class="error-message">Please enter at least one recipient</div>'; 
+	}
+
+	if ($originatorNotPresent) {
+		$originatorError = 'error';
+		$originatorErrorMessage = '<div class="error-message">Who is offering this trade?</div>';
+	}
+	
+?>
 <fieldset>
 	<legend><?php echo __('Make a Trade'); ?></legend>
 	<div class="block">
 		<?php
 		echo $this->Form->input('from_user_id', array(
 				'type' => 'text', 
-//				'default' => $usersId,
+				'default' => "me",
 				'label' => __('Person making the trade'),
-				'div' => 'TradeFromUserIdDiv'));
+				'div' => 'TradeFromUserIdDiv required' . $originatorError));
 		echo $this->Form->input('Trade.user_id', array(
 				'type' => 'text', 
 				'default' => $usersId, 
@@ -25,20 +42,23 @@
 		echo $this->Form->input('shift_id', array('label' => __('Which shift would you like to trade?')));
 		?>
 	</div>
-	<div class="block">
+	<div class="block required <?= $recipientError?>">
 		<label><?=__('Who are you offering the trade to?')?></label>
 		<?php 
 		echo $this->Html->div('TradesDetail.user_id',
 			$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail]', 'user_id'),
 				array('div' => 'pick-doctor'));
 		?>
+		<?=$recipientErrorMessage?>
+	</div>
+
 	</div>
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
 	</div>
 	</fieldset>
 
-	<script>
+	<script type="text/javascript">
 	$(document).ready(function(){
 		//Prevent enter from submitting form
 		 $(window).keydown(function(event){

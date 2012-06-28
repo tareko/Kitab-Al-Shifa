@@ -68,11 +68,14 @@ class TradesController extends AppController {
  * @return void
  */
 	public function add() {
-		$shiftOptions[] = array();
-		$this->loadModel('Calendar');
+		$recipientNotPresent = false;
+		$originatorNotPresent = false;
 		if ($this->request->is('post') && $this->request->data) {
-			$this->Trade->create();
-			if ($this->Trade->saveAssociated($this->request->data)) {
+			if (!isset($this->request->data['TradesDetail'])) {
+				$recipientNotPresent = true;
+			}
+			if (isset($this->request->data['TradesDetail']) && $this->Trade->saveAssociated($this->request->data, array(
+				'validate' => 'first'))) {
 					$this->Session->setFlash(__('The trade has been saved'));
 				return $this->redirect(array('action' => 'index'));
 			} else {
@@ -85,6 +88,8 @@ class TradesController extends AppController {
 		else {
 			$this->set('usersId', $this->_usersId());
 		}
+		$this->set('recipientNotPresent', $recipientNotPresent);
+		$this->set('originatorNotPresent', $originatorNotPresent);
 		$this->render();
 	}
 
