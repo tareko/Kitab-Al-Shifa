@@ -135,7 +135,7 @@ class TradeRequest {
 			$email = new CakeEmail('default');
 			
 			//Send a message to the recipient about the decision
-			$email->template('tradeRequestRecipientStatusChange')
+			/*$email->template('tradeRequestRecipientStatusChange')
 				->emailFormat('text')
 				->to($tradesDetail['User']['email'])
 				->subject('[Kitab] Shift trade status update')
@@ -145,13 +145,13 @@ class TradeRequest {
 							'statusWord' => $statusWord,
 							'shift' => $tradesDetail['Trade']['Shift']))
 				->send();
-			
+			*/
 			//Send a message to the originator about the decision
 			$email = new CakeEmail('default');
 			$email->template('tradeRequestRecipientStatusChangeToOriginator')
 				->emailFormat('text')
 				->to($tradesDetail['Trade']['User']['email'])
-				->subject('[Kitab] Shift trade status update')
+				->subject('[Kitab] '.$tradesDetail['User'].' accepted your trade')
 				->viewVars(array(
 							'userOriginator' => $tradesDetail['Trade']['User'],
 							'userRecipient' => $tradesDetail['User'],
