@@ -317,6 +317,7 @@ class ShiftsController extends AppController {
 		$this->Session->setFlash(__('Please select a physician'));
 		$this->set('physicianAction', $physicianAction);
 		$this->set('physicians', $physicians);
+		$this->render();
 	}
 	
 	/**

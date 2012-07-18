@@ -116,7 +116,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 */
 	public function testAddPost() {
-		//Fix broken test
+		//TODO: Fix broken test
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed'
@@ -142,7 +142,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 				);
 
 		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-		debug($result);
+		$this->assertEqual($this->headers['Location'], 'http://127.0.0.1/kitab/trades');
 	}
 	public function testAddPostFailedSaveBadDataNoRecipient() {
 		$Trades = $this->generate('Trades', array(
