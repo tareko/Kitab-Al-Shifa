@@ -27,23 +27,6 @@ class TestCalendarsController extends CalendarsController {
 	}
 }
 
-class UrlEncodeTestCase extends ControllerTestCase {
-
-	/**
-	 * Test that a request with urlencoded bits in the main GET parameter are filtered out.
-	 *
-	 * @return void
-	 */
-	public function testGetParamWithUrlencodedElement() {
-		$_GET = array();
-		$_GET['/shifts/calendarView/id:1'] = '';
-		$_SERVER['REQUEST_URI'] = '/shifts/calendarView/id%3A1';
-
-		$request = new CakeRequest();
-		$this->assertEquals(array(), $request->query);
-	}
-}
-
 /**
  * CalendarsController Test Case
  *
@@ -54,7 +37,7 @@ class CalendarsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.calendar', 'app.usergroup', 'app.group', 'app.user', 'app.profile', 'app.shifts', 'app.user_usergroup_map');
+	public $fixtures = array('app.calendar', 'app.usergroup', 'app.group', 'app.user', 'app.profile', 'app.user_usergroup_map', 'app.shift', 'app.shifts_type', 'app.location');
 
 /**
  * setUp method
@@ -158,6 +141,36 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 		debug($result);
 	}
 
+	/**
+	* Test that a request with urlencoded bits in the main GET parameter are filtered out.
+	*
+	* @return void
+	*/
+	public function testGetParamWithUrlencodedElement() {
+		$_GET = array();
+		$_GET['/shifts/calendarView/id:1'] = '';
+		$_SERVER['REQUEST_URI'] = '/shifts/calendarView/id%3A1';
+	
+		$request = new CakeRequest();
+		$this->assertEquals(array(), $request->query);
+	}
+	
+	public function testGetParamWithUrlencodedElement2() {
+	
+		/**
+		 * Test that a request with urlencoded bits in the main GET parameter are filtered out.
+		 *
+		 * @return void
+		 */
+		$result = $this->testAction('/shifts/icsView/id%3A1');
+		$result2 = $this->testAction('/shifts/icsView/id:1');
+		
+		$this->assertEquals($result, $result2);
+		if (!empty($result)) {
+			$this->assertNoPattern('/Please type a name/', $result);
+		}
+	}
+	
 /**
  * tearDown method
  *
