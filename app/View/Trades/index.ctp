@@ -8,7 +8,7 @@ $originator = array(
 );
 
 $recipient = array(
-0 => 'Unprocessed',
+0 => 'Awaiting response from originator',
 1 => 'Pending your approval',
 2 => 'Accepted',
 3 => 'Refused'
