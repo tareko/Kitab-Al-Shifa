@@ -16,6 +16,9 @@ $originatorErrorMessage = '';
 		$originatorErrorMessage = '<div class="error-message">Who is offering this trade?</div>';
 	}
 	
+	if ($checkDuplicate) {
+		echo '<div class="error">This shift is already in the process of being traded! Please cancel the pre-existing trade before trying to trade this shift again</div>';
+	}
 ?>
 <fieldset>
 	<legend><?php echo __('Make a Trade'); ?></legend>
