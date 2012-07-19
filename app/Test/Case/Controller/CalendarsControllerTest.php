@@ -74,7 +74,17 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testAddWithData() {
-	$data = array(
+		$Calendars = $this->generate('Calendars', array(
+					'methods' => array(
+							'_requestAllowed'
+					),
+		));
+		
+		$Calendars->expects($this->any())
+			->method('_requestAllowed')
+			->will($this->returnValue(true));
+		
+		$data = array(
 			'Calendar' => array(
 					'usergroups_id' => 1,
 					'name' => 'Test Calendar',
@@ -89,20 +99,29 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 					'published' => 1,
 					'comments' => 'Comments for test calendar'
 			)
-	);
-	$result = $this->testAction(
+		);
+		$result = $this->testAction(
 			'/calendars/add',
 			array('data' => $data, 'method' => 'post'));
-	debug($result);
+		$this->assertTextEndsWith('/calendars', $this->headers['Location']);
 	}
 
 	public function testAddWithBadData() {
-//TODO: NOT WORKING
-		$this->setExpectedException('NotFoundException');
 		$data = array();
-		$result = $this->testAction(
+		$Calendars = $this->generate('Calendars', array(
+						'components' => array(
+							'Session'
+						)
+		));
+		
+		$Calendars->Session
+			->expects($this->any())
+			->method('setFlash');
+
+		$this->testAction(
 				'/calendars/add',
 				array('data' => $data, 'method' => 'post'));
+		$this->assertContains('/calendars/add', $this->view);
 	}
 
 	public function testEditNoId() {
