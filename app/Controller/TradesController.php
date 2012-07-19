@@ -70,11 +70,15 @@ class TradesController extends AppController {
 	public function add() {
 		$recipientNotPresent = false;
 		$originatorNotPresent = false;
+		$checkDuplicate = false;
 		if ($this->request->is('post') && $this->request->data) {
+			if (isset($this->request->data['Trade']['shift_id']) && isset($this->request->data['Trade']['user_id'])) {
+				$checkDuplicate = $this->checkDuplicate($this->request->data['Trade']['shift_id'], $this->request->data['Trade']['user_id']);
+			}
 			if (!isset($this->request->data['TradesDetail'])) {
 				$recipientNotPresent = true;
 			}
-			if (isset($this->request->data['TradesDetail']) && $this->Trade->saveAssociated($this->request->data, array(
+			if (isset($this->request->data['TradesDetail']) && !$checkDuplicate && $this->Trade->saveAssociated($this->request->data, array(
 				'validate' => 'first'))) {
 					$this->Session->setFlash(__('The trade has been saved'));
 				return $this->redirect(array('action' => 'index'));
@@ -90,6 +94,7 @@ class TradesController extends AppController {
 		}
 		$this->set('recipientNotPresent', $recipientNotPresent);
 		$this->set('originatorNotPresent', $originatorNotPresent);
+		$this->set('checkDuplicate', $checkDuplicate);
 		$this->render();
 	}
 
@@ -182,7 +187,7 @@ class TradesController extends AppController {
 			}
 		}
 		$this->set('success', 1);
-		$this->render();
+		$this->render('/Trades/start_unprocessed');
 	}
 	
 	/**
@@ -329,6 +334,32 @@ class TradesController extends AppController {
 		else {
 			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Wrong token');
 			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
+		}
+	}
+	
+	/* 
+	 * Check duplicate trade and return true if duplicate found
+	 * 
+	 */
+	public function checkDuplicate($shiftId, $userId) {
+		$trade = $this->Trade->find('first', array(
+					'fields' => array(
+						'Trade.user_id',
+						'Trade.shift_id',
+						'Trade.user_status',
+								'Trade.status'),
+							'conditions' => array(
+								'Trade.user_status !=' => 3,
+								'Trade.status !=' => 3,
+								'Trade.user_id' => $userId,
+								'Trade.shift_id' => $shiftId),
+		));
+
+		if ($trade) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 }

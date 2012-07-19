@@ -116,7 +116,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 */
 	public function testAddPost() {
-		//TODO: Fix broken test
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed'
@@ -129,7 +128,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 
 		$data = array(
 				'Trade' => array(
-						'user_id' => 1,
+						'user_id' => 2,
 						'shift_id' => 16,
 				),
 				'TradesDetail' => array(
@@ -527,6 +526,35 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 	
 		$result = $this->testAction('/trades/reject?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
+	}
+	
+	public function testRejectDuplicateTrade() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed'
+				),
+		));
+		
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$data = array(
+				'Trade' => array(
+						'user_id' => 1,
+						'shift_id' => 16,
+				),
+				'TradesDetail' => array(
+						0 => array(
+								'user_id' => 2
+								),
+						1 => array(
+								'user_id' => 3)
+						)
+				);
+
+		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
+		$this->assertContains('This shift is already in the process', $result);
 	}
 /**
  * tearDown method
