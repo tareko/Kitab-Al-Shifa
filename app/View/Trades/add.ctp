@@ -30,7 +30,7 @@ $originatorErrorMessage = '';
 				'type' => 'text', 
 				'default' => $usersId, 
 				'div' => 'input text TradeFromUserIdHiddenDiv',
-				'hidden' => true,
+				'type' => 'hidden',
 				'label' => false,
 				'id' => 'TradeFromUserIdHidden'));
 		?>

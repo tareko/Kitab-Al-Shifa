@@ -14,17 +14,18 @@ class DatePickerHelper extends AppHelper {
 	 * @param unknown_type $calendarId
 	 */
 	function makeDatePicker($userData, $calendarId) {
-		echo $this->Html->script('jquery'); // Include jQuery library
-		echo $this->Html->script('jquery-ui'); // Include jQuery UI library
-		echo $this->Html->css('ui-lightness/jquery-ui');
-	 	echo $this->Html->div('', '', array('id' => 'datepicker' . $calendarId));
 ?>
-		<script>
-		$(document).ready(function() {
-			startCalendar();
-		});
+		<?= $this->Html->css('ui-lightness/jquery-ui'); ?>
 		
-		function startCalendar() {
+		<?= $this->Html->script('jquery'); // Include jQuery library ?>
+		
+		<?= $this->Html->script('jquery-ui'); // Include jQuery UI library ?>
+		
+	 	<?= $this->Html->div('', '', array('id' => 'datepicker' . $calendarId)); ?>
+
+		<script type="text/javascript">
+		$(document).ready(function() {
+		
 			$.getJSON(
 				'<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>', 
 				{id: $('<?=$userData?>').val()}, 
@@ -37,11 +38,11 @@ class DatePickerHelper extends AppHelper {
 					});
 				}
 			);
-		}
+		});
 		
 		function shiftsWorking(date) {
 		    for (i = 0; i < shiftDays.shiftList.length; i++) {
-		      dateDB = new Date(shiftDays.shiftList[i].Shift.date);
+		      dateDB = new Date(Date.UTC.apply(Date, shiftDays.shiftList[i].Shift.date.split('-').map(function (d, i) { return parseInt(d, 10) - (i === 1 ? 1 : 0); })));
 		      dateDB.setDate (dateDB.getDate()+1);
 		      if (date.getYear() == dateDB.getYear()
 		          && date.getMonth() == dateDB.getMonth()
