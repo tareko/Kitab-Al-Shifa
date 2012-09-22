@@ -11,6 +11,7 @@ class Calendar extends AppModel {
  * @var string
  */
 	public $displayField = 'name';
+	public $order = array('start_date' => 'DESC');
 /**
  * Validation rules
  *

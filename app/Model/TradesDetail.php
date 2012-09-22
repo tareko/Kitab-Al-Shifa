@@ -13,6 +13,7 @@ App::uses('AppModel', 'Model');
  */
 class TradesDetail extends AppModel {
 	public $actsAs = array('Search.Searchable', 'Containable');
+	public $order = array('updated' => 'DESC');
 
 /**
  * Display field
