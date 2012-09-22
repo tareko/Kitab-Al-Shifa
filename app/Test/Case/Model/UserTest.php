@@ -11,7 +11,7 @@ class UserTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.user_usergroup_map_j17', 'app.usergroup_j17');
+	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.user_usergroup_map_j17', 'app.usergroup_j17');
 
 /**
  * setUp method

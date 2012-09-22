@@ -11,7 +11,7 @@ class ShiftTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail');
+	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail');
 
 /**
  * setUp method

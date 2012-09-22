@@ -36,7 +36,7 @@ class TradesControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.trade', 'app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.trades_detail', 'app.calendar');
+	public $fixtures = array('app.trade', 'app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.trades_detail', 'app.calendar');
 
 /**
  * setUp method
@@ -300,7 +300,7 @@ class TradesControllerTestCase extends ControllerTestCase {
   			'return' => false,
   			'token' => 'abcdefghijklmnopqrstuvwxyzabcdef'
   		)));
- 			
+
 		$result = $this->testAction('/trades/startUnprocessed');
 		debug($result);
 	}

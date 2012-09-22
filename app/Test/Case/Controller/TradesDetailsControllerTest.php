@@ -36,7 +36,7 @@ class TradesDetailsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.trades_detail', 'app.trade', 'app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.shifts', 'app.usergroup', 'app.group', 'app.user_usergroup_map');
+	public $fixtures = array('app.trades_detail', 'app.trade', 'app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.usergroup', 'app.group', 'app.user_usergroup_map');
 
 /**
  * setUp method

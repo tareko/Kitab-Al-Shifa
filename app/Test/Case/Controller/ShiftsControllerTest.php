@@ -82,7 +82,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/index');
 		$this->assertContains('<td>2011-12-02&nbsp;</td>
 		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/3">10-16 U45</a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/3">1000-1600 U45</a>&nbsp;</td>
 		<td><a href="/kitab/users/view/2">Harold Morrissey</a>&nbsp;</td>
 		<td>2011-10-19 08:23:49&nbsp;</td>', $result);
 	}
@@ -91,7 +91,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/index/id:1');
 		$this->assertContains('<td>2013-12-28&nbsp;</td>
 		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/12">0400-1000 </a>&nbsp;</td>
 		<td><a href="/kitab/users/view/1">James Bynum</a>&nbsp;</td>
 		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
 	}
@@ -101,7 +101,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/index/calendar:1');
 		$this->assertContains('<td>2011-12-11&nbsp;</td>
 		<td><a href="/kitab/locations/view/3">Come on pretty mama</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/10">08-15 </a>&nbsp;</td>
+		<td><a href="/kitab/shifts_types/view/10">0800-1500 </a>&nbsp;</td>
 		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
 		<td>2011-10-19 10:35:51&nbsp;</td>', $result);
 		$this->assertTextNotContains('<td>2013-12-30&nbsp;</td>
@@ -308,7 +308,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->assertContains('<tr>
 		<td>2013-11-22</td>
 		<td>Bermuda</td>
-		<td>04-10 </td>', $result);
+		<td>0400-1000 </td>', $result);
 	}
 /**
 * testWizard method
