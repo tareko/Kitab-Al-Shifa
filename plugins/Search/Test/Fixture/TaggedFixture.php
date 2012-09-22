@@ -14,15 +14,9 @@
  *
  * @package search
  * @subpackage search.tests.fixtures
- */ 
+ */
 class TaggedFixture extends CakeTestFixture {
 
-/**
- * Name
- *
- * @var string $name
- */
-	public $name = 'Tagged';
 
 /**
  * Table

@@ -229,7 +229,7 @@ class Debugger {
 			case E_COMPILE_ERROR:
 			case E_USER_ERROR:
 				$error = 'Fatal Error';
-				$level = LOG_ERROR;
+				$level = LOG_ERR;
 			break;
 			case E_WARNING:
 			case E_USER_WARNING:
@@ -290,7 +290,7 @@ class Debugger {
 			'scope'		=> null,
 			'exclude'	=> array('call_user_func_array', 'trigger_error')
 		);
-		$options = Set::merge($defaults, $options);
+		$options = Hash::merge($defaults, $options);
 
 		$backtrace = debug_backtrace();
 		$count = count($backtrace);
@@ -542,10 +542,18 @@ class Debugger {
 
 		if ($depth >= 0) {
 			foreach ($var as $key => $val) {
+				// Sniff for globals as !== explodes in < 5.4
+				if ($key === 'GLOBALS' && is_array($val) && isset($val['GLOBALS'])) {
+					$val = '[recursion]';
+				} else if ($val !== $var) {
+					$val = self::_export($val, $depth, $indent);
+				}
 				$vars[] = $break . self::exportVar($key) .
 					' => ' .
-					self::_export($val, $depth - 1, $indent);
+					$val;
 			}
+		} else {
+			$vars[] = $break . '[maximum depth reached]';
 		}
 		return $out . implode(',', $vars) . $end . ')';
 	}
@@ -708,8 +716,14 @@ class Debugger {
 
 		$files = $this->trace(array('start' => $data['start'], 'format' => 'points'));
 		$code = '';
-		if (isset($files[1]['file'])) {
-			$code = $this->excerpt($files[1]['file'], $files[1]['line'] - 1, 1);
+		$file = null;
+		if (isset($files[0]['file'])) {
+			$file = $files[0];
+		} elseif (isset($files[1]['file'])) {
+			$file = $files[1];
+		}
+		if ($file) {
+			$code = $this->excerpt($file['file'], $file['line'] - 1, 1);
 		}
 		$trace = $this->trace(array('start' => $data['start'], 'depth' => '20'));
 		$insertOpts = array('before' => '{:', 'after' => '}');
@@ -718,7 +732,7 @@ class Debugger {
 		$info = '';
 
 		foreach ((array)$data['context'] as $var => $value) {
-			$context[] = "\${$var} = " . $this->exportVar($value, 1);
+			$context[] = "\${$var} = " . $this->exportVar($value, 3);
 		}
 
 		switch ($this->_outputFormat) {

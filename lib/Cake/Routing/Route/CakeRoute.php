@@ -286,14 +286,11 @@ class CakeRoute {
 			if (empty($param) && $param !== '0' && $param !== 0) {
 				continue;
 			}
-			
-			$separator = strpos($param, $namedConfig['separator']) !== false ? $namedConfig['separator'] : null;
-			if (!$separator && strpos($param, rawurlencode($namedConfig['separator'])) !== false) {
-				$separator = rawurlencode($namedConfig['separator']);
-			}
-			if ((!isset($this->options['named']) || !empty($this->options['named'])) && $separator) {
-				list($key, $val) = explode($separator, $param, 2);
-  				$key = rawurldecode($key);
+
+			$separatorIsPresent = strpos($param, $namedConfig['separator']) !== false;
+			if ((!isset($this->options['named']) || !empty($this->options['named'])) && $separatorIsPresent) {
+				list($key, $val) = explode($namedConfig['separator'], $param, 2);
+				$key = rawurldecode($key);
 				$val = rawurldecode($val);
 				$hasRule = isset($rules[$key]);
 				$passIt = (!$hasRule && !$greedy) || ($hasRule && !$this->_matchNamed($val, $rules[$key], $context));
@@ -500,9 +497,9 @@ class CakeRoute {
 			$named = array();
 			foreach ($params['named'] as $key => $value) {
 				if (is_array($value)) {
-					$flat = Set::flatten($value, '][');
+					$flat = Hash::flatten($value, '%5D%5B');
 					foreach ($flat as $namedKey => $namedValue) {
-						$named[] = $key . "[$namedKey]" . $separator . rawurlencode($namedValue);
+						$named[] = $key . "%5B{$namedKey}%5D" . $separator . rawurlencode($namedValue);
 					}
 				} else {
 					$named[] = $key . $separator . rawurlencode($value);
