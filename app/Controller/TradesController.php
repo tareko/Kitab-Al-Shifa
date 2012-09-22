@@ -40,11 +40,13 @@ class TradesController extends AppController {
 		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
 		$this->Trade->recursive = 0;
 		$this->set('usersId', $this->_usersId());
-
+		$this->paginate = array(
+				'recursive' => 3,
+				'limit' => 5
+		);
+		
 
 		if (isset($this->request->params['named']['id'])) {
-			$this->paginate = array(
-				'recursive' => 3);
 			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->request->params['named']['id'])));
 			$this->paginate = array(
 				'recursive' => 3,
@@ -52,14 +54,13 @@ class TradesController extends AppController {
 			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
 		}
 		else {
-			$this->paginate = array(
-				'recursive' => 3);
 			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->_usersId())));
 			$this->paginate = array(
 				'recursive' => 3,
 				'order' => 'Trade.status ASC');
 			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->_usersId())));
 		}
+		$this->render();
 	}
 
 /**
