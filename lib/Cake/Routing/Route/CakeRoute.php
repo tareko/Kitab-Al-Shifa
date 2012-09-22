@@ -287,9 +287,12 @@ class CakeRoute {
 				continue;
 			}
 
-			$separatorIsPresent = strpos($param, $namedConfig['separator']) !== false;
-			if ((!isset($this->options['named']) || !empty($this->options['named'])) && $separatorIsPresent) {
-				list($key, $val) = explode($namedConfig['separator'], $param, 2);
+			$separator = strpos($param, $namedConfig['separator']) !== false ? $namedConfig['separator'] : null;
+			if (!$separator && strpos($param, rawurlencode($namedConfig['separator'])) !== false) {
+				$separator = rawurlencode($namedConfig['separator']);
+			}
+			if ((!isset($this->options['named']) || !empty($this->options['named'])) && $separator) {
+				list($key, $val) = explode($separator, $param, 2);
 				$key = rawurldecode($key);
 				$val = rawurldecode($val);
 				$hasRule = isset($rules[$key]);
