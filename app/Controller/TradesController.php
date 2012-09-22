@@ -349,8 +349,8 @@ class TradesController extends AppController {
 						'Trade.user_status',
 								'Trade.status'),
 							'conditions' => array(
-								'Trade.user_status !=' => 3,
-								'Trade.status !=' => 3,
+								'Trade.user_status !=' => 2,
+								'Trade.status !=' => 2,
 								'Trade.user_id' => $userId,
 								'Trade.shift_id' => $shiftId),
 		));
