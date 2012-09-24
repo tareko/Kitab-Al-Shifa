@@ -134,7 +134,7 @@ class ShiftsController extends AppController {
 		//Otherwise, go ahead and create a new PDF
 		$this->set('calendars', $this->Calendar->find('list'));
 		$this->set('masterSet', $this->Shift->getMasterSet($id));
-		$this->render();
+		return $this->render();
 	}
 
 	/**

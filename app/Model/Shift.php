@@ -164,7 +164,12 @@ class Shift extends AppModel {
 		));
 		
 		foreach ($shiftList as $shift) {
-			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
+			if (!isset($shift['User']['Profile']['cb_displayname'])) {
+				$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => '', 'id' => $shift['Shift']['id']);
+			}
+			else {
+				$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
+			}
 		}
 		return $masterSet;
 	}
