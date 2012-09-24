@@ -122,4 +122,50 @@ class Shift extends AppModel {
 			));
 
 	}
+	
+	function getMasterSet ($id = NULL) {
+		App::uses('Calendar', 'Model');
+		$this->Calendar = new Calendar();
+		$masterSet['calendar'] = $this->Calendar->findById($id);
+		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($id);
+
+		$shiftList = $this->find('all', array(
+				'contain' => array(
+						'ShiftsType' => array(
+								'fields' => array('id')),
+						'ShiftsType.Location' => array(
+								'fields' => array('Location.id')),
+						'User' => array(
+								'fields' => array('id', 'username')),
+						'User.Profile' => array(
+								'fields' => array('Profile.cb_displayname'))
+				),
+				'conditions' => array(
+						'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
+						'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+				)
+		));
+		
+		$locations_raw = $this->ShiftsType->Location->find('all', array(
+				'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
+				'recursive' => '0'
+		));
+		foreach ($locations_raw as $location) {
+			$masterSet['locations'][$location['Location']['id']]['location'] = $location['Location']['location'];
+			$masterSet['locations'][$location['Location']['id']]['abbreviated_name'] = $location['Location']['abbreviated_name'];
+		}
+		$masterSet['ShiftsType'] = $this->ShiftsType->find('all', array(
+				'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
+				'conditions' => array(
+						'ShiftsType.start_date <=' => $masterSet['calendar']['Calendar']['start_date'],
+						'ShiftsType.expiry_date >=' => $masterSet['calendar']['Calendar']['start_date'],
+				),
+				'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
+		));
+		
+		foreach ($shiftList as $shift) {
+			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
+		}
+		return $masterSet;
+	}
 }

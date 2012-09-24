@@ -1,6 +1,6 @@
 <?php
 if (isset($updateNotNeeded)) {
-	echo "EMA_Schedule-".$masterSet['calendar']['Calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf up to date. Update not needed";
+	echo "Calendar " . $id ." is already up to date. Update not needed";
 	return;
 }
 

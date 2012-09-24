@@ -115,6 +115,7 @@ class ShiftsController extends AppController {
 		$this->set('notUpdated', $notUpdated);
 		$this->render();
 	}
+	
 	function pdfCreate($id = NULL) {
 		if (isset($this->request->params['named']['calendar'])) {
 			$id = $this->request->params['named']['calendar'];
@@ -123,59 +124,16 @@ class ShiftsController extends AppController {
 			return $this->setAction('calendarList', 'pdfCreate');
 		}
 
-		$this->loadModel('Calendar');
-		$masterSet['calendar'] = $this->Calendar->findById($id);
-		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($masterSet['calendar']['Calendar']['id']);
-
 		//Check if in need of an update
-		if (!$this->Calendar->needsUpdate($masterSet['calendar']['Calendar']['id'])) {
-			$this->set('masterSet', $masterSet);
+		$this->loadModel('Calendar');
+		if (!$this->Calendar->needsUpdate($id)) {
+			$this->set('id', $id);
 			$this->set('updateNotNeeded', 1);
 			return $this->render();
 		}
-		
 		//Otherwise, go ahead and create a new PDF
 		$this->set('calendars', $this->Calendar->find('list'));
-		
-		$shiftList = $this->Shift->find('all', array(
-				'contain' => array(
-					'ShiftsType' => array(
-							'fields' => array('id')),
-					'ShiftsType.Location' => array(
-							'fields' => array('Location.id')),
-					'User' => array(
-							'fields' => array('id', 'username')),
-					'User.Profile' => array(
-							'fields' => array('Profile.cb_displayname'))
-				),
-				'conditions' => array(
-					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
-					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-				)
-			));
-
-		$locations_raw = $this->Shift->ShiftsType->Location->find('all', array(
-			'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
-			'recursive' => '0'
-			));
-		foreach ($locations_raw as $location) {
-			$masterSet['locations'][$location['Location']['id']]['location'] = $location['Location']['location'];
-			$masterSet['locations'][$location['Location']['id']]['abbreviated_name'] = $location['Location']['abbreviated_name']; 
-		}
-		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
-			'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
-			'conditions' => array(
-				'ShiftsType.start_date <=' => $masterSet['calendar']['Calendar']['start_date'],
-				'ShiftsType.expiry_date >=' => $masterSet['calendar']['Calendar']['start_date'],
-				),
-			'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
-				));
-
-		foreach ($shiftList as $shift) {
-			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
-		}
-		
-		$this->set('masterSet', $masterSet);
+		$this->set('masterSet', $this->Shift->getMasterSet($id));
 		$this->render();
 	}
 
