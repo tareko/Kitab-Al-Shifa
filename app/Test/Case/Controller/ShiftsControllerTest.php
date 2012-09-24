@@ -38,7 +38,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @var array
  */
 	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.calendar', 'app.trade', 'app.user_usergroup_map_j17', 'app.usergroup_j17', 'app.trades_detail');
-
+	
 /**
  * setUp method
  *
@@ -58,7 +58,6 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$Shifts->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-		
 	}
 
 /**
@@ -86,7 +85,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/users/view/2">Harold Morrissey</a>&nbsp;</td>
 		<td>2011-10-19 08:23:49&nbsp;</td>', $result);
 	}
-
+	
 	public function testIndexId() {
 		$result = $this->testAction('/shifts/index/id:1');
 		$this->assertContains('<td>2013-12-28&nbsp;</td>
@@ -140,6 +139,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 	/**
 	 * Test to make sure that the correct 'lastupdated' variable is returned for that calendar.
 	 */
+	//#TODO Broken, since the wrong model loads up due to $this->Shift = new Shift(); in Calendar model.
 	public function testPdfCreateLastUpdated() {
 		$result = $this->testAction('/shifts/pdfCreate/calendar:1',
 				array('return' => 'vars'));

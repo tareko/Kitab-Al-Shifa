@@ -96,30 +96,57 @@ class ShiftsController extends AppController {
 			'recursive' => '0')));
 	}
 
-	function pdfCreate() {
+	/** Function to update all PDFs that need updating
+	 * 
+	 */
+	function pdfUpdate() {
 		$this->loadModel('Calendar');
-		if (isset($this->request->params['named']['calendar'])) {
-			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
-			$masterSet['calendar']['lastupdated'] = $this->Shift->find('first', array(
-				'fields' => array('Shift.updated', 'Shift.date'),
-				'conditions' => array(
-					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
-					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-				),
-				'order' => array(
-					'Shift.updated' => 'DESC',
-				)
-			));
+		$calendars = $this->Calendar->find('list');
+		foreach ($calendars as $id => $calendar) {
+			if (!$this->Calendar->needsUpdate($id)) {
+				$notUpdated[] = $id;
+			}
+			else {
+				$updated[] = $id;
+				$this->pdfCreate($id);
+			}
 		}
-		else {
+		$this->set('updated', $updated);
+		$this->set('notUpdated', $notUpdated);
+		$this->render();
+	}
+	function pdfCreate($id = NULL) {
+		if (isset($this->request->params['named']['calendar'])) {
+			$id = $this->request->params['named']['calendar'];
+		}
+		if (!isset($id)) {
 			return $this->setAction('calendarList', 'pdfCreate');
 		}
+
+		$this->loadModel('Calendar');
+		$masterSet['calendar'] = $this->Calendar->findById($id);
+		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($masterSet['calendar']['Calendar']['id']);
+
+		//Check if in need of an update
+		if (!$this->Calendar->needsUpdate($masterSet['calendar']['Calendar']['id'])) {
+			$this->set('masterSet', $masterSet);
+			$this->set('updateNotNeeded', 1);
+			return $this->render();
+		}
+		
+		//Otherwise, go ahead and create a new PDF
 		$this->set('calendars', $this->Calendar->find('list'));
 		
 		$shiftList = $this->Shift->find('all', array(
 				'contain' => array(
-					'ShiftsType' => array('Location'), 
-					'User' => array('Profile')
+					'ShiftsType' => array(
+							'fields' => array('id')),
+					'ShiftsType.Location' => array(
+							'fields' => array('Location.id')),
+					'User' => array(
+							'fields' => array('id', 'username')),
+					'User.Profile' => array(
+							'fields' => array('Profile.cb_displayname'))
 				),
 				'conditions' => array(
 					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],

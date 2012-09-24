@@ -1,11 +1,15 @@
 <?php
+if (isset($updateNotNeeded)) {
+	echo "EMA_Schedule-".$masterSet['calendar']['Calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf up to date. Update not needed";
+	return;
+}
 
 App::import('Vendor','xtcpdf'); 
 
 $tcpdf = new XTCPDF();
 $textfont = 'freesans'; // looks better, finer, and more condensed than 'dejavusans'
 
-$tcpdf->SetAuthor("Emergency Medicine London. http://emlondon.ca");
+$tcpdf->SetAuthor("Emergency Medicine London. https://emlondon.ca");
 $tcpdf->SetAutoPageBreak( false );
 $tcpdf->setHeaderFont(array($textfont,'',40));
 $tcpdf->xheadertext = '';
@@ -19,7 +23,7 @@ $tcpdf->setCellHeightRatio(1.5);
 $output = $this->Calendar->makeCalendarPdf($masterSet);
 $output .= '<br/><br/><br/><div style="font-size:60%"><p>Notes:<br/>' . $masterSet['calendar']['Calendar']['comments'];
 $output .= '<p>PDF created: '. date('Y-m-d').'</p>
-<p>Schedule last updated: '.$masterSet['calendar']['lastupdated']['Shift']['updated'].'</p></div>';
+<p>Schedule last updated: '.$masterSet['calendar']['lastupdated'].'</p></div>';
 
 $tcpdf->writeHTML($output, true, false, true, false, '');
 

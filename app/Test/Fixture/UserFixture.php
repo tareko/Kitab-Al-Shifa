@@ -11,7 +11,7 @@ class UserFixture extends CakeTestFixture {
  *
  * @var array
  */
-	public $import = array('connection' => 'joomla');
+//	public $import = array('connection' => 'joomla');
 
 /**
  * Fields
