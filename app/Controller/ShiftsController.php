@@ -5,7 +5,7 @@ class ShiftsController extends AppController {
 	var $name = 'Shifts';
 	var $components = array('RequestHandler', 'Search.Prg');
 	var $scaffold = 'admin';
-	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal', 'PhysicianPicker');
+	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal', 'PhysicianPicker', 'Html');
 //	public $cacheAction = "1 hour";
 
 	var $paginate = array(
@@ -100,15 +100,21 @@ class ShiftsController extends AppController {
 	 * 
 	 */
 	function pdfUpdate() {
+		$updated = NULL;
+		$notUpdated = NULL;
 		$this->loadModel('Calendar');
-		$calendars = $this->Calendar->find('list');
-		foreach ($calendars as $id => $calendar) {
+		$calendars = $this->Calendar->find('list',array(
+				'id',
+				'start_date'));
+		foreach ($calendars as $id => $start_date) {
 			if (!$this->Calendar->needsUpdate($id)) {
 				$notUpdated[] = $id;
 			}
 			else {
 				$updated[] = $id;
-				$this->pdfCreate($id);
+				$this->set('calendars', $this->Calendar->find('list'));
+				$this->set('masterSet', $this->Shift->getMasterSet($id));
+				$this->view = 'pdfCreate';
 			}
 		}
 		$this->set('updated', $updated);

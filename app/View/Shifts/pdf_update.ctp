@@ -1,9 +1,13 @@
 <?php
-foreach ($updated as $update) {
-	echo $update . " was updated.<br/>";
+if (isset($updated)) {
+	foreach ($updated as $update) {
+		echo $update . " was updated.<br/>";
+	}
 }
 ?><br/><br/>
 <?php 
-foreach ($notUpdated as $notUpdate) {
-	echo $notUpdate . " was NOT updated.<br/>";
+if (isset($notUpdated)) {
+	foreach ($notUpdated as $notUpdate) {
+		echo $notUpdate . " was NOT updated.<br/>";
+	}
 }
