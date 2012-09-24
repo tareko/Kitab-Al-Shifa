@@ -61,14 +61,14 @@ class ShiftFixture extends CakeTestFixture {
 			'user_id' => '5',
 			'date' => '2011-12-08',
 			'shifts_type_id' => '7',
-			'updated' => '2011-10-19 10:24:30'
+			'updated' => '2011-10-19 10:25:30'
 		),
 		array(
 			'id' => '167',
 			'user_id' => '1',
 			'date' => '2011-12-09',
 			'shifts_type_id' => '8',
-			'updated' => '2011-10-19 10:24:30'
+			'updated' => '2011-10-19 10:26:30'
 		),
 		array(
 			'id' => '196',
@@ -82,7 +82,7 @@ class ShiftFixture extends CakeTestFixture {
 			'user_id' => '3',
 			'date' => '2011-12-11',
 			'shifts_type_id' => '10',
-			'updated' => '2011-10-19 10:35:51'
+			'updated' => '2011-10-19 10:36:51'
 		),
 		array(
 			'id' => '483',
@@ -96,77 +96,77 @@ class ShiftFixture extends CakeTestFixture {
 			'user_id' => '5',
 			'date' => '2011-12-28',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 16:56:23'
 		),
 		array(
 			'id' => '514',
 			'user_id' => '1',
 			'date' => '2013-12-28',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 16:57:23'
 		),
 		array(
 			'id' => '515',
 			'user_id' => '2',
 			'date' => '2013-12-29',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 16:58:23'
 		),
 		array(
 			'id' => '516',
 			'user_id' => '3',
 			'date' => '2013-12-30',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 16:59:23'
 		),
 		array(
 			'id' => '517',
 			'user_id' => '4',
 			'date' => '2013-11-20',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 15:55:23'
 		),
 		array(
 			'id' => '518',
 			'user_id' => '5',
 			'date' => '2013-11-21',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 14:55:23'
 		),
 		array(
 			'id' => '519',
 			'user_id' => '1',
 			'date' => '2013-11-22',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 13:55:23'
 		),
 			array(
 			'id' => '520',
 			'user_id' => '2',
 			'date' => '2013-11-23',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 12:55:23'
 		),
 			array(
 			'id' => '521',
 			'user_id' => '3',
 			'date' => '2013-11-24',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 11:55:23'
 		),
 			array(
 			'id' => '522',
 			'user_id' => '4',
 			'date' => '2013-11-25',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 10:55:23'
 		),
 			array(
 			'id' => '523',
 			'user_id' => '5',
 			'date' => '2013-11-26',
 			'shifts_type_id' => '12',
-			'updated' => '2011-10-19 16:55:23'
+			'updated' => '2011-10-19 10:35:23'
 		),
 	);
 }

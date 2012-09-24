@@ -101,7 +101,11 @@ class ShiftsController extends AppController {
 		if (isset($this->request->params['named']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 			$masterSet['calendar']['lastupdated'] = $this->Shift->find('first', array(
-				'fields' => array('Shift.updated'),
+				'fields' => array('Shift.updated', 'Shift.date'),
+				'conditions' => array(
+					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
+					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+				),
 				'order' => array(
 					'Shift.updated' => 'DESC',
 				)
@@ -145,8 +149,6 @@ class ShiftsController extends AppController {
 		}
 		
 		$this->set('masterSet', $masterSet);
-//		$this->layout = 'pdf'; //this will use the pdf.ctp layout 
-//		$this->header("Content-Type: application/pdf");
 		$this->render();
 	}
 

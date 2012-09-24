@@ -93,7 +93,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
 		<td><a href="/kitab/shifts_types/view/12">0400-1000 </a>&nbsp;</td>
 		<td><a href="/kitab/users/view/1">James Bynum</a>&nbsp;</td>
-		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
+		<td>2011-10-19 16:57:23&nbsp;</td>', $result);
 	}
 	
 	//TODO: This is probably wrong. Calendar #1 doesn't include the dates shown.
@@ -103,7 +103,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/locations/view/3">Come on pretty mama</a>&nbsp;</td>
 		<td><a href="/kitab/shifts_types/view/10">0800-1500 </a>&nbsp;</td>
 		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
-		<td>2011-10-19 10:35:51&nbsp;</td>', $result);
+		<td>2011-10-19 10:36:51&nbsp;</td>', $result);
 		$this->assertTextNotContains('<td>2013-12-30&nbsp;</td>
 		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
 		<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>
@@ -132,15 +132,20 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testPdfCreateNoCalGiven() {
-		$result = $this->testAction('/shifts/pdfCreate');
+		$result = $this->testAction('/shifts/pdfCreate',
+				array('return' => 'vars'));
 		debug($result);
 	}
 
-	public function testPdfCreateCalGiven() {
-		$result = $this->testAction('/shifts/pdfCreate/calendar:1');
-		debug($result);
+	/**
+	 * Test to make sure that the correct 'lastupdated' variable is returned for that calendar.
+	 */
+	public function testPdfCreateLastUpdated() {
+		$result = $this->testAction('/shifts/pdfCreate/calendar:1',
+				array('return' => 'vars'));
+		$this->assertEquals('2011-10-19 10:36:51', $result['masterSet']['calendar']['lastupdated']['Shift']['updated']);
 	}
-	
+
 /**
  * testCalendarEdit method
  *
