@@ -42,6 +42,9 @@ class Billing extends AppModel {
 			}
 			if (substr($row, 0, 3) == 'HET') {
 				$data[$i][$j]['Items'][] = $this->parseFields($row, 'HET');
+				if (substr($row, 41, 1) != ' ') {
+					$data[$i][$j]['Items'][] = $this->parseFields(substr($row, 38), 'HET');
+				}
 			}
 		}
 		return $data;
