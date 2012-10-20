@@ -51,4 +51,14 @@ class BillingsItem extends AppModel {
 	public function dateFormatBeforeSave($dateString) {
 		return date('Y-m-d', strtotime($dateString));
 	}
+	
+	public function distinctShiftsPerDay ($conditions = array()) {
+		$data = $this->find('all', array(
+				'fields' => array('Billing.healthcare_provider', 'service_date', 'COUNT(DISTINCT billing_id)'),
+				'conditions' => $conditions,
+				'group' => array('Billing.healthcare_provider', 'service_date')
+				)
+		);
+		return $data;
+	}
 }

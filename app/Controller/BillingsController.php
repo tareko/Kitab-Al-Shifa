@@ -8,6 +8,11 @@ class BillingsController extends AppController {
 
 
 	function index() {
+		$this->loadModel('BillingsItem');
+		debug($this->BillingsItem->distinctShiftsPerDay());
+		$log = $this->BillingsItem->getDataSource()->getLog(false, false);
+		debug($log);
+		
         $this->render();
 	}
 	/* Upload function
@@ -30,10 +35,11 @@ class BillingsController extends AppController {
 	}
 	
 	function export() {
+		//set_time_limit(300);
 		// Find fields needed without recursing through associated models
 		$data = $this->Billing->find('all', array(
-				'limit' => 100,
-				'BillingsItem'));
+				'BillingsItem',
+				'limit' => 1000));
 		$data = $this->Billing->recombineBilling($data);
 		// Define column headers for CSV file, in same array format as the data itself
 		$headers = array(
