@@ -347,7 +347,7 @@ class ShiftsController extends AppController {
 		if (!$this->Shift->exists()) {
 			throw new NotFoundException(__('Invalid shift'));
 		}
-		if ($this->request->is('post') || $this->request->is('put')) {
+		if ($this->request->isPost() || $this->request->isPut()) {
 			if ($this->Shift->save($this->request->data)) {
 				$this->Session->setFlash(__('The shift has been saved'));
 				$this->redirect(array('action' => 'index'));

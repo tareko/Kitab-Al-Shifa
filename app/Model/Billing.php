@@ -1,55 +1,134 @@
 <?php
+App::uses('AppModel', 'Model');
 /**
  * Billing Model
  *
+ * @property BillingsItem $BillingsItem
  */
 class Billing extends AppModel {
+
+	/**
+	 * Associations
+	 * @var unknown_type
+	 */
+	public $hasMany = array(
+			'BillingsItem' => array(
+					'className' => 'BillingsItem',
+					'foreignKey' => 'billing_id',
+					'conditions' => '',
+					'fields' => '',
+					'order' => ''
+			)
+	);
+	
+/**
+ * Validation rules
+ *
+ * @var array
+ */
+	public $validate = array(
+		'patient_birthdate' => array(
+			'date' => array(
+				'rule' => array('date'),
+				//'message' => 'Your custom message here',
+				'allowEmpty' => false,
+				'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+
+		'payment_program' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				'required' => true,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'payee' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				'required' => true,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+/*
+ 		'referring' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
+				//'message' => 'Your custom message here',
+				'allowEmpty' => true,
+				'required' => false,
+				//'last' => true, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+ 		),
+*/
+	);
+	
+	public function beforeValidate($options = array()) {
+		if (!empty($this->data['Billing']['patient_birthdate'])) {
+			$this->data['Billing']['patient_birthdate'] = $this->dateFormatBeforeSave($this->data['Billing']['patient_birthdate']);
+		}
+		return true;
+	}
+	
+	public function dateFormatBeforeSave($dateString) {
+		return date('Y-m-d', strtotime($dateString));
+	}
 	
 	/**
 	 * Imports MOHLTC file into DB
 	 * See MOHLTC Technical specifications: Interface to Health Care Systems
 	 * http://health.gov.on.ca/english/providers/pub/ohip/tech_specific/tech_specific_mn.html
-	 * 
+	 *
 	 * Special thanks to Tigrang for some amazing help!
-	 * 
+	 *
 	 * @param string $filename
 	 */
 	function import ($filename) {
 		// Set the filename to read from
-		$filename = TMP . 'uploads' . DS . 'Billing' . DS . $filename;
-
+		$filename = $filename;
+	
 		// Open the file
 		if (!$file = fopen($filename, 'r')) {
 			return false;
 		}
-		
+	
 		// Start parsing for health encounters
 		$data = array();
 		$i = 0;
 		$j = 0;
-
+	
 		while($row = fgets($file)) {
 			if (substr($row, 0, 3) == 'HEB') {
 				$i = $i + 1;
-				$data[$i] = $this->parseFields($row, 'HEB');
+				$data_provider[$i] = $this->parseFields($row, 'HEB');
 			}
 			if (substr($row, 0, 3) == 'HEH') {
 				$j = $j + 1;
-				$data[$i][$j] = $this->parseFields($row, 'HEH');
+				$data[$j]['Billing'] = $this->parseFields($row, 'HEH');
+				$data[$j]['Billing']['healthcare_provider'] = $data_provider[$i]['healthcare_provider'];
 			}
 			if (substr($row, 0, 3) == 'HER') {
-				$data[$i][$j]['Items'][] = $this->parseFields($row, 'HER');
+				$data[$j]['BillingsItem'][] = $this->parseFields($row, 'HER');
 			}
 			if (substr($row, 0, 3) == 'HET') {
-				$data[$i][$j]['Items'][] = $this->parseFields($row, 'HET');
+				$data[$j]['BillingsItem'][] = $this->parseFields($row, 'HET');
 				if (substr($row, 41, 1) != ' ') {
-					$data[$i][$j]['Items'][] = $this->parseFields(substr($row, 38), 'HET');
+					$data[$j]['BillingsItem'][] = $this->parseFields(substr($row, 38), 'HET');
 				}
 			}
 		}
 		return $data;
 	}
-
+	
 	function parseFields($row, $section) {
 		$schema = array(
 				'HEB' => array(
@@ -98,4 +177,24 @@ class Billing extends AppModel {
 		return $fields;
 	}
 	
+	/**
+	 * Recombine billings into one array for ease of CSV export
+	 * @param array $data
+	 */
+	
+	public function recombineBilling ($data) {
+		$i = 0;
+		foreach ($data as $row) {
+			foreach ($row['BillingsItem'] as $item) {
+				$output[$i] = $item;
+				$output[$i]['healthcare_provider'] = $row['Billing']['healthcare_provider'];
+				$output[$i]['patient_birthdate'] = $row['Billing']['patient_birthdate'];
+				$output[$i]['payment_program'] = $row['Billing']['payment_program'];
+				$output[$i]['payee'] = $row['Billing']['payee'];
+				$output[$i]['referring'] = $row['Billing']['referring'];
+				$i = $i + 1;
+			}
+		}
+		return $output;
+	}
 }

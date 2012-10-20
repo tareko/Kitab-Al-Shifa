@@ -53,3 +53,6 @@
  * Add router for AJAX
  */
 	Router::parseExtensions('json');
+	
+	//Add router for  CSV
+	Router::parseExtensions('csv');
