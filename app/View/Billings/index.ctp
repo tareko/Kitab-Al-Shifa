@@ -1,140 +1,121 @@
-<style>
+In your whole career, you saw: <?php $total_patients ?> patients
+Your annual average is: <?php $annual_average ?> patients
+Your daily average is: <?php $daily_average ?> patients
 
-svg {
-	font: 10px sans-serif;
-}
+The group daily average is:
 
-path {
-	fill: steelblue;
+
+<!-- <style>
+body {
+  font: 10px sans-serif;
 }
 
 .axis path,
 .axis line {
-	fill: none;
-	stroke: #000;
-	shape-rendering: crispEdges;
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
 }
 
-.brush .extent {
-	stroke: #fff;
-	fill-opacity: .125;
-	shape-rendering: crispEdges;
+.dot {
+  stroke: #000;
 }
 
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var margin = {
-	top: 10, right: 10, bottom: 100, left: 40},
-	margin2 = {
-		top: 430, right: 10, bottom: 20, left: 40},
-		width = 960 - margin.left - margin.right,
-		height = 500 - margin.top - margin.bottom,
-		height2 = 500 - margin2.top - margin2.bottom;
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
-		var parseDate = d3.time.format("%b %Y").parse;
+var x = d3.time.scale()
+    .range([0, width]);
 
-		var x = d3.time.scale().range([0, width]),
-		x2 = d3.time.scale().range([0, width]),
-		y = d3.scale.linear().range([height, 0]),
-		y2 = d3.scale.linear().range([height2, 0]);
+var y = d3.scale.linear()
+    .range([height, 0]);
 
-		var xAxis = d3.svg.axis().scale(x).orient("bottom"),
-		xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
-		yAxis = d3.svg.axis().scale(y).orient("left");
+var color = d3.scale.category10();
 
-		var brush = d3.svg.brush()
-		.x(x2)
-		.on("brush", brush);
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
 
-		var area = d3.svg.area()
-		.interpolate("monotone")
-		.x(function(d) {
-			return x(d.date);
-		})
-		.y0(height)
-		.y1(function(d) {
-			return y(d.price);
-		});
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
 
-		var area2 = d3.svg.area()
-		.interpolate("monotone")
-		.x(function(d) {
-			return x2(d.date);
-		})
-		.y0(height2)
-		.y1(function(d) {
-			return y2(d.price);
-		});
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-		var svg = d3.select("body").append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom);
+d3.csv("http://127.0.0.1/kitab/billings/patientsPerDay.csv", function(error, data) {
 
-		svg.append("defs").append("clipPath")
-		.attr("id", "clip")
-		.append("rect")
-		.attr("width", width)
-		.attr("height", height);
+	data = data.map( function (d) {
+		return { 
+			provider: +d.Provider,   // the + sign will coerce strings to number values
+			date: new Date(d['Service date']),
+			patients: +d['Unique patients seen'] }; 
+	});
 
-		var focus = svg.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	providers = d3.nest().key(function(d) { return d.provider; }).entries(data);
 
-		var context = svg.append("g")
-		.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+  x.domain(d3.extent(data, function(d) { return d.date; })).nice();
+  y.domain(d3.extent(data, function(d) { return d.patients; })).nice();
 
-		d3.csv("http://127.0.0.1/sp500.csv", function(error, data) {
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Sepal Width (cm)");
 
-			data.forEach(function(d) {
-				d.date = parseDate(d.date);
-				d.price = +d.price;
-			});
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Sepal Length (cm)")
 
-			x.domain(d3.extent(data.map(function(d) {
-				return d.date;
-			})));
-			y.domain([0, d3.max(data.map(function(d) {
-				return d.price;
-			}))]);
-			x2.domain(x.domain());
-			y2.domain(y.domain());
+  svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d.date); })
+      .attr("cy", function(d) { return y(d.patients); })
+      .style("fill", function(d) { return color(d.provider); });
 
-			focus.append("path")
-			.datum(data)
-			.attr("clip-path", "url(#clip)")
-			.attr("d", area);
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-			focus.append("g")
-			.attr("class", "x axis")
-			.attr("transform", "translate(0," + height + ")")
-			.call(xAxis);
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
 
-			focus.append("g")
-			.attr("class", "y axis")
-			.call(yAxis);
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
 
-			context.append("path")
-			.datum(data)
-			.attr("d", area2);
+});
 
-			context.append("g")
-			.attr("class", "x axis")
-			.attr("transform", "translate(0," + height2 + ")")
-			.call(xAxis2);
-
-			context.append("g")
-			.attr("class", "x brush")
-			.call(brush)
-			.selectAll("rect")
-			.attr("y", -6)
-			.attr("height", height2 + 7);
-		});
-
-		function brush() {
-			x.domain(brush.empty() ? x2.domain() : brush.extent());
-			focus.select("path").attr("d", area);
-			focus.select(".x.axis").call(xAxis);
-		}
-
-		</script>
+</script>
+-->

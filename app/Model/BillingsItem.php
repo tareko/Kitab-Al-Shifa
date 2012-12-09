@@ -52,13 +52,38 @@ class BillingsItem extends AppModel {
 		return date('Y-m-d', strtotime($dateString));
 	}
 	
-	public function distinctShiftsPerDay ($conditions = array()) {
+	public function distinctPatientsPerDay ($conditions = array()) {
+		$i = 0;
 		$data = $this->find('all', array(
 				'fields' => array('Billing.healthcare_provider', 'service_date', 'COUNT(DISTINCT billing_id)'),
 				'conditions' => $conditions,
 				'group' => array('Billing.healthcare_provider', 'service_date')
 				)
 		);
-		return $data;
+		foreach ($data as $row) {
+			$output[$i]['healthcare_provider'] = $row['Billing']['healthcare_provider'];
+			$output[$i]['service_date'] = $row['BillingsItem']['service_date'];
+			$output[$i]['count'] = $row[0]['COUNT(DISTINCT billing_id)'];
+			$i = $i + 1;
+		}
+		return $output;
 	}
+	
+	public function distinctPatientsPerDayAnnualAverage ($conditions = array()) {
+		$i = 0;
+		$data = $this->find('all', array(
+				'fields' => array('Billing.healthcare_provider', 'service_date', 'COUNT(DISTINCT billing_id)'),
+				'conditions' => $conditions,
+				'group' => array('Billing.healthcare_provider', 'service_date')
+		)
+		);
+		foreach ($data as $row) {
+			$output[$i]['healthcare_provider'] = $row['Billing']['healthcare_provider'];
+			$output[$i]['service_date'] = $row['BillingsItem']['service_date'];
+			$output[$i]['count'] = $row[0]['COUNT(DISTINCT billing_id)'];
+			$i = $i + 1;
+		}
+		return $output;
+	}
+	
 }

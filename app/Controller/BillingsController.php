@@ -9,10 +9,8 @@ class BillingsController extends AppController {
 
 	function index() {
 		$this->loadModel('BillingsItem');
-		debug($this->BillingsItem->distinctShiftsPerDay());
-		$log = $this->BillingsItem->getDataSource()->getLog(false, false);
-		debug($log);
-		
+		$perDay = $this->BillingsItem->distinctPatientsPerDayAnnualAverage(array('healthcare_provider' => 10800));
+		debug ($perDay);
         $this->render();
 	}
 	/* Upload function
@@ -39,7 +37,7 @@ class BillingsController extends AppController {
 		// Find fields needed without recursing through associated models
 		$data = $this->Billing->find('all', array(
 				'BillingsItem',
-				'limit' => 1000));
+				'limit' => 10000));
 		$data = $this->Billing->recombineBilling($data);
 		// Define column headers for CSV file, in same array format as the data itself
 		$headers = array(
@@ -60,5 +58,20 @@ class BillingsController extends AppController {
 		// Make the data available to the view (and the resulting CSV file)
 		$this->set(compact('data'));
 	}
+	
+	function patientsPerDay() {
+		$this->loadModel('BillingsItem');
+		$data = $this->BillingsItem->distinctPatientsPerDay();
+		$headers = array(
+				'healthcare_provider' => 'Provider',
+				'service_date' => 'Service date',
+				'COUNT(DISTINCT billing_id)' => 'Unique patients seen',
+		);
+		// Add headers to start of data array
+		array_unshift($data,$headers);
+		$this->set('data', $data);
+		$this->render();
+	}
+	
 }
 ?>

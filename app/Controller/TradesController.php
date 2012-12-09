@@ -72,7 +72,7 @@ class TradesController extends AppController {
 		$recipientNotPresent = false;
 		$originatorNotPresent = false;
 		$checkDuplicate = false;
-		if ($this->request->is('post') && $this->request->data) {
+		if ($this->request->isPost() && $this->request->data) {
 			if (isset($this->request->data['Trade']['shift_id']) && isset($this->request->data['Trade']['user_id'])) {
 				$checkDuplicate = $this->checkDuplicate($this->request->data['Trade']['shift_id'], $this->request->data['Trade']['user_id']);
 			}
