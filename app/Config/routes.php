@@ -50,9 +50,6 @@
 	require CAKE . 'Config' . DS . 'routes.php';
 
 /**
- * Add router for AJAX
+ * Add routers for AJAX and CSV
  */
-	Router::parseExtensions('json');
-	
-	//Add router for  CSV
-	Router::parseExtensions('csv');
+	Router::parseExtensions('json', 'csv');
