@@ -274,5 +274,51 @@ class CalendarHelper extends AppHelper {
 
 		return $output;
 	}
+	
+	
+	function makeCalendarCsv($masterSet) {
+		//Create variables
+		$i = 1;
+		$header = null;
+		$output = array();
+		$calendar = $masterSet['calendar'];
+		$startDate = $calendar['Calendar']['start_date'];
+		$endDate = $calendar['Calendar']['end_date'];
+		$k = $startDate;
+	
+		// Create headers
+		$output[] = array($calendar['Calendar']['name']);
+		$temp_headers[] = "Date";
+		
+		foreach ($masterSet['ShiftsType'] as $shiftsType) {
+			$temp_headers[] = $masterSet['locations'][$shiftsType['ShiftsType']['location_id']]['location'];
+		}
+		$output[] = $temp_headers;
+		$output1[] = "";
+	
+		foreach ($masterSet['ShiftsType'] as $shiftsType) {
+			$output1[] = $shiftsType['ShiftsType']['times'];
+		}
+		$output[] = $output1;
+	
+	
+		//Output Days of the month
+		while ($k <= $calendar['Calendar']['end_date']) {
+			$output1 = null;
+			$output1[] = date('Y-m-d', strtotime($k));
+			foreach ($masterSet['ShiftsType'] as $shiftsType) {
+				if (isset($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']])) {
+					$output1[] = $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'];
+				}
+				else {
+					$output1[] = "";
+				}
+			}
+			// Enter physician names into record, spaced with comma
+			$output[] = $output1;
+			$k = date('Y-m-d', strtotime("$k + 1 day"));
+		}
+	
+		return $output;
+	}
 }
-?>

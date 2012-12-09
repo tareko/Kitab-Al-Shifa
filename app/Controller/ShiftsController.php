@@ -189,7 +189,7 @@ class ShiftsController extends AppController {
 	}
 
 	function calendarView() {
-		$this->Prg->commonProcess();
+ 		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 		$this->loadModel('Profile');
 		
