@@ -12,6 +12,10 @@ class BillingsController extends AppController {
 		$this->loadModel('BillingsItem');
 		$this->loadModel('Shift');
 		
+		if (!isset($this->request->query['id']) || !isset($this->request->query['start_date']) || !isset($this->request->query['end_date'])) {
+			return $this->render();
+		}
+		
 		$conditions = array();
 		if (isset($this->request->query['id'])) {
 			$conditions = $conditions + array('user_id' => $this->request->query['id']);
