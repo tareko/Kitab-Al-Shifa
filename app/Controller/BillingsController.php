@@ -69,7 +69,6 @@ class BillingsController extends AppController {
 				return $this->render();
 			}
 		}
-		debug($status);
 		$this->set(compact('status'));
 		$this->render();
 	}
