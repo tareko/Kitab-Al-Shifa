@@ -12,8 +12,10 @@ class BillingsController extends AppController {
 		$this->loadModel('BillingsItem');
 		$this->loadModel('Shift');
 		
+		// If query is received, then start all the DB magic
 		if (isset($this->request->query['id']) && isset($this->request->query['start_date']) && isset($this->request->query['end_date'])) {
-			
+
+			// Figure out if start date and end date are in simple YYYY-MM-DD or as array
 			if (isset($this->request->query['start_date']['year'])) {
 				$start_date = $this->request->query['start_date']['year'].'-'.$this->request->query['start_date']['month'].'-'.$this->request->query['start_date']['day'];
 			}
@@ -28,12 +30,14 @@ class BillingsController extends AppController {
 				$end_date = $this->request->query['end_date'];
 			}
 
+			//Set conditions
 			$conditions = array();
 			$conditions = $conditions + array('user_id' => $this->request->query['id']);
 			$conditions = $conditions + array('Shift.date >=' => $start_date);
 			$conditions = $conditions + array('Shift.date <=' => $end_date);
 
 
+			//Get all shifts worked
 			$shiftsWorked = $this->Shift->getShiftList($conditions);
 			foreach($shiftsWorked as $shift) {
 				$patientsSeen[$i] = $shift;
@@ -51,6 +55,8 @@ class BillingsController extends AppController {
 		$this->set(compact('patientsSeen', 'userList'));
 		$this->render();
 	}
+	
+	
 	/* Upload function
 	 * 
 	 */
