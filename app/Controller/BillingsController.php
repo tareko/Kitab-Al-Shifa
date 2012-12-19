@@ -8,27 +8,69 @@ class BillingsController extends AppController {
 
 
 	function index() {
+		$i = 0;
 		$this->loadModel('BillingsItem');
-		$perDay = $this->BillingsItem->distinctPatientsPerDayAnnualAverage(array('healthcare_provider' => 10800));
-		debug ($perDay);
+		$this->loadModel('Shift');
+		
+		$conditions = array();
+		if (isset($this->request->query['id'])) {
+			$conditions = $conditions + array('user_id' => $this->request->query['id']);
+		}
+		if (isset($this->request->query['start_date'])) {
+			$conditions = $conditions + array('Shift.date >=' => $this->request->query['start_date']);
+		}
+		if (isset($this->request->query['end_date'])) {
+			$conditions = $conditions + array('Shift.date <=' => $this->request->query['end_date']);
+		}
+		
+
+		$shiftsWorked = $this->Shift->getShiftList($conditions);
+		foreach($shiftsWorked as $shift) {
+			$patientsSeen[$i] = $shift;
+			$patientsPerShift = $this->BillingsItem->distinctPatientsPerShift($shift);
+			if ($patientsPerShift) {
+				$patientsSeen[$i]['Billing'] = $patientsPerShift['0'];
+			}
+			else {
+				$patientsSeen[$i]['Billing']['count'] = 'Unavailable';
+			}
+			$i = $i + 1; 
+		}
+		$this->set(compact('patientsSeen'));
         $this->render();
 	}
 	/* Upload function
 	 * 
 	 */
 	function upload() {
+		$status = array();
 		if ($this->request->isPost()) {
-			$data = $this->Billing->import($this->request->data['Billing']['upload']['tmp_name']);
-			if ($this->Billing->saveAll($data, array('deep' => true))) {
-				return $this->Session->setFlash('Successfully imported file \'' .$this->request->data['Billing']['upload']['name'] . '\'');
+			$failure = false;
+			foreach ($this->data['Billing']['upload'] as $upload) {
+				$data = $this->Billing->import($upload['tmp_name']);
+				if ($this->Billing->saveAll($data, array('deep' => true))) {
+					$status[] = $upload['name'] ." saved successfully";
+				}
+				else {
+					debug($this->Billing->validationErrors);
+					debug($data);
+					$status[] = $upload['name'] ." failed to save";
+					$failure = true;
+				}
+			}
+			if ($failure == true) {
+				$this->set(compact('status'));
+				$this->Session->setFlash('I\'m sorry. One or more files did not successfully import.');
+				return $this->render();
 			}
 			else {
-				debug($this->Billing->validationErrors);
-				debug($data);
-				return $this->Session->setFlash('I\'m sorry. This file did not successfully import.');
+				$this->set(compact('status'));
+				$this->Session->setFlash('Import successful.');
+				return $this->render();
 			}
-			
 		}
+		debug($status);
+		$this->set(compact('status'));
 		$this->render();
 	}
 	

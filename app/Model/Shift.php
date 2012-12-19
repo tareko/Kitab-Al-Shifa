@@ -115,7 +115,7 @@ class Shift extends AppModel {
 					'User' => array(
 							'fields' => array('name'),
 							'Profile' => array(
-									'fields' => array('cb_displayname')
+									'fields' => array('cb_displayname', 'cb_ohip')
 				))),
 				'conditions' => $conditions,
 				'recursive' => '2',
@@ -172,5 +172,49 @@ class Shift extends AppModel {
 			}
 		}
 		return $masterSet;
+	}
+
+	/**
+	 * The shifts worked by a physician (or several physicians) by OHIP Number
+	 * 
+	 * @param unknown_type $healthcare_provider
+	 * @param unknown_type $start_date
+	 * @param unknown_type $end_date
+	 * @param array $conditions
+	 * @return array $output
+	 */
+	function shiftsWorkedbyOhipNumber ($healthcare_provider = NULL, $start_date = NULL, $end_date = NULL, $conditions = array()) {
+		$conditionsProfile = array_merge($conditions, array(
+			'Profile.cb_ohip' => $healthcare_provider,
+		));
+		$conditionsShift = array();
+		if ($start_date) {
+			$conditionsShift = array_merge($conditionsShift, array(
+					'Shift.date >=' => $start_date
+					));
+		}
+		if ($end_date) {
+			$conditionsShift = array_merge($conditionsShift, array(
+					'Shift.date <=' => $end_date,
+					));
+		}
+		
+		return $this->User->Profile->find('all', array(
+				'contain' => array(
+						'Shift' => array(
+								'fields' => array('id', 'date'),
+								'conditions' => $conditionsShift,
+								'ShiftsType' => array(
+									'fields' => array('id', 'shift_start', 'shift_end'),
+									'Location' => array(
+										'fields' => 'location')),
+								'User' => array(
+									'fields' => array('name'),
+								))),
+				'fields' => array('cb_ohip'),
+				'conditions' => $conditionsProfile,
+				'recursive' => '3',
+		));
+		
 	}
 }

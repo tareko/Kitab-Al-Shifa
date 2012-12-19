@@ -197,5 +197,4 @@ class Billing extends AppModel {
 		}
 		return $output;
 	}
-
 }

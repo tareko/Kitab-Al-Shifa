@@ -54,6 +54,7 @@ class BillingsItem extends AppModel {
 	
 	public function distinctPatientsPerDay ($conditions = array()) {
 		$i = 0;
+		$output = array();
 		$data = $this->find('all', array(
 				'fields' => array('Billing.healthcare_provider', 'service_date', 'COUNT(DISTINCT billing_id)'),
 				'conditions' => $conditions,
@@ -68,7 +69,7 @@ class BillingsItem extends AppModel {
 		}
 		return $output;
 	}
-	
+
 	public function distinctPatientsPerDayAnnualAverage ($conditions = array()) {
 		$i = 0;
 		$data = $this->find('all', array(
@@ -83,6 +84,15 @@ class BillingsItem extends AppModel {
 			$output[$i]['count'] = $row[0]['COUNT(DISTINCT billing_id)'];
 			$i = $i + 1;
 		}
+		return $output;
+	}
+
+	public function distinctPatientsPerShift ($shift) {
+		$conditions = array(
+				'service_date' => $shift['Shift']['date'],
+				'Billing.healthcare_provider' => $shift['User']['Profile']['cb_ohip'],
+				);
+		$output = $this->distinctPatientsPerDay($conditions);
 		return $output;
 	}
 	
