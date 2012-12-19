@@ -1,3 +1,17 @@
+<?php 
+echo $this->Form->create('Billing', array('type' => 'get'));
+
+echo $this->Form->select('id', $userList);
+echo $this->Form->input('start_date', array(
+		'type' => 'date',
+		'dateFormat' => 'D-M-Y'));
+echo $this->Form->input('end_date', array(
+		'type' => 'date',
+		'dateFormat' => 'D-M-Y'));
+
+echo $this->Form->end('Submit');
+
+?>
 <table>
 	<tr><th>Physician</th><th>Date</th><th>Location</th><th>Shift</th><th>Patients seen</th></tr>
 <?php 

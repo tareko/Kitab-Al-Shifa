@@ -12,36 +12,44 @@ class BillingsController extends AppController {
 		$this->loadModel('BillingsItem');
 		$this->loadModel('Shift');
 		
-		if (!isset($this->request->query['id']) || !isset($this->request->query['start_date']) || !isset($this->request->query['end_date'])) {
-			return $this->render();
-		}
-		
-		$conditions = array();
-		if (isset($this->request->query['id'])) {
-			$conditions = $conditions + array('user_id' => $this->request->query['id']);
-		}
-		if (isset($this->request->query['start_date'])) {
-			$conditions = $conditions + array('Shift.date >=' => $this->request->query['start_date']);
-		}
-		if (isset($this->request->query['end_date'])) {
-			$conditions = $conditions + array('Shift.date <=' => $this->request->query['end_date']);
-		}
-		
-
-		$shiftsWorked = $this->Shift->getShiftList($conditions);
-		foreach($shiftsWorked as $shift) {
-			$patientsSeen[$i] = $shift;
-			$patientsPerShift = $this->BillingsItem->distinctPatientsPerShift($shift);
-			if ($patientsPerShift) {
-				$patientsSeen[$i]['Billing'] = $patientsPerShift['0'];
+		if (isset($this->request->query['id']) && isset($this->request->query['start_date']) && isset($this->request->query['end_date'])) {
+			
+			if (isset($this->request->query['start_date']['year'])) {
+				$start_date = $this->request->query['start_date']['year'].'-'.$this->request->query['start_date']['month'].'-'.$this->request->query['start_date']['day'];
 			}
 			else {
-				$patientsSeen[$i]['Billing']['count'] = 'Unavailable';
+				$start_date = $this->request->query['start_date'];
 			}
-			$i = $i + 1; 
+			
+			if (isset($this->request->query['end_date']['year'])) {
+				$end_date = $this->request->query['end_date']['year'].'-'.$this->request->query['end_date']['month'].'-'.$this->request->query['end_date']['day'];
+			}
+			else {
+				$end_date = $this->request->query['end_date'];
+			}
+
+			$conditions = array();
+			$conditions = $conditions + array('user_id' => $this->request->query['id']);
+			$conditions = $conditions + array('Shift.date >=' => $start_date);
+			$conditions = $conditions + array('Shift.date <=' => $end_date);
+
+
+			$shiftsWorked = $this->Shift->getShiftList($conditions);
+			foreach($shiftsWorked as $shift) {
+				$patientsSeen[$i] = $shift;
+				$patientsPerShift = $this->BillingsItem->distinctPatientsPerShift($shift);
+				if ($patientsPerShift) {
+					$patientsSeen[$i]['Billing'] = $patientsPerShift['0'];
+				}
+				else {
+					$patientsSeen[$i]['Billing']['count'] = 'Unavailable';
+				}
+				$i = $i + 1; 
+			}
 		}
-		$this->set(compact('patientsSeen'));
-        $this->render();
+		$userList = $this->Shift->User->getList(NULL, NULL, true);
+		$this->set(compact('patientsSeen', 'userList'));
+		$this->render();
 	}
 	/* Upload function
 	 * 
