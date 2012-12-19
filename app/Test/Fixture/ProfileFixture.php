@@ -71,6 +71,7 @@ class ProfileFixture extends CakeTestFixture {
 		'cb_addrprov' => array('type' => 'string', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'comment' => '', 'charset' => 'utf8'),
 		'formatname' => array('type' => 'string', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'comment' => '', 'charset' => 'utf8'),
 		'cb_displayname' => array('type' => 'string', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'comment' => '', 'charset' => 'utf8'),
+		'cb_ohip' => array('type' => 'string', 'null' => true, 'default' => NULL, 'collate' => 'utf8_general_ci', 'comment' => '', 'charset' => 'utf8'),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'user_id' => array('column' => 'user_id', 'unique' => 1), 'apprconfbanid' => array('column' => array('approved', 'confirmed', 'banned', 'id'), 'unique' => 0), 'avatappr_apr_conf_ban_avatar' => array('column' => array('avatarapproved', 'approved', 'confirmed', 'banned', 'avatar'), 'unique' => 0), 'lastupdatedate' => array('column' => 'lastupdatedate', 'unique' => 0)),
 		'tableParameters' => array()
 	);
@@ -127,7 +128,8 @@ class ProfileFixture extends CakeTestFixture {
 			'cb_addrs2' => '',
 			'cb_addrprov' => '',
 			'formatname' => NULL,
-			'cb_displayname' => 'Bynum'
+			'cb_displayname' => 'Bynum',
+			'cb_ohip' => '010010'
 		),
 		array(
 			'id' => '2',
@@ -175,7 +177,8 @@ class ProfileFixture extends CakeTestFixture {
 			'cb_addrs2' => '',
 			'cb_addrprov' => '',
 			'formatname' => NULL,
-			'cb_displayname' => 'Morrissey'
+			'cb_displayname' => 'Morrissey',
+			'cb_ohip' => '010012'
 		),
 		array(
 			'id' => '3',
@@ -223,7 +226,8 @@ class ProfileFixture extends CakeTestFixture {
 			'cb_addrs2' => '',
 			'cb_addrprov' => '',
 			'formatname' => NULL,
-			'cb_displayname' => 'Cremin'
+			'cb_displayname' => 'Cremin',
+			'cb_ohip' => '010014'
 		),
 		array(
 			'id' => '4',
@@ -271,7 +275,8 @@ class ProfileFixture extends CakeTestFixture {
 			'cb_addrs2' => '',
 			'cb_addrprov' => '',
 			'formatname' => NULL,
-			'cb_displayname' => 'Beaudoin'
+			'cb_displayname' => 'Beaudoin',
+			'cb_ohip' => '010016'
 		),
 		array(
 			'id' => '5',
@@ -319,7 +324,8 @@ class ProfileFixture extends CakeTestFixture {
 			'cb_addrs2' => '',
 			'cb_addrprov' => '',
 			'formatname' => NULL,
-			'cb_displayname' => 'Chatigny'
+			'cb_displayname' => 'Chatigny',
+			'cb_ohip' => '010018'
 		),
 	);
 }
