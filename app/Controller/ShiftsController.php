@@ -352,7 +352,7 @@ class ShiftsController extends AppController {
 			if ($this->request->data['Shift']['list'] == 'some') {
 				$i = 0;
 				foreach ($this->request->data['Shift'] as $users) {
-					if (isset($users['id'])) {
+					if (is_array($users)) {
 						$this->request->params['named']['id['.$i.']'] = $users['id'];
 						$i++;
 					}
