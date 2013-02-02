@@ -34,10 +34,7 @@ class BillingsItem extends AppModel {
 	public $belongsTo = array(
 		'Billing' => array(
 			'className' => 'Billing',
-			'foreignKey' => 'billing_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
+			'foreignKey' => 'billing_id'
 		)
 	);
  
