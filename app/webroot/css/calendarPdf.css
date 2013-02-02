@@ -1,12 +1,17 @@
+body {
+	font-family: Sans;
+	font-size: 8px;
+}
+
 table {
-	width: 800px;
-	padding: 0 0 0 1px;
+	border-collapse:collapse;
+	width: 100%;
+	padding: 0;
 	margin: 0;
-	font-size: 18px;
 }
 h1 {
 	text-align: center;
-	font-size: 3em;
+	font-size: 4em;
 	font-weight: bold;
 }
 
@@ -48,7 +53,7 @@ h1 {
 }
 
 .shiftTimes {
-	font-size: 20px;
+	font-size: 8px;
 	font-weight: bold;
 	vertical-align: middle;
 	text-align: center;
@@ -57,14 +62,12 @@ h1 {
 }
 .locations {
 	text-align: center;
-	font-size: 28px;
+	font-size: 14px;
 	font-weight: bold;
 	height: 20px;
 	vertical-align: middle;
 	padding: 0;
 	margin: 0;
-	text-overflow: clip;
-	overflow: hidden;
 }
 
 .names {
@@ -86,7 +89,7 @@ h1 {
 }
 */
 
-.shiftTimes .column-1 {
+.shiftTimes {
 	background-color: #eee;
 }
 
@@ -106,21 +109,22 @@ h1 {
 */
 
 .shiftTimes .column-1, .shiftTimes .column-2, .column-3, .column-5, .column-7, .column-9, .column-11, .column-13, .column-15, .column-17, .column-19, .column-21, .column-23, .column-25, .column-27, .column-29, .column-31, .column-33, .column-35, .column-37, .column-39, .column-41, .column-43, .column-45, .column-47, .column-49, .column-51 {
-	border-left: 1px dotted #999;
+	border-left: 1px solid #999;
 	padding-left: 2px;
 	margin-left: 10px;
 }
 .column-2, .column-4, .column-6, .column-8, .column-10, .column-12, .column-14, .column-16, .column-18, .column-20, .column-22, .column-24, .column-26, .column-28, .column-30, .column-32, .column-34, .column-36, .column-38, .column-40, .column-42, .column-44, .column-46, .column-48, .column-50 {
-	border-left: 1px dotted #999;
+	border-left: 1px solid #999;
 	padding-left: 2px;
 	margin-left: 10px;
 }
 
+.notes {
+}
 
 /* Dark*/
 .dark {
 	background-color: #ddd;
-	border: 1px solid #000;
 }
 /*
 .dark .column-3, .dark .column-5, .dark .column-7, .dark .column-9, .dark .column-11, .dark .column-13, .dark .column-15, .dark .column-17, .dark .column-19, .dark .column-21, .dark .column-23, .dark .column-25, .dark .column-26, .dark .column-27, .dark .column-29, .dark .column-31, .dark .column-33, .dark .column-35, .dark .column-37, .dark .column-39, .dark .column-41, .dark .column-43, .dark .column-45, .dark .column-47, .dark .column-49, .dark .column-51 {

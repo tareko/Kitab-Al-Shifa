@@ -92,10 +92,11 @@ Cache::config('default', array('engine' => 'File'));
  		'engine' => 'CakePdf.WkHtmlToPdf',
  		'margin' => array(
  				'bottom' => 15,
- 				'left' => 50,
- 				'right' => 30,
- 				'top' => 45
+ 				'left' => 5,
+ 				'right' => 5,
+ 				'top' => 10
  		),
  		'orientation' => 'landscape',
- 		'download' => true
+ 		'download' => true,
+ 		'pageSize' => 'Letter',
  ));

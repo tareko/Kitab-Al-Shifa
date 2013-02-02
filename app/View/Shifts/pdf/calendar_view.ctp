@@ -1,10 +1,7 @@
 <?php
-echo $this->Form->create('Shift', array(
-    'url' => array('action' => 'calendarView') + $this->request->params['named']
-));
-echo $this->Form->input('calendar', $calendars);
-echo $this->Form->submit(__('Search', true), array('div' => false));
-echo $this->Form->end();
+echo $this->Html->css($this->Html->url("/app/webroot/css/calendarPdf.css", true));
+echo $this->Calendar->makeCalendarPdf($masterSet);
 ?>
-
-<?= $this->Calendar->makeCalendarView($masterSet); ?>
+<br/><br/><br/><div class="notes"><p>Notes:<br/><?= $masterSet['calendar']['Calendar']['comments'];?>
+<p>PDF created: <?=date('Y-m-d')?></p>
+<p>Schedule last updated: <?=$masterSet['calendar']['lastupdated']?></p></div>

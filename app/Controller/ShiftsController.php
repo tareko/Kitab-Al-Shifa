@@ -190,57 +190,23 @@ class ShiftsController extends AppController {
 
 	function calendarView() {
  		$this->Prg->commonProcess();
-		$this->loadModel('Calendar');
-		$this->loadModel('Profile');
+ 		$this->loadModel('Calendar');
 
-		if (isset($this->request->params['named']['calendar'])) {
-			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
-		}
-		else {
+		$id = $this->request->params['named']['calendar'];
+
+		if (!isset($this->request->params['named']['calendar'])) {
 			return $this->setAction('calendarList', 'calendarView');
 		}
-		$this->set('calendars', $this->Calendar->find('list'));
 
-		if (isset($this->request->params['named']['id'])) {
-			$shiftList = $this->Shift->getShiftList(
-				array(
-					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
-					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-					'Shift.user_id' => $this->request->params['named']['id'],
-					)
-			);
-		}
-
-		else {
-			$shiftList = $this->Shift->getShiftList(
-				array(
-					'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
-					'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-					)
-			);
-		}
-
-		$masterSet['locations'] = $this->Shift->ShiftsType->Location->getLocations();
-
- 		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
-				'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
-				'conditions' => array(
-					'ShiftsType.start_date <=' => $masterSet['calendar']['Calendar']['start_date'],
-					'ShiftsType.expiry_date >=' => $masterSet['calendar']['Calendar']['start_date'],
-		),
-				'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
-		));
-
-
-		foreach ($shiftList as $shift) {
-			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
-		}
+		$masterSet = $this->Shift->getMasterSet($id);
 
 		$this->pdfConfig = array(
 				'filename' => "EMA_Schedule-".$masterSet['calendar']['Calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf"
 				);
 
+		$this->set('calendars', $this->Calendar->find('list'));
 		$this->set('masterSet', $masterSet);
+
 		$this->render();
 	}
 

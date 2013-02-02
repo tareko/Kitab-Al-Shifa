@@ -186,13 +186,10 @@ class CalendarHelper extends AppHelper {
 		$k = $startDate;
 		$lastOrder = null;
 
-
-		$output .= $this->Html->css($this->Html->url("/app/webroot/css/calendarPdf.css", true));
-
 		//Create headers
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
 		$output .= "<table>";
-		$output .= "<tr><td rowspan=\"2\" class=\"locations\" style=\"width: 40px;\">Date</td>";
+		$output .= "<tr><td rowspan=\"2\" class=\"locations\" style=\"width: 60px;\"\>Date</td>";
 
 		//Roll out locations
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
@@ -270,7 +267,6 @@ class CalendarHelper extends AppHelper {
 		}
 
 		$output .= "</table>";
-debug($output);
 		return $output;
 	}
 
