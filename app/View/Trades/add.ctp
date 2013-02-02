@@ -55,6 +55,62 @@ $originatorErrorMessage = '';
 		<?=$recipientErrorMessage?>
 	</div>
 
+	<div class="block required">		
+		<?php echo $this->Form->input('consideration', array(
+				'options' => array('0' => 'Cash', '1' => 'Trade', '2' => 'Future trade'),
+				'label' => __('What is this trade in exchange for?')));
+		?>
+	</div>
+
+	
+	
+	
+	
+	</fieldset><fieldset>
+	<div style="clear:both;">&nbsp;</div>
+		<div class="block">
+		<?php
+		echo $this->Form->input('Trade.1.from_user_id', array(
+				'type' => 'text', 
+				'default' => "me",
+				'label' => __('Person making the trade'),
+				'div' => 'Trade1FromUserIdDiv required' . $originatorError));
+		echo $this->Form->input('Trade.1.user_id', array(
+				'type' => 'text', 
+				'default' => $usersId, 
+				'div' => 'input text Trade1FromUserIdHiddenDiv',
+				'type' => 'hidden',
+				'label' => false,
+				'id' => 'Trade1FromUserIdHidden'));
+		?>
+	</div>
+	<div class="block">
+		<label for="datepicker1"><?= __('Please select the date of the shift you would like to trade')?></label>
+		<?php
+		echo $this->DatePicker->makeDatePicker('#Trade1FromUserIdHidden', 1);
+		echo $this->Form->input('Trade.1.shift_id', array('label' => __('Which shift would you like to trade?')));
+		?>
+	</div>
+	<div class="block required <?= $recipientError?>">
+		<label><?=__('Who are you offering the trade to?')?></label>
+		<?php 
+		echo $this->Html->div('Trade.1.TradesDetail.user_id',
+			$this->PhysicianPicker->makePhysicianPicker(null, 'data[Trade][1][TradesDetail]', 'Trade.1.user_id'),
+				array('div' => 'pick-doctor'));
+		?>
+		<?=$recipientErrorMessage?>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	</div>
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
