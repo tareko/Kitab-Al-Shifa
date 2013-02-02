@@ -123,11 +123,11 @@ class Shift extends AppModel {
 
 	}
 
-	function getMasterSet ($id = NULL) {
+	function getMasterSet ($calendar = NULL, $id = NULL) {
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
-		$masterSet['calendar'] = $this->Calendar->findById($id);
-		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($id);
+		$masterSet['calendar'] = $this->Calendar->findById($calendar);
+		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($calendar);
 
 		$shiftList = $this->find('all', array(
 				'contain' => array(
@@ -143,6 +143,7 @@ class Shift extends AppModel {
 				'conditions' => array(
 						'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
 						'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
+						'Shift.user_id' => $id,
 				)
 		));
 

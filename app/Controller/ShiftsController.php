@@ -192,13 +192,14 @@ class ShiftsController extends AppController {
  		$this->Prg->commonProcess();
  		$this->loadModel('Calendar');
 
-		$id = $this->request->params['named']['calendar'];
-
 		if (!isset($this->request->params['named']['calendar'])) {
 			return $this->setAction('calendarList', 'calendarView');
 		}
 
-		$masterSet = $this->Shift->getMasterSet($id);
+		$calendar = $this->request->params['named']['calendar'];
+		$id = (isset($this->request->params['named']['id'])) ? $this->request->params['named']['id'] : null;
+
+		$masterSet = $this->Shift->getMasterSet($calendar, $id);
 
 		$this->pdfConfig = array(
 				'filename' => "EMA_Schedule-".$masterSet['calendar']['Calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf"
