@@ -129,6 +129,8 @@ class Shift extends AppModel {
 		$masterSet['calendar'] = $this->Calendar->findById($calendar);
 		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($calendar);
 
+		$idCondition = (isset($id) ? array('Shift.user_id' => $id) : array());
+
 		$shiftList = $this->find('all', array(
 				'contain' => array(
 						'ShiftsType' => array(
@@ -143,8 +145,7 @@ class Shift extends AppModel {
 				'conditions' => array(
 						'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
 						'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
-						'Shift.user_id' => $id,
-				)
+				) + $idCondition
 		));
 
 		$locations_raw = $this->ShiftsType->Location->find('all', array(

@@ -335,50 +335,42 @@ class ShiftsController extends AppController {
 	function wizard() {
 		$params = array();
 		$this->loadModel('Calendar');
-		$this->Prg->commonProcess();
 		$this->set('physicians', $this->User->getList(null, true, true));
 		$this->set('calendars', $this->Calendar->find('list'));
 
-
-		if (isset($this->request->params['named']['list'])) {
-			if ($this->request->params['named']['list'] == 'all') {
-				unset($this->request->params['named']['id']);
+		if (isset($this->request->data['Shift']['list'])) {
+			if ($this->request->data['Shift']['list'] == 'all') {
+				//No action needed
 			}
-			if ($this->request->params['named']['list'] == 'mine') {
+			if ($this->request->data['Shift']['list'] == 'mine') {
 				$this->request->params['named']['id'] = $this->_usersId();
 			}
 
+			$this->request->params['named']['calendar'] = $this->request->data['Shift']['calendar'];
+
 			//TODO: Needs fixing so that the 'some users' category can be selected
-			if ($this->request->params['named']['list'] == 'some') {
-				return $this->Session->setFlash('Apologies. That option is not available currently');
-				if (isset($this->request->data['User'])) {
-					$i = 0;
-					foreach ($this->request->data['User'] as $users) {
-						$params = $params + array('id[' .$i. ']' => $users['id']);
+			if ($this->request->data['Shift']['list'] == 'some') {
+				$i = 0;
+				foreach ($this->request->data['Shift'] as $users) {
+					if (isset($users['id'])) {
+						$this->request->params['named']['id['.$i.']'] = $users['id'];
 						$i++;
 					}
 				}
 			}
 
 
-
-			if (isset($this->request->params['named']['output'])) {
-				if ($this->request->params['named']['output'] == 'webcal') {
+			if (isset($this->request->data['Shift']['output'])) {
+				if ($this->request->data['Shift']['output'] == 'webcal') {
 					return $this->redirect(array('controller' => 'shifts', 'action' => 'calendarView') + $this->request->params['named'] + $params);
 				}
-				elseif ($this->request->params['named']['output'] == 'list') {
+				elseif ($this->request->data['Shift']['output'] == 'list') {
 					return $this->redirect(array('controller' => 'shifts', 'action' => 'index') + $this->request->params['named'] + $params);
 				}
-				elseif ($this->request->params['named']['output'] == 'print') {
-					if ($this->request->params['named']['list'] == 'mine' || $this->request->params['named']['list'] == 'some') {
-						return $this->Session->setFlash('Apologies. That option is not available currently');
-					}
-					else {
-						$this->Session->setFlash('Please select which calendar you would like to see');
-						return $this->redirect(array('controller' => 'shifts', 'action' => 'pdfView') + $this->request->params['named'] + $params);
-					}
+				elseif ($this->request->data['Shift']['output'] == 'print') {
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'calendarView', 'ext' => 'pdf') + $this->request->params['named'] + $params);
 				}
-				elseif ($this->request->params['named']['output'] == 'ics') {
+				elseif ($this->request->data['Shift']['output'] == 'ics') {
 					return $this->redirect(array('controller' => 'shifts', 'action' => 'icsView') + $this->request->params['named'] + $params);
 				}
 			}
