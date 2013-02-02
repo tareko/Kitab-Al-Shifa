@@ -5,9 +5,9 @@ App::uses('AppController', 'Controller', 'Sanitize', 'Utility');
  * Trades Controller
  *
  * @property Trade $Trade
- * 
+ *
  */
-class TradesController extends AppController {	
+class TradesController extends AppController {
 /**
  * Helpers
  *
@@ -19,7 +19,7 @@ class TradesController extends AppController {
 	var $paginate = array(
 			'recursive' => '2',
 	);
-	
+
 /* 	public $presetVars = array(
 			array('field' => 'month', 'type' => 'value'),
 			array('field' => 'year', 'type' => 'value'),
@@ -44,7 +44,7 @@ class TradesController extends AppController {
 				'recursive' => 3,
 				'limit' => 5
 		);
-		
+
 
 		if (isset($this->request->params['named']['id'])) {
 			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->request->params['named']['id'])));
@@ -118,12 +118,12 @@ class TradesController extends AppController {
 		$this->set('calendars', $this->Calendar->find('list'));
 		$this->render();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Deal with unprocessed shift trade requests.
 	 * Meant for a cron job.
-	 * 
+	 *
 	 */
 	public function startUnprocessed() {
 		App::import('Lib', 'TradeRequest');
@@ -138,7 +138,7 @@ class TradesController extends AppController {
 				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
 				//Get communication method preference for receiving user
 				$method = $this->User->getCommunicationMethod($trade['User']['id']);
-				
+
 				$sendOriginator = $this->_TradeRequest->sendOriginator($trade['Trade']['id'], $trade['User'], $trade['Shift'], $method);
 				if ($sendOriginator['return'] == true) {
 					// Assuming success, update Status of TradesDetail to 1
@@ -146,7 +146,7 @@ class TradesController extends AppController {
 					$this->Trade->set('user_status', 1);
 					$this->Trade->set('token', $sendOriginator['token']);
 					$this->Trade->save();
-				
+
 					// Write log indicating trade detail was done
 					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
 				}
@@ -166,16 +166,16 @@ class TradesController extends AppController {
 						$this->Trade->TradesDetail->set('status', 1);
 						$this->Trade->TradesDetail->set('token', $sendDetails['token']);
 						$this->Trade->TradesDetail->save();
-						
+
 						// Write log indicating trade detail was done
 						CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
 					}
 					else {
 						return $this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
 					}
-						
+
 				}
-	
+
 				// Assuming success, update Status of Trade to 1
 				$this->Trade->read(null, $trade['Trade']['id']);
 				$this->Trade->set('status', 1);
@@ -190,13 +190,13 @@ class TradesController extends AppController {
 		$this->set('success', 1);
 		$this->render('/Trades/start_unprocessed');
 	}
-	
+
 	/**
-	 * Complete accepted 
+	 * Complete accepted
 	 * Enter accepted shift trade into calendar
 	 */
 	public function completeAccepted() {
-		//TODO: Get shifts where the Originator has accepted and at least one (and hopefully only 
+		//TODO: Get shifts where the Originator has accepted and at least one (and hopefully only
 		// one) Recipient has accepted
 
 		$trades = $this->Trade->find('all', array(
@@ -233,20 +233,20 @@ class TradesController extends AppController {
 				$this->Trade->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
 				$this->Trade->Shift->set('updated', date("Y-m-d H:i:s",time()));
 				$this->Trade->Shift->save();
-	
+
 				$this->Trade->read(null, $trade['Trade']['id']);
 				$this->Trade->set('status', 2);
 				$this->Trade->save();
-	
+
 				//Log successfully completed trade.
 				CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['user_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
 			}
 		}
-		
+
 		$this->set('success', 1);
-		$this->render();		
+		$this->render();
 	}
-	
+
 	public function accept() {
 		$return = $this->changeStatus($this->request, 2);
 		if ($return == true) {
@@ -257,7 +257,7 @@ class TradesController extends AppController {
 		}
 		$this->render();
 	}
-	 
+
 	public function reject() {
 		$return = $this->changeStatus($this->request, 3);
 		if ($return == true) {
@@ -268,19 +268,19 @@ class TradesController extends AppController {
 		}
 		$this->render();
 	}
-	
-	
+
+
 	public function changeStatus($request, $status) {
 		if (!isset($this->request) || !isset($this->request->query['id']) || !isset($this->request->query['token'])) {
 			throw new NotFoundException(__('Invalid trade or trade parameters missing'));
 		}
-		
+
 		App::import('Lib', 'TradeRequest');
 		$this->_TradeRequest = new TradeRequest();
-		
+
 		$token = $request->query['token'];
 		$id = $request->query['id'];
-		
+
 		$trade = $this->Trade->find('first', array(
 					'fields' => array(
 						'Trade.id',
@@ -313,12 +313,12 @@ class TradesController extends AppController {
 						)
 					)
 		));
-		
+
 		if (empty($trade)) {
 			throw new NotFoundException(__('Trade not found or already acted upon'));
 		}
-		
-		
+
+
 		if ($token == $trade['Trade']['token']) {
 			$this->Trade->read(null, $id);
 			$this->Trade->set('user_status', $status);
@@ -337,10 +337,10 @@ class TradesController extends AppController {
 			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
 		}
 	}
-	
-	/* 
+
+	/*
 	 * Check duplicate trade and return true if duplicate found
-	 * 
+	 *
 	 */
 	public function checkDuplicate($shiftId, $userId) {
 		$trade = $this->Trade->find('first', array(
@@ -350,7 +350,7 @@ class TradesController extends AppController {
 						'Trade.user_status',
 								'Trade.status'),
 							'conditions' => array(
-								'Trade.user_status !=' => 2,
+								'Trade.user_status <' => 2,
 								'Trade.status !=' => 2,
 								'Trade.user_id' => $userId,
 								'Trade.shift_id' => $shiftId),

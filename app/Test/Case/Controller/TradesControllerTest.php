@@ -73,14 +73,14 @@ class TradesControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testAdd() {
-		
+
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed',
 						'_usersId'
 				),
 		));
-		
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -88,7 +88,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
+
 		$result = $this->testAction('/trades/add');
 		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="me" id="TradeFromUserId"/>', $result);
 		$this->assertContains('<div id="datepicker1"></div>', $result);
@@ -106,7 +106,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'_usersId'
 				),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -121,7 +121,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'_requestAllowed'
 				),
 		));
-		
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -129,7 +129,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$data = array(
 				'Trade' => array(
 						'user_id' => 2,
-						'shift_id' => 16,
+						'shift_id' => 1,
 				),
 				'TradesDetail' => array(
 						0 => array(
@@ -161,23 +161,23 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'shift_id' => 16,
 				),
 		);
-	
+
 		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
 		$this->assertContains('<div class="error-message">Please enter at least one recipient</div>', $result);
 	}
-	
+
 	public function testAddPostFailedSaveBadDataNoShift() {
-	
+
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed'
 				),
 		));
-		
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-		
+
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
@@ -192,6 +192,38 @@ class TradesControllerTestCase extends ControllerTestCase {
 			);
 		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
 		$this->assertContains('<div class="error-message">Please select a proper shift (numeric)</div>', $result);
+	}
+
+	/* This test ensures that when a shift is added that has a previously cancelled trade, it will go through.
+	 *
+	 */
+	public function testAddDuplicateCancelled() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$data = array(
+				'Trade' => array(
+						'user_id' => 3,
+						'shift_id' => 86,
+				),
+				'TradesDetail' => array(
+						0 => array(
+								'user_id' => 2
+						),
+						1 => array(
+								'user_id' => 3)
+				)
+		);
+
+		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
+		$this->assertEqual($this->headers['Location'], 'http://127.0.0.1/kitab/trades');
 	}
 
 /**
@@ -216,7 +248,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'_requestAllowed'
 				),
 		));
-		
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -238,7 +270,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'_requestAllowed'
 				),
 		));
-		
+
 		$Trades->expects($this->any())
 			->method('_requestAllowed')
 			->will($this->returnValue(true));
@@ -284,16 +316,16 @@ class TradesControllerTestCase extends ControllerTestCase {
 
 	public function testStartUnprocessedWithFailedTradeRequest() {
 		//TODO: Fix Broken test
-		
+
 		App::import('Lib', 'TradeRequest');
 
 		$Trades->_TradeRequest = new TradeRequest();
-		
+
 		$Trades->_TradeRequest = $this->getMockBuilder('_TradeRequest')
 			->setMethods(array('send'))
 			->disableOriginalConstructor()
 			->getMock();
-		
+
 		$Trades->_TradeRequest->expects($this->any())
 		->method('send')
  		->will($this->returnValue(array(
@@ -307,17 +339,17 @@ class TradesControllerTestCase extends ControllerTestCase {
 
 /**
  * test Accept method
- * 
- */	
+ *
+ */
 	public function testAcceptNoParams() {
 		$this->setExpectedException('NotFoundException');
-		
+
 		$Trades = $this->generate('Trades', array(
 						'methods' => array(
 								'_requestAllowed'
 		),
 		));
-		
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -327,73 +359,73 @@ class TradesControllerTestCase extends ControllerTestCase {
 
 	public function testAcceptNoId() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 							'methods' => array(
 									'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/accept?token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
-	
+
 		public function testAcceptNoToken() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 							'methods' => array(
 									'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/accept?id=8');
 	}
-	
+
 	public function testAcceptWrongToken() {
 		$Trades = $this->generate('Trades', array(
 							'methods' => array(
 									'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-				
+
 		$result = $this->testAction('/trades/accept?id=12&token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
 
 	public function testAcceptIdNotFound() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 								'methods' => array(
 										'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
 		$result = $this->testAction('/trades/accept?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
-	
+
 	public function testAcceptCorrectIdAndToken() {
 		$Trades = $this->generate('Trades', array(
 								'methods' => array(
 										'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -402,139 +434,139 @@ class TradesControllerTestCase extends ControllerTestCase {
 
 	public function testAcceptWrongStatus() {
 		$this->setExpectedException('NotFoundException');
-		
+
 		$Trades = $this->generate('Trades', array(
 									'methods' => array(
 											'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/accept?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
 	}
-	
+
 	/**
 	* test Reject method
 	*
 	*/
 	public function testRejectNoParams() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 							'methods' => array(
 									'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject');
 	}
-	
+
 	public function testRejectNoId() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 								'methods' => array(
 										'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject?token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
-	
+
 	public function testRejectNoToken() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 								'methods' => array(
 										'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject?id=8');
 	}
-	
+
 	public function testRejectWrongToken() {
 		$Trades = $this->generate('Trades', array(
 								'methods' => array(
 										'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject?id=12&token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
-	
+
 	public function testRejectIdNotFound() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 									'methods' => array(
 											'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef');
 	}
-	
+
 	public function testRejectCorrectIdAndToken() {
 		$Trades = $this->generate('Trades', array(
 									'methods' => array(
 											'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject?id=12&token=a50e7ad2e87fe32ef46d9bb84db20012');
 	}
-	
+
 	public function testRejectWrongStatus() {
 		$this->setExpectedException('NotFoundException');
-	
+
 		$Trades = $this->generate('Trades', array(
 										'methods' => array(
 												'_requestAllowed'
 		),
 		));
-	
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/trades/reject?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
 	}
-	
+
 	public function testRejectDuplicateTrade() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed'
 				),
 		));
-		
+
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -563,7 +595,7 @@ class TradesControllerTestCase extends ControllerTestCase {
  */
 	public function tearDown() {
 		unset($this->Trades);
-	
+
 		parent::tearDown();
 	}
 }
