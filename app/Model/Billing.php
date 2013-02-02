@@ -15,9 +15,6 @@ class Billing extends AppModel {
 			'BillingsItem' => array(
 					'className' => 'BillingsItem',
 					'foreignKey' => 'billing_id',
-					'conditions' => '',
-					'fields' => '',
-					'order' => ''
 			)
 	);
 	
@@ -170,6 +167,14 @@ class Billing extends AppModel {
 								'length' => 8)
 				),
 		);
+
+		//OHIP Number
+		if (Configure::read('save_ohip') == true) {
+			$schema['HEH']['ohip'] = array(
+				'start' => 3,
+				'length' => 10);
+		}
+		
 		$fields = array();
 		foreach($schema[$section] as $field => $opts) {
 			$fields[$field] = substr($row, $opts['start'], $opts['length']);
@@ -196,5 +201,21 @@ class Billing extends AppModel {
 			}
 		}
 		return $output;
+	}
+	
+	/**
+	 * How much was spent per Patient. Receive patient identifier as OHIP number.
+	 * 
+	 * @param string $ohip
+	 * @param array $conditions
+	 */
+	
+	public function spentPerPatient($ohip = null, $conditions = array()) {
+		$conditions = $conditions + array('Billing.ohip' => $ohip);
+		return $this->BillingsItem->find('all', array(
+					'fields' => array('SUM(fee_submitted)'),
+					'conditions' => $conditions,
+				)
+		)[0][0]['SUM(fee_submitted)'];
 	}
 }

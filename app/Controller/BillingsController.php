@@ -132,5 +132,20 @@ class BillingsController extends AppController {
 		$this->render();
 	}
 	
+	function spentPerPatient() {
+		if (isset($this->request->query['ohip']) && isset($this->request->query['start_date']) && isset($this->request->query['end_date'])) {
+			$ohip = $this->request->query['ohip'];
+			$conditions = array (
+						'BillingsItem.service_date >=' => $this->request->query['start_date'],
+						'BillingsItem.service_date <=' => $this->request->query['end_date']);
+			$data = $this->Billing->spentPerPatient($ohip, $conditions);
+			$this->set('data', $data);
+			$this->render();
+		}
+		else {
+			echo "enter stuff";
+		}
+	}
+	
 }
 ?>
