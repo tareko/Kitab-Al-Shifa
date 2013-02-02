@@ -2,7 +2,7 @@
 /**
  * This file is loaded automatically by the app/webroot/index.php file after core.php
  *
- * This file should load/create any application wide configuration settings, such as 
+ * This file should load/create any application wide configuration settings, such as
  * Caching, Logging, loading additional configuration files.
  *
  * You should also use this file to include any files that provide global functions/constants
@@ -63,14 +63,14 @@ Cache::config('default', array('engine' => 'File'));
  *
  */
  CakePlugin::loadAll(); // Loads all plugins at once
- 
+
  // Enable the Dispatcher filters for plugin assets, and
  // CacheHelper.
  Configure::write('Dispatcher.filters', array(
  		'AssetDispatcher',
  		'CacheDispatcher'
  ));
- 
+
  // Add logging configuration.
  CakeLog::config('debug', array(
  		'engine' => 'FileLog',
@@ -81,4 +81,21 @@ Cache::config('default', array('engine' => 'File'));
  		'engine' => 'FileLog',
  		'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
  		'file' => 'error',
+ ));
+
+ //Load CakePdf
+ CakePlugin::load('CakePdf', array(
+ 		'bootstrap' => true,
+ 		'routes' => true
+ ));
+ Configure::write('CakePdf', array(
+ 		'engine' => 'CakePdf.WkHtmlToPdf',
+ 		'margin' => array(
+ 				'bottom' => 15,
+ 				'left' => 50,
+ 				'right' => 30,
+ 				'top' => 45
+ 		),
+ 		'orientation' => 'landscape',
+ 		'download' => true
  ));

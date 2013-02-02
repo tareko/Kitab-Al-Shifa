@@ -13,7 +13,7 @@ class CalendarHelper extends AppHelper {
 		$startDate = $calendar['Calendar']['start_date'];
 		$endDate = $calendar['Calendar']['end_date'];
 		$k = $startDate;
-		
+
 		$output .= $this->Html->css('calendar.css');
 
 		// Create Form to save any possibly empty entries
@@ -54,14 +54,14 @@ class CalendarHelper extends AppHelper {
 			}
 		}
 		$output .= "</tr>";
-		
+
 
 		foreach ($masterSet['ShiftsType'] as $shiftsType) {
 			$output1[] = $shiftsType['ShiftsType']['times'];
 		}
 		$output .= $this->Html->tableCells($output1, array ('class' => 'calendarHeaderTimes'));
 		$output .= "</thead>";
-		
+
 
 		//Output Days of the month
 		while ($k <= $calendar['Calendar']['end_date']) {
@@ -72,7 +72,7 @@ class CalendarHelper extends AppHelper {
 					$output1[] = $this->Html->link($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'], array('controller' => 'shifts', 'action' => 'edit', $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['id']));
 				}
 				else {
-					$output1[] = 
+					$output1[] =
 					$this->Form->hidden("Shift.$i.shifts_type_id", array('value' => $shiftsType['ShiftsType']['id'] )) .
 					$this->Form->hidden("Shift.$i.date", array('value' => $k )) .
 					$this->Form->input("Shift.$i.user_id", array(
@@ -90,7 +90,7 @@ class CalendarHelper extends AppHelper {
 		$output .= $this->Form->end('Save');
 		return $output;
 	}
-	
+
 	/**
 	 * Calendar View Helper
 	 * This helper creates an HTML table of a calendar for display
@@ -108,14 +108,14 @@ class CalendarHelper extends AppHelper {
 		$startDate = $calendar['Calendar']['start_date'];
 		$endDate = $calendar['Calendar']['end_date'];
 		$k = $startDate;
-	
+
 		$output .= $this->Html->css('calendar.css');
-	
+
 		// Create headers
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
 		$output .= "<table>";
 		$output .= "<thead><tr><th rowspan=\"2\">Date</th>";
-	
+
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
 			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
 				$colspan++;
@@ -143,15 +143,15 @@ class CalendarHelper extends AppHelper {
 			}
 		}
 		$output .= "</tr>";
-	
-	
+
+
 		foreach ($masterSet['ShiftsType'] as $shiftsType) {
 			$output1[] = $shiftsType['ShiftsType']['times'];
 		}
 		$output .= $this->Html->tableCells($output1, array ('class' => 'calendarHeaderTimes'));
 		$output .= "</thead>";
-	
-	
+
+
 		//Output Days of the month
 		while ($k <= $calendar['Calendar']['end_date']) {
 			$output1 = null;
@@ -168,11 +168,11 @@ class CalendarHelper extends AppHelper {
 			$output .= $this->Html->tableCells($output1);
 			$k = date('Y-m-d', strtotime("$k + 1 day"));
 		}
-	
+
 		$output .= "</table>";
 		return $output;
 	}
-	
+
 	function makeCalendarPdf($masterSet) {
 		//Create variables
 		$i = 1;
@@ -238,14 +238,13 @@ class CalendarHelper extends AppHelper {
 		$output .= $this->Html->tableCells($output1, array('class' => 'shiftTimes odd'), array('class' => 'shiftTimes even'), true);
 
 		//Output Days of the month
-//print_r($masterSet);
 		while ($k <= $calendar['Calendar']['end_date']) {
 			$output1 = null;
 			$output1[] = date('D, M j', strtotime($k));
 			if (isset($masterSet[$k])) {
 				foreach ($masterSet['ShiftsType'] as $shiftCount => $shiftsType) {
 					if (isset($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']])) {
-						$output1[] = $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'];
+						$output1[] = '<div class="names">' . $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'] . '</div>';
 					}
 					else {
 						if (isset($masterSet['ShiftsType'][$shiftCount + 1]['ShiftsType']['display_order']) && $masterSet['ShiftsType'][$shiftCount]['ShiftsType']['display_order'] == $masterSet['ShiftsType'][$shiftCount + 1]['ShiftsType']['display_order']) {}
@@ -271,11 +270,11 @@ class CalendarHelper extends AppHelper {
 		}
 
 		$output .= "</table>";
-
+debug($output);
 		return $output;
 	}
-	
-	
+
+
 	function makeCalendarCsv($masterSet) {
 		//Create variables
 		$i = 1;
@@ -285,23 +284,23 @@ class CalendarHelper extends AppHelper {
 		$startDate = $calendar['Calendar']['start_date'];
 		$endDate = $calendar['Calendar']['end_date'];
 		$k = $startDate;
-	
+
 		// Create headers
 		$output[] = array($calendar['Calendar']['name']);
 		$temp_headers[] = "Date";
-		
+
 		foreach ($masterSet['ShiftsType'] as $shiftsType) {
 			$temp_headers[] = $masterSet['locations'][$shiftsType['ShiftsType']['location_id']]['location'];
 		}
 		$output[] = $temp_headers;
 		$output1[] = "";
-	
+
 		foreach ($masterSet['ShiftsType'] as $shiftsType) {
 			$output1[] = $shiftsType['ShiftsType']['times'];
 		}
 		$output[] = $output1;
-	
-	
+
+
 		//Output Days of the month
 		while ($k <= $calendar['Calendar']['end_date']) {
 			$output1 = null;
@@ -318,7 +317,7 @@ class CalendarHelper extends AppHelper {
 			$output[] = $output1;
 			$k = date('Y-m-d', strtotime("$k + 1 day"));
 		}
-	
+
 		return $output;
 	}
 }

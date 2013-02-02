@@ -31,14 +31,14 @@
  */
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
 
-	
+
 /**
  * Redirect /admin/users/login to go to /users/login and login properly.
  */
 	Router::redirect('/admin/users/login', array('controller' => 'users', 'action' => 'login'));
-	
+
 /**
- * Load all plugin routes.  See the CakePlugin documentation on 
+ * Load all plugin routes.  See the CakePlugin documentation on
  * how to customize the loading of plugin routes.
  */
 	CakePlugin::routes();
@@ -52,4 +52,4 @@
 /**
  * Add routers for AJAX and CSV
  */
-	Router::parseExtensions('json', 'csv');
+	Router::parseExtensions('json', 'csv', 'pdf');

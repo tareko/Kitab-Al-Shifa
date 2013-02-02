@@ -1,4 +1,4 @@
-<?php 
+<?php
 App::uses('Sanitize', 'Utility');
 
 class ShiftsController extends AppController {
@@ -30,7 +30,7 @@ class ShiftsController extends AppController {
 					'Shift.date <=' => $calendar['Calendar']['end_date'],
 					);
 		}
-		
+
 		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
 			'fields' => array('Location.location'),
 //			'order' => array('ShiftsType.location_id ASC', 'ShiftsType.shift_start ASC'),
@@ -47,7 +47,7 @@ class ShiftsController extends AppController {
         }
         $this->render();
 	}
-	
+
 	function home() {
 		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
 				'fields' => array('Location.location'),
@@ -56,15 +56,15 @@ class ShiftsController extends AppController {
 		$this->Prg->commonProcess();
 		$this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
 		$this->paginate['limit'] = 5;
-	
+
 		$this->set('shifts', $this->paginate(array(
-				'Shift.user_id' => $this->_usersId(), 
+				'Shift.user_id' => $this->_usersId(),
 				'Shift.date >=' => date('Y-m-d')
 				)));
 		$this->set('usersId', $this->_usersId());
 		$this->render();
 	}
-	
+
 	function add() {
 		$this->loadModel('Profile');
 		# Check if there is form data to be processed
@@ -85,19 +85,19 @@ class ShiftsController extends AppController {
 				$this->redirect(array('action' => $this->request->params['named']['Action']));
  			}
 		}
-		
+
 		# If no data, present an add form
 		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
 		$this->set('shifts', $this->paginate());
 		$this->set('users', $this->Shift->User->getList(NULL, NULL, true));
-		
+
 		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
 			'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
 			'recursive' => '0')));
 	}
 
 	/** Function to update all PDFs that need updating
-	 * 
+	 *
 	 */
 	function pdfUpdate() {
 		$updated = NULL;
@@ -121,7 +121,7 @@ class ShiftsController extends AppController {
 		$this->set('notUpdated', $notUpdated);
 		$this->render();
 	}
-	
+
 	function pdfCreate($id = NULL) {
 		if (isset($this->request->params['named']['calendar'])) {
 			$id = $this->request->params['named']['calendar'];
@@ -140,18 +140,18 @@ class ShiftsController extends AppController {
 		//Otherwise, go ahead and create a new PDF
 		$this->set('calendars', $this->Calendar->find('list'));
 		$this->set('masterSet', $this->Shift->getMasterSet($id));
-		return $this->render();
+
 	}
 
 	/**
 	 * Function for web-based editing of calendar.
-	 * 
+	 *
 	 */
 	function calendarEdit() {
 		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 		$this->loadModel('Profile');
-		
+
 		if (isset($this->request->params['named']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
@@ -159,7 +159,7 @@ class ShiftsController extends AppController {
 			return $this->setAction('calendarList', 'calendarEdit');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
-		
+
 		$shiftList = $this->Shift->getShiftList(
 			array(
 				'Shift.date >=' => $masterSet['calendar']['Calendar']['start_date'],
@@ -192,7 +192,7 @@ class ShiftsController extends AppController {
  		$this->Prg->commonProcess();
 		$this->loadModel('Calendar');
 		$this->loadModel('Profile');
-		
+
 		if (isset($this->request->params['named']['calendar'])) {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
@@ -200,7 +200,7 @@ class ShiftsController extends AppController {
 			return $this->setAction('calendarList', 'calendarView');
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
-	
+
 		if (isset($this->request->params['named']['id'])) {
 			$shiftList = $this->Shift->getShiftList(
 				array(
@@ -221,7 +221,7 @@ class ShiftsController extends AppController {
 		}
 
 		$masterSet['locations'] = $this->Shift->ShiftsType->Location->getLocations();
-	
+
  		$masterSet['ShiftsType'] = $this->Shift->ShiftsType->find('all', array(
 				'fields' => array('ShiftsType.times', 'ShiftsType.location_id', 'ShiftsType.display_order'),
 				'conditions' => array(
@@ -230,16 +230,20 @@ class ShiftsController extends AppController {
 		),
 				'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
 		));
-	
-	
+
+
 		foreach ($shiftList as $shift) {
 			$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => $shift['User']['Profile']['cb_displayname'], 'id' => $shift['Shift']['id']);
 		}
-		
+
+		$this->pdfConfig = array(
+				'filename' => "EMA_Schedule-".$masterSet['calendar']['Calendar']['id']."-".$masterSet['calendar']['Calendar']['start_date'].".pdf"
+				);
+
 		$this->set('masterSet', $masterSet);
 		$this->render();
 	}
-	
+
 	function pdfView() {
 			$this->loadModel('Calendar');
 			$this->set('calendars', $this->Calendar->getList());
@@ -248,7 +252,7 @@ class ShiftsController extends AppController {
 
 	function icsView() {
 		$this->Prg->commonProcess();
-	
+
 		if (strlen(strstr($this->request->referer(), 'wizard'))>0) {
 			$this->set('id', $this->request->params['named']['id']);
 			$this->render('ics_link');
@@ -279,7 +283,7 @@ class ShiftsController extends AppController {
 			$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_start'] = $shiftsTypeSetRaw['ShiftsType']['shift_start'];
 			$shiftsTypeSet[$shiftsTypeSetRaw['ShiftsType']['id']]['shift_end'] = $shiftsTypeSetRaw['ShiftsType']['shift_end'];
 		}
-				
+
 		$i = 1;
 		foreach ($shiftList as $shift) {
 			$masterSet[$i]['id'] = $shift['Shift']['id'];
@@ -297,7 +301,7 @@ class ShiftsController extends AppController {
 
 	/**
 	 * List of all physicians for icsView
-	 * 
+	 *
 	 */
 	function physicianList($physicianAction, $group = null) {
 		if ($group) {
@@ -312,7 +316,7 @@ class ShiftsController extends AppController {
 		$this->set('physicians', $physicians);
 		$this->render();
 	}
-	
+
 	/**
 	 * List of calendars
 	 */
@@ -325,7 +329,7 @@ class ShiftsController extends AppController {
 		$this->Session->setFlash(__('Please select a calendar'));
 		$this->set('calendars', $this->Calendar->getList());
 	}
-	
+
 	public function delete($id = null) {
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
@@ -367,8 +371,8 @@ class ShiftsController extends AppController {
 		$this->Prg->commonProcess();
 		$this->set('physicians', $this->User->getList(null, true, true));
 		$this->set('calendars', $this->Calendar->find('list'));
-		
-		
+
+
 		if (isset($this->request->params['named']['list'])) {
 			if ($this->request->params['named']['list'] == 'all') {
 				unset($this->request->params['named']['id']);
@@ -376,7 +380,7 @@ class ShiftsController extends AppController {
 			if ($this->request->params['named']['list'] == 'mine') {
 				$this->request->params['named']['id'] = $this->_usersId();
 			}
-			
+
 			//TODO: Needs fixing so that the 'some users' category can be selected
 			if ($this->request->params['named']['list'] == 'some') {
 				return $this->Session->setFlash('Apologies. That option is not available currently');
@@ -388,8 +392,8 @@ class ShiftsController extends AppController {
 					}
 				}
 			}
-				
-				
+
+
 
 			if (isset($this->request->params['named']['output'])) {
 				if ($this->request->params['named']['output'] == 'webcal') {
@@ -415,7 +419,7 @@ class ShiftsController extends AppController {
 
 		$this->render();
 	}
-	
+
 	public function listShifts() {
 		$shiftOptions = array();
 		if (isset($this->request->query['date'])) {
@@ -431,6 +435,6 @@ class ShiftsController extends AppController {
 		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
 		$this->set('_serialize', array('shiftList'));
 	}
-	
+
 }
 ?>

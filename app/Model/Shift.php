@@ -16,7 +16,7 @@ class Shift extends AppModel {
 		array('name' => 'year', 'type' => 'value', 'field' => 'YEAR(Shift.date)'),
 		array('name' => 'location', 'type' => 'value', 'field' => 'ShiftsType.location_id'),
 		);
-		
+
 /**
  * Validation rules
  *
@@ -111,7 +111,7 @@ class Shift extends AppModel {
 					'ShiftsType' => array(
 						'fields' => array('id', 'shift_start', 'shift_end'),
 						'Location' => array(
-							'fields' => 'location')), 
+							'fields' => 'location')),
 					'User' => array(
 							'fields' => array('name'),
 							'Profile' => array(
@@ -122,7 +122,7 @@ class Shift extends AppModel {
 			));
 
 	}
-	
+
 	function getMasterSet ($id = NULL) {
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
@@ -145,7 +145,7 @@ class Shift extends AppModel {
 						'Shift.date <=' => $masterSet['calendar']['Calendar']['end_date'],
 				)
 		));
-		
+
 		$locations_raw = $this->ShiftsType->Location->find('all', array(
 				'fields' => array('Location.id', 'Location.location', 'Location.abbreviated_name'),
 				'recursive' => '0'
@@ -162,7 +162,7 @@ class Shift extends AppModel {
 				),
 				'order' => array('ShiftsType.display_order ASC', 'ShiftsType.shift_start ASC'),
 		));
-		
+
 		foreach ($shiftList as $shift) {
 			if (!isset($shift['User']['Profile']['cb_displayname'])) {
 				$masterSet[$shift['Shift']['date']][$shift['ShiftsType']['location_id']][$shift['Shift']['shifts_type_id']] = array('name' => '', 'id' => $shift['Shift']['id']);
@@ -176,7 +176,7 @@ class Shift extends AppModel {
 
 	/**
 	 * The shifts worked by a physician (or several physicians) by OHIP Number
-	 * 
+	 *
 	 * @param unknown_type $healthcare_provider
 	 * @param unknown_type $start_date
 	 * @param unknown_type $end_date
@@ -198,7 +198,7 @@ class Shift extends AppModel {
 					'Shift.date <=' => $end_date,
 					));
 		}
-		
+
 		return $this->User->Profile->find('all', array(
 				'contain' => array(
 						'Shift' => array(
@@ -215,6 +215,45 @@ class Shift extends AppModel {
 				'conditions' => $conditionsProfile,
 				'recursive' => '3',
 		));
-		
+
+	}
+
+	/**
+	 * The hours worked by a physician (or several physicians) by OHIP Number
+	 *
+	 * @param unknown_type $healthcare_provider
+	 * @param unknown_type $start_date
+	 * @param unknown_type $end_date
+	 * @param array $conditions
+	 * @return array $output
+	 */
+
+	function secondsWorkedbyOhipNumber ($healthcare_provider = NULL, $start_date = NULL, $end_date = NULL, $conditions = array()) {
+		$secondsWorked = array();
+		$profiles = $this->shiftsWorkedbyOhipNumber($healthcare_provider, $start_date, $end_date, $conditions);
+		foreach ($profiles as $profile) {
+			foreach($profile['Shift'] as $shift) {
+				// More usable variables for end and start times
+				$start = $shift['ShiftsType']['shift_start'];
+				$end = $shift['ShiftsType']['shift_end'];
+
+				// Calculate time worked in seconds per location
+				$secondsWorked[$shift['ShiftsType']['Location']['location']] = (isset($secondsWorked[$shift['ShiftsType']['Location']['location']]) ? $secondsWorked[$shift['ShiftsType']['Location']['location']] : 0) + ($end < $start ? strtotime($end . " + 24 hours") : strtotime($end)) - strtotime($start);
+			}
+		}
+		return $secondsWorked;
+
+	}
+
+	function secondsToHours ($seconds = null) {
+		if (is_array($seconds)) {
+			foreach ($seconds as $id => $second) {
+				$hours[$id] = $second / 3600;
+			}
+		}
+		else {
+			$hours = $seconds / 3600;
+		}
+		return $hours;
 	}
 }

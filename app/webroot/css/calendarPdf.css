@@ -55,7 +55,6 @@ h1 {
 	padding: 0;
 	margin: 0;
 }
-
 .locations {
 	text-align: center;
 	font-size: 28px;
@@ -68,7 +67,11 @@ h1 {
 	overflow: hidden;
 }
 
-
+.names {
+	text-overflow: clip;
+	overflow: hidden;
+	height: 10px;
+}
 /* Colouring for even and odd rows, divided into columns */
 
 /*.even {
