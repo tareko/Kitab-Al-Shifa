@@ -40,18 +40,18 @@ class BillingsItem extends AppModel {
 			'order' => ''
 		)
 	);
- 
+
 	public function beforeValidate($options = array()) {
 		if (!empty($this->data['BillingsItem']['service_date'])) {
 			$this->data['BillingsItem']['service_date'] = $this->dateFormatBeforeSave($this->data['BillingsItem']['service_date']);
 		}
 		return true;
 	}
-	
+
 	public function dateFormatBeforeSave($dateString) {
 		return date('Y-m-d', strtotime($dateString));
 	}
-	
+
 	public function distinctPatientsPerDay ($conditions = array()) {
 		$i = 0;
 		$output = array();
@@ -95,5 +95,4 @@ class BillingsItem extends AppModel {
 		$output = $this->distinctPatientsPerDay($conditions);
 		return $output;
 	}
-	
 }

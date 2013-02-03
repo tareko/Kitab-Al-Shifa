@@ -7,7 +7,7 @@ App::uses('AppModel', 'Model');
  */
 class Profile extends AppModel {
 	public $actsAs = array('Containable');
-	
+
 /**
  * Use database config
  *
@@ -21,7 +21,7 @@ class Profile extends AppModel {
  */
 	public $useTable = 'comprofiler';
 	public $tablePrefix = 'j17_';
-	
+
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
 /**
@@ -39,8 +39,14 @@ class Profile extends AppModel {
 		'Shift' => array(
 			'className' => 'Shift',
 			'foreignKey' => 'user_id',
+		),
+			//Not working
+		'Billing' => array(
+			'className' => 'Billing',
+			'foreignKey' => 'healthcare_provider',
+			'associationForeignKey'  => 'cb_ohip',
 		)
 	);
 	var $virtualFields = array('fullname' => 'CONCAT(Profile.firstname, " ", Profile.lastname)');
-	
+
 }

@@ -15,14 +15,14 @@ class AppController extends Controller {
 		),
 //		'DebugKit.Toolbar'
 	);
-	
+
 	function beforeFilter() {
 		$this->set('admin', $this->_isAdmin());
 		$this->set('logged_in', $this->_loggedIn());
 		$this->set('users_username', $this->_usersUsername());
 		$this->set('users_id', $this->_usersId());
 		$this->_defaultPermissions();
-		
+
   		if (!$this->_requestAllowed($this->name, $this->action, $this->_getAclRules($this->_usersId()))) {
   			$this->Session->setFlash('Access denied. You do not have permission to access this page');
 			header('HTTP/1.1 401 Unauthorized');
@@ -30,12 +30,12 @@ class AppController extends Controller {
 			$this->render('permission_denied');
 		}
 	}
-	
+
 	/**
 	 * requestAllowed
 	 * Checks to see if the user is allowed to access this property.
 	 * Based on http://debuggable.com/posts/a-lightweight-approach-to-acl-the-33-lines-of-magic
-	 * 
+	 *
 	 * @param string $object
 	 * @param string $property
 	 * @param string $rules
@@ -53,16 +53,16 @@ class AppController extends Controller {
 			));
 			$rules = $rules['Group']['acl'];
 		}
-		
+
 		// This Regex converts a string of rules like "objectA:actionA,objectB:actionB,..." into the array $matches.
 		preg_match_all('/([^:,]+):([^,:]+)/is', $rules, $matches, PREG_SET_ORDER);
 		foreach ($matches as $match)
 		{
 			list($rawMatch, $allowedObject, $allowedProperty) = $match;
-			 
+
 			$allowedObject = str_replace('*', '.*', $allowedObject);
 			$allowedProperty = str_replace('*', '.*', $allowedProperty);
-			 
+
 			if ($allowedObject{0}=='!')
 			{
 				$allowedObject = substr($allowedObject, 1);
@@ -71,7 +71,7 @@ class AppController extends Controller {
 			else {
 				$negativeCondition = false;
 			}
-			 
+
 			if (preg_match('/^'.$allowedObject.'$/i', $object) &&
 			preg_match('/^'.$allowedProperty.'$/i', $property))
 			{
@@ -88,7 +88,7 @@ class AppController extends Controller {
 
 	function _getAclRules($userId) {
 		$acl = NULL;
-		
+
 		$rulesRaw = $this->User->find('all',
 		array(
 	  		'contain' => array(
@@ -110,8 +110,8 @@ class AppController extends Controller {
 		}
 		return $acl;
 	}
-	
-	
+
+
 	function _isAdmin() {
 		$admin = FALSE;
 		if ($this->Auth->user()) {
@@ -121,8 +121,8 @@ class AppController extends Controller {
 		}
 		return $admin;
 	}
-	
-	// 
+
+	//
 	function _loggedIn() {
 		$logged_in = FALSE;
 		if ($this->Auth->user()) {
@@ -130,7 +130,7 @@ class AppController extends Controller {
 		}
 		return $logged_in;
 	}
-	
+
 	function _usersId() {
 		$users_username = NULL;
 		if ($this->Auth->user()) {

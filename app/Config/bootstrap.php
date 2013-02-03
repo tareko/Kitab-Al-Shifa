@@ -81,6 +81,7 @@ Cache::config('default', array('engine' => 'File'));
  		'engine' => 'FileLog',
  		'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
  		'file' => 'error',
+<<<<<<< Updated upstream
  ));
 
  //Load CakePdf
@@ -99,4 +100,6 @@ Cache::config('default', array('engine' => 'File'));
  		'orientation' => 'landscape',
  		'download' => true,
  		'pageSize' => 'Letter',
+=======
+>>>>>>> Stashed changes
  ));
