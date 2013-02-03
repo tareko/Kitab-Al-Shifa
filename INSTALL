@@ -18,4 +18,6 @@ following directories, which have to be writable by your webserver:
 	f. mkdir app/tmp/sessions
 	g. mkdir app/tmp/tests
 
-7. Config directory - not yet in repository
+7. Config directory
+
+8. Add the kitab.sql scheme and Joomla scheme if needed
