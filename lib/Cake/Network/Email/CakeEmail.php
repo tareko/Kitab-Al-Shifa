@@ -33,6 +33,7 @@ App::import('I18n', 'Multibyte');
  * @package       Cake.Network.Email
  */
 class CakeEmail {
+
 /**
  * Default X-Mailer
  *
@@ -85,7 +86,7 @@ class CakeEmail {
 /**
  * The sender email
  *
- * @var array();
+ * @var array
  */
 	protected $_sender = array();
 
@@ -325,7 +326,7 @@ class CakeEmail {
 		if ($this->_appCharset !== null) {
 			$this->charset = $this->_appCharset;
 		}
-		$this->_domain = env('HTTP_HOST');
+		$this->_domain = preg_replace('/\:\d+$/', '', env('HTTP_HOST'));
 		if (empty($this->_domain)) {
 			$this->_domain = php_uname('n');
 		}
@@ -946,12 +947,16 @@ class CakeEmail {
  * $email->attachments(array('custom_name.png' => array(
  *		'file' => 'path/to/file',
  *		'mimetype' => 'image/png',
- *		'contentId' => 'abc123'
+ *		'contentId' => 'abc123',
+ *		'contentDisposition' => false
  * ));
  * }}}
  *
  * The `contentId` key allows you to specify an inline attachment. In your email text, you
  * can use `<img src="cid:abc123" />` to display the image inline.
+ *
+ * The `contentDisposition` key allows you to disable the `Content-Disposition` header, this can improve
+ * attachment compatibility with outlook email clients.
  *
  * @param string|array $attachments String with the filename or array with filenames
  * @return array|CakeEmail Either the array of attachments when getting or $this when setting.
@@ -991,6 +996,7 @@ class CakeEmail {
  * @param string|array $attachments String with the filename or array with filenames
  * @return CakeEmail $this
  * @throws SocketException
+ * @see CakeEmail::attachments()
  */
 	public function addAttachments($attachments) {
 		$current = $this->_attachments;
@@ -1035,7 +1041,7 @@ class CakeEmail {
 
 /**
  * Send an email using the specified content, template and layout
- * 
+ *
  * @param string|array $content String with message or array with messages
  * @return array
  * @throws SocketException
@@ -1104,7 +1110,6 @@ class CakeEmail {
 /**
  * Apply the config to an instance
  *
- * @param CakeEmail $obj CakeEmail
  * @param array $config
  * @return void
  * @throws ConfigureException When configuration file cannot be found, or is missing
@@ -1237,7 +1242,7 @@ class CakeEmail {
  * @param string $message Message to wrap
  * @return array Wrapped message
  */
-	protected function _wrap($message) {
+	protected function _wrap($message, $wrapLength = CakeEmail::LINE_LENGTH_MUST) {
 		$message = str_replace(array("\r\n", "\r"), "\n", $message);
 		$lines = explode("\n", $message);
 		$formatted = array();
@@ -1248,7 +1253,10 @@ class CakeEmail {
 				continue;
 			}
 			if (!preg_match('/\<[a-z]/i', $line)) {
-				$formatted = array_merge($formatted, explode("\n", wordwrap($line, self::LINE_LENGTH_SHOULD, "\n")));
+				$formatted = array_merge(
+					$formatted,
+					explode("\n", wordwrap($line, $wrapLength, "\n"))
+				);
 				continue;
 			}
 
@@ -1261,7 +1269,7 @@ class CakeEmail {
 					$tag .= $char;
 					if ($char === '>') {
 						$tagLength = strlen($tag);
-						if ($tagLength + $tmpLineLength < self::LINE_LENGTH_SHOULD) {
+						if ($tagLength + $tmpLineLength < $wrapLength) {
 							$tmpLine .= $tag;
 							$tmpLineLength += $tagLength;
 						} else {
@@ -1270,7 +1278,7 @@ class CakeEmail {
 								$tmpLine = '';
 								$tmpLineLength = 0;
 							}
-							if ($tagLength > self::LINE_LENGTH_SHOULD) {
+							if ($tagLength > $wrapLength) {
 								$formatted[] = $tag;
 							} else {
 								$tmpLine = $tag;
@@ -1287,14 +1295,14 @@ class CakeEmail {
 					$tag = '<';
 					continue;
 				}
-				if ($char === ' ' && $tmpLineLength >= self::LINE_LENGTH_SHOULD) {
+				if ($char === ' ' && $tmpLineLength >= $wrapLength) {
 					$formatted[] = $tmpLine;
 					$tmpLineLength = 0;
 					continue;
 				}
 				$tmpLine .= $char;
 				$tmpLineLength++;
-				if ($tmpLineLength === self::LINE_LENGTH_SHOULD) {
+				if ($tmpLineLength === $wrapLength) {
 					$nextChar = $line[$i + 1];
 					if ($nextChar === ' ' || $nextChar === '<') {
 						$formatted[] = trim($tmpLine);
@@ -1337,7 +1345,7 @@ class CakeEmail {
 /**
  * Attach non-embedded files by adding file contents inside boundaries.
  *
- * @param string $boundary Boundary to use. If null, will default to $this->_boundary 
+ * @param string $boundary Boundary to use. If null, will default to $this->_boundary
  * @return array An array of lines to add to the message
  */
 	protected function _attachFiles($boundary = null) {
@@ -1355,7 +1363,12 @@ class CakeEmail {
 			$msg[] = '--' . $boundary;
 			$msg[] = 'Content-Type: ' . $fileInfo['mimetype'];
 			$msg[] = 'Content-Transfer-Encoding: base64';
-			$msg[] = 'Content-Disposition: attachment; filename="' . $filename . '"';
+			if (
+				!isset($fileInfo['contentDisposition']) ||
+				$fileInfo['contentDisposition']
+			) {
+				$msg[] = 'Content-Disposition: attachment; filename="' . $filename . '"';
+			}
 			$msg[] = '';
 			$msg[] = $data;
 			$msg[] = '';
@@ -1380,7 +1393,7 @@ class CakeEmail {
 /**
  * Attach inline/embedded files to the message.
  *
- * @param string $boundary Boundary to use. If null, will default to $this->_boundary 
+ * @param string $boundary Boundary to use. If null, will default to $this->_boundary
  * @return array An array of lines to add to the message
  */
 	protected function _attachInlineFiles($boundary = null) {
@@ -1494,7 +1507,7 @@ class CakeEmail {
 /**
  * Gets the text body types that are in this email message
  *
- * @return array Array of types.  Valid types are 'text' and 'html'
+ * @return array Array of types. Valid types are 'text' and 'html'
  */
 	protected function _getTypes() {
 		$types = array($this->_emailFormat);

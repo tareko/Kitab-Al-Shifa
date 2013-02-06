@@ -24,7 +24,7 @@ App::uses('CakeValidationSet', 'Model/Validator');
  *
  * @package       Cake.Test.Case.Model.Validator
  */
-class CakeValidationSetTest  extends CakeTestCase {
+class CakeValidationSetTest extends CakeTestCase {
 
 /**
  * testValidate method
@@ -76,11 +76,6 @@ class CakeValidationSetTest  extends CakeTestCase {
 	public function testGetRule() {
 		$rules = array('notEmpty' => array('rule' => 'notEmpty', 'message' => 'Can not be empty'));
 		$Field = new CakeValidationSet('title', $rules);
-		$data = array(
-			'title' => '',
-			'body' => 'a body'
-		);
-
 		$result = $Field->getRule('notEmpty');
 		$this->assertInstanceOf('CakeValidationRule', $result);
 		$this->assertEquals('notEmpty', $result->rule);
@@ -156,10 +151,22 @@ class CakeValidationSetTest  extends CakeTestCase {
 		$result = $Field->getRules();
 		$this->assertEquals(array('validEmail'), array_keys($result));
 
+		$Field->setRules(array('validEmail' => $rule), false);
+		$result = $Field->getRules();
+		$this->assertEquals(array('validEmail'), array_keys($result));
+		$this->assertTrue(array_pop($result) instanceof CakeValidationRule);
+
 		$rules = array('notEmpty' => $RuleEmpty);
 		$Field->setRules($rules, true);
 		$result = $Field->getRules();
 		$this->assertEquals(array('validEmail', 'notEmpty'), array_keys($result));
+
+		$rules = array('notEmpty' => array('rule' => 'notEmpty'));
+		$Field->setRules($rules, true);
+		$result = $Field->getRules();
+		$this->assertEquals(array('validEmail', 'notEmpty'), array_keys($result));
+		$this->assertTrue(array_pop($result) instanceof CakeValidationRule);
+		$this->assertTrue(array_pop($result) instanceof CakeValidationRule);
 	}
 
 /**

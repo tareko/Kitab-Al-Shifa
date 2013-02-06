@@ -239,7 +239,7 @@ class EmailComponent extends Component {
  * it be handled by sendmail (or similar) or a string
  * to completely override the Message-ID.
  *
- * If you are sending Email from a shell, be sure to set this value.  As you
+ * If you are sending Email from a shell, be sure to set this value. As you
  * could encounter delivery issues if you do not.
  *
  * @var mixed
@@ -288,6 +288,7 @@ class EmailComponent extends Component {
 	public function send($content = null, $template = null, $layout = null) {
 		$lib = new CakeEmail();
 		$lib->charset = $this->charset;
+		$lib->headerCharset = $this->charset;
 
 		$lib->from($this->_formatAddresses((array)$this->from));
 		if (!empty($this->to)) {
@@ -305,7 +306,7 @@ class EmailComponent extends Component {
 		if (!empty($this->return)) {
 			$lib->returnPath($this->_formatAddresses((array)$this->return));
 		}
-		if (!empty($readReceipt)) {
+		if (!empty($this->readReceipt)) {
 			$lib->readReceipt($this->_formatAddresses((array)$this->readReceipt));
 		}
 
@@ -316,7 +317,7 @@ class EmailComponent extends Component {
 		foreach ($this->headers as $key => $value) {
 			$headers['X-' . $key] = $value;
 		}
-		if ($this->date != false) {
+		if ($this->date) {
 			$headers['Date'] = $this->date;
 		}
 		$lib->setHeaders($headers);
@@ -448,7 +449,7 @@ class EmailComponent extends Component {
  * @return string Stripped value
  */
 	protected function _strip($value, $message = false) {
-		$search  = '%0a|%0d|Content-(?:Type|Transfer-Encoding)\:';
+		$search = '%0a|%0d|Content-(?:Type|Transfer-Encoding)\:';
 		$search .= '|charset\=|mime-version\:|multipart/mixed|(?:[^a-z]to|b?cc)\:.*';
 
 		if ($message !== true) {

@@ -30,7 +30,7 @@ class CakeValidationRuleTest extends CakeTestCase {
  * Auxiliary method to test custom validators
  *
  * @return boolean
- **/
+ */
 	public function myTestRule() {
 		return false;
 	}
@@ -39,7 +39,7 @@ class CakeValidationRuleTest extends CakeTestCase {
  * Auxiliary method to test custom validators
  *
  * @return boolean
- **/
+ */
 	public function myTestRule2() {
 		return true;
 	}
@@ -48,7 +48,7 @@ class CakeValidationRuleTest extends CakeTestCase {
  * Auxiliary method to test custom validators
  *
  * @return string
- **/
+ */
 	public function myTestRule3() {
 		return 'string';
 	}
@@ -171,4 +171,29 @@ class CakeValidationRuleTest extends CakeTestCase {
 		$Rule->isUpdate(true);
 		$this->assertTrue($Rule->isEmptyAllowed());
 	}
+
+/**
+ * Test checkRequired method
+ *
+ * @return void
+ */
+	public function testCheckRequiredWhenRequiredAndAllowEmpty() {
+		$Rule = $this->getMock('CakeValidationRule', array('isRequired'));
+		$Rule->expects($this->any())
+			->method('isRequired')
+			->will($this->returnValue(true));
+		$Rule->allowEmpty = true;
+
+		$fieldname = 'field';
+		$data = array(
+			$fieldname => null
+		);
+
+		$this->assertFalse($Rule->checkRequired($fieldname, $data), "A null but present field should not fail requirement check if allowEmpty is true");
+
+		$Rule->allowEmpty = false;
+
+		$this->assertTrue($Rule->checkRequired($fieldname, $data), "A null but present field should fail requirement check if allowEmpty is false");
+	}
+
 }

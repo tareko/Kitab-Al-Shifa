@@ -58,7 +58,7 @@ class ControllerTestDispatcher extends Dispatcher {
 		$this->testController->helpers = array_merge(array('InterceptContent'), $this->testController->helpers);
 		$this->testController->setRequest($request);
 		$this->testController->response = $this->response;
-		foreach ($this->testController->Components->attached() as $component) {
+		foreach ($this->testController->Components->loaded() as $component) {
 			$object = $this->testController->Components->{$component};
 			if (isset($object->response)) {
 				$object->response = $response;
@@ -173,7 +173,7 @@ abstract class ControllerTestCase extends CakeTestCase {
  *
  * @var boolean
  */
-	private $__dirtyController = false;
+	protected $_dirtyController = false;
 
 /**
  * Used to enable calling ControllerTestCase::testAction() without the testing
@@ -196,20 +196,21 @@ abstract class ControllerTestCase extends CakeTestCase {
  *
  * ### Options:
  *
- * - `data` Will be used as the request data.  If the `method` is GET,
- *   data will be used a GET params.  If the `method` is POST, it will be used
+ * - `data` Will be used as the request data. If the `method` is GET,
+ *   data will be used a GET params. If the `method` is POST, it will be used
  *   as POST data. By setting `$options['data']` to a string, you can simulate XML or JSON
  *   payloads to your controllers allowing you to test REST webservices.
  * - `method` POST or GET. Defaults to POST.
- * - `return` Specify the return type you want.  Choose from:
+ * - `return` Specify the return type you want. Choose from:
  *     - `vars` Get the set view variables.
  *     - `view` Get the rendered view, without a layout.
  *     - `contents` Get the rendered view including the layout.
- *     - `result` Get the return value of the controller action.  Useful
+ *     - `result` Get the return value of the controller action. Useful
  *       for testing requestAction methods.
  *
  * @param string $url The url to test
  * @param array $options See options
+ * @return mixed
  */
 	protected function _testAction($url = '', $options = array()) {
 		$this->vars = $this->result = $this->view = $this->contents = $this->headers = null;
@@ -252,7 +253,7 @@ abstract class ControllerTestCase extends CakeTestCase {
 			$this->headers = Router::currentRoute()->response->header();
 			return;
 		}
-		if ($this->__dirtyController) {
+		if ($this->_dirtyController) {
 			$this->controller = null;
 		}
 
@@ -275,7 +276,7 @@ abstract class ControllerTestCase extends CakeTestCase {
 		if (isset($this->controller->View)) {
 			$this->view = $this->controller->View->fetch('__view_no_layout__');
 		}
-		$this->__dirtyController = true;
+		$this->_dirtyController = true;
 		$this->headers = $Dispatch->response->header();
 
 		$_GET = $restore['get'];
@@ -342,12 +343,7 @@ abstract class ControllerTestCase extends CakeTestCase {
 			if ($methods === true) {
 				$methods = array();
 			}
-			ClassRegistry::init($model);
-			list($plugin, $name) = pluginSplit($model);
-			$config = array_merge((array)$config, array('name' => $model));
-			$_model = $this->getMock($name, $methods, array($config));
-			ClassRegistry::removeObject($name);
-			ClassRegistry::addObject($name, $_model);
+			$this->getMockForModel($model, $methods, $config);
 		}
 
 		foreach ($mocks['components'] as $component => $methods) {
@@ -371,7 +367,7 @@ abstract class ControllerTestCase extends CakeTestCase {
 		}
 
 		$_controller->constructClasses();
-		$this->__dirtyController = false;
+		$this->_dirtyController = false;
 
 		$this->controller = $_controller;
 		return $this->controller;

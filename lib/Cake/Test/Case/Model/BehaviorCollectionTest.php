@@ -66,15 +66,12 @@ class TestBehavior extends ModelBehavior {
 		switch ($settings['beforeFind']) {
 			case 'on':
 				return false;
-			break;
 			case 'test':
 				return null;
-			break;
 			case 'modify':
 				$query['fields'] = array($model->alias . '.id', $model->alias . '.name', $model->alias . '.mytime');
 				$query['recursive'] = -1;
 				return $query;
-			break;
 		}
 	}
 
@@ -94,16 +91,12 @@ class TestBehavior extends ModelBehavior {
 		switch ($settings['afterFind']) {
 			case 'on':
 				return array();
-			break;
 			case 'test':
 				return true;
-			break;
 			case 'test2':
 				return null;
-			break;
 			case 'modify':
 				return Hash::extract($results, "{n}.{$model->alias}");
-			break;
 		}
 	}
 
@@ -121,14 +114,11 @@ class TestBehavior extends ModelBehavior {
 		switch ($settings['beforeSave']) {
 			case 'on':
 				return false;
-			break;
 			case 'test':
 				return true;
-			break;
 			case 'modify':
 				$model->data[$model->alias]['name'] .= ' modified before';
 				return true;
-			break;
 		}
 	}
 
@@ -157,7 +147,6 @@ class TestBehavior extends ModelBehavior {
 			break;
 			case 'test2':
 				return false;
-			break;
 			case 'modify':
 				$model->data[$model->alias]['name'] .= ' ' . $string;
 			break;
@@ -179,18 +168,14 @@ class TestBehavior extends ModelBehavior {
 			case 'on':
 				$model->invalidate('name');
 				return true;
-			break;
 			case 'test':
 				return null;
-			break;
 			case 'whitelist':
 				$this->_addToWhitelist($model, array('name'));
 				return true;
-			break;
 			case 'stop':
 				$model->invalidate('name');
 				return false;
-			break;
 		}
 	}
 
@@ -209,11 +194,9 @@ class TestBehavior extends ModelBehavior {
 		switch ($settings['afterValidate']) {
 			case 'on':
 				return false;
-			break;
 			case 'test':
 				$model->data = array('foo');
 				return true;
-			break;
 		}
 	}
 
@@ -232,17 +215,14 @@ class TestBehavior extends ModelBehavior {
 		switch ($settings['beforeDelete']) {
 			case 'on':
 				return false;
-			break;
 			case 'test':
 				return null;
-			break;
 			case 'test2':
 				echo 'beforeDelete success';
 				if ($cascade) {
 					echo ' (cascading) ';
 				}
 				return true;
-			break;
 		}
 	}
 
@@ -460,10 +440,10 @@ class BehaviorCollectionTest extends CakeTestCase {
  */
 	public function testLoadDisabled() {
 		$Apple = new Apple();
-		$this->assertSame(array(), $Apple->Behaviors->attached());
+		$this->assertSame(array(), $Apple->Behaviors->loaded());
 
 		$Apple->Behaviors->load('Translate', array('enabled' => false));
-		$this->assertTrue($Apple->Behaviors->attached('Translate'));
+		$this->assertTrue($Apple->Behaviors->loaded('Translate'));
 		$this->assertFalse($Apple->Behaviors->enabled('Translate'));
 	}
 
@@ -472,10 +452,10 @@ class BehaviorCollectionTest extends CakeTestCase {
  */
 	public function testLoadAlias() {
 		$Apple = new Apple();
-		$this->assertSame(array(), $Apple->Behaviors->attached());
+		$this->assertSame(array(), $Apple->Behaviors->loaded());
 
 		$Apple->Behaviors->load('Test', array('className' => 'TestAlias', 'somesetting' => true));
-		$this->assertSame(array('Test'), $Apple->Behaviors->attached());
+		$this->assertSame(array('Test'), $Apple->Behaviors->loaded());
 		$this->assertInstanceOf('TestAliasBehavior', $Apple->Behaviors->Test);
 		$this->assertTrue($Apple->Behaviors->Test->settings['Apple']['somesetting']);
 
@@ -488,8 +468,8 @@ class BehaviorCollectionTest extends CakeTestCase {
 		$this->assertTrue($Apple->Behaviors->load('SomeOther', array('className' => 'TestPlugin.TestPluginPersisterOne')));
 		$this->assertInstanceOf('TestPluginPersisterOneBehavior', $Apple->Behaviors->SomeOther);
 
-		$result = $Apple->Behaviors->attached();
-		$this->assertEquals(array('Test', 'SomeOther'), $result, 'attached() results are wrong.');
+		$result = $Apple->Behaviors->loaded();
+		$this->assertEquals(array('Test', 'SomeOther'), $result, 'loaded() results are wrong.');
 		App::build();
 		CakePlugin::unload();
 	}
@@ -501,18 +481,18 @@ class BehaviorCollectionTest extends CakeTestCase {
  */
 	public function testBehaviorBinding() {
 		$Apple = new Apple();
-		$this->assertSame(array(), $Apple->Behaviors->attached());
+		$this->assertSame(array(), $Apple->Behaviors->loaded());
 
 		$Apple->Behaviors->attach('Test', array('key' => 'value'));
-		$this->assertSame(array('Test'), $Apple->Behaviors->attached());
+		$this->assertSame(array('Test'), $Apple->Behaviors->loaded());
 		$this->assertEquals('testbehavior', strtolower(get_class($Apple->Behaviors->Test)));
 		$expected = array('beforeFind' => 'on', 'afterFind' => 'off', 'key' => 'value');
 		$this->assertEquals($expected, $Apple->Behaviors->Test->settings['Apple']);
 		$this->assertEquals(array('Apple'), array_keys($Apple->Behaviors->Test->settings));
 
-		$this->assertSame($Apple->Sample->Behaviors->attached(), array());
+		$this->assertSame($Apple->Sample->Behaviors->loaded(), array());
 		$Apple->Sample->Behaviors->attach('Test', array('key2' => 'value2'));
-		$this->assertSame($Apple->Sample->Behaviors->attached(), array('Test'));
+		$this->assertSame($Apple->Sample->Behaviors->loaded(), array('Test'));
 		$this->assertEquals(array('beforeFind' => 'on', 'afterFind' => 'off', 'key2' => 'value2'), $Apple->Sample->Behaviors->Test->settings['Sample']);
 
 		$this->assertEquals(array('Apple', 'Sample'), array_keys($Apple->Behaviors->Test->settings));
@@ -568,17 +548,17 @@ class BehaviorCollectionTest extends CakeTestCase {
 		$Apple = new Apple();
 		$Apple->Behaviors->attach('Plugin.Test');
 		$this->assertTrue(isset($Apple->Behaviors->Test), 'Missing behavior');
-		$this->assertEquals(array('Test'), $Apple->Behaviors->attached());
+		$this->assertEquals(array('Test'), $Apple->Behaviors->loaded());
 
 		$Apple->Behaviors->detach('Plugin.Test');
-		$this->assertEquals(array(), $Apple->Behaviors->attached());
+		$this->assertEquals(array(), $Apple->Behaviors->loaded());
 
 		$Apple->Behaviors->attach('Plugin.Test');
 		$this->assertTrue(isset($Apple->Behaviors->Test), 'Missing behavior');
-		$this->assertEquals(array('Test'), $Apple->Behaviors->attached());
+		$this->assertEquals(array('Test'), $Apple->Behaviors->loaded());
 
 		$Apple->Behaviors->detach('Test');
-		$this->assertEquals(array(), $Apple->Behaviors->attached());
+		$this->assertEquals(array(), $Apple->Behaviors->loaded());
 	}
 
 /**
@@ -599,14 +579,13 @@ class BehaviorCollectionTest extends CakeTestCase {
  */
 	public function testBehaviorToggling() {
 		$Apple = new Apple();
-		$expected = $Apple->find('all');
 		$this->assertSame($Apple->Behaviors->enabled(), array());
 
 		$Apple->Behaviors->init('Apple', array('Test' => array('key' => 'value')));
 		$this->assertSame($Apple->Behaviors->enabled(), array('Test'));
 
 		$Apple->Behaviors->disable('Test');
-		$this->assertSame(array('Test'), $Apple->Behaviors->attached());
+		$this->assertSame(array('Test'), $Apple->Behaviors->loaded());
 		$this->assertSame($Apple->Behaviors->enabled(), array());
 
 		$Apple->Sample->Behaviors->attach('Test');
@@ -614,7 +593,7 @@ class BehaviorCollectionTest extends CakeTestCase {
 		$this->assertSame($Apple->Behaviors->enabled(), array());
 
 		$Apple->Behaviors->enable('Test');
-		$this->assertSame($Apple->Behaviors->attached('Test'), true);
+		$this->assertSame($Apple->Behaviors->loaded('Test'), true);
 		$this->assertSame($Apple->Behaviors->enabled(), array('Test'));
 
 		$Apple->Behaviors->disable('Test');
@@ -707,22 +686,6 @@ class BehaviorCollectionTest extends CakeTestCase {
 		$Apple->Child->Behaviors->attach('Test', array('before' => 'test'));
 		$this->assertSame($expected, $Apple->find('all'));
 
-		$expected2 = array(
-			array(
-				'Apple' => array('id' => 1),
-				'Child' => array(
-					array('id' => 2, 'name' => 'Bright Red Apple', 'mytime' => '22:57:17'))),
-			array(
-				'Apple' => array('id' => 2),
-				'Child' => array(
-					array('id' => 1, 'name' => 'Red Apple 1', 'mytime' => '22:57:17'),
-					array('id' => 3, 'name' => 'green blue', 'mytime' => '22:57:17'),
-					array('id' => 4, 'name' => 'Test Name', 'mytime' => '22:57:17'))),
-			array(
-				'Apple' => array('id' => 3),
-				'Child' => array())
-		);
-
 		$Apple->Child->Behaviors->attach('Test', array('before' => 'modify'));
 		$result = $Apple->find('all', array('fields' => array('Apple.id'), 'conditions' => array('Apple.id <' => '4')));
 
@@ -786,21 +749,22 @@ class BehaviorCollectionTest extends CakeTestCase {
 	public function testBehaviorBelongsToFindCallbacks() {
 		$this->skipIf($this->db instanceof Sqlserver, 'This test is not compatible with SQL Server.');
 
+		$conditions = array('order' => 'Apple.id ASC');
 		$Apple = new Apple();
 		$Apple->unbindModel(array('hasMany' => array('Child'), 'hasOne' => array('Sample')), false);
-		$expected = $Apple->find('all');
+		$expected = $Apple->find('all', $conditions);
 
 		$Apple->unbindModel(array('belongsTo' => array('Parent')));
-		$wellBehaved = $Apple->find('all');
+		$wellBehaved = $Apple->find('all', $conditions);
 		$Apple->Parent->Behaviors->attach('Test');
 		$Apple->unbindModel(array('belongsTo' => array('Parent')));
-		$this->assertSame($Apple->find('all'), $wellBehaved);
+		$this->assertSame($Apple->find('all', $conditions), $wellBehaved);
 
 		$Apple->Parent->Behaviors->attach('Test', array('before' => 'off'));
-		$this->assertSame($expected, $Apple->find('all'));
+		$this->assertSame($expected, $Apple->find('all', $conditions));
 
 		$Apple->Parent->Behaviors->attach('Test', array('before' => 'test'));
-		$this->assertSame($expected, $Apple->find('all'));
+		$this->assertSame($expected, $Apple->find('all', $conditions));
 
 		$Apple->Parent->Behaviors->attach('Test', array('before' => 'modify'));
 		$expected2 = array(
@@ -816,22 +780,23 @@ class BehaviorCollectionTest extends CakeTestCase {
 		);
 		$result2 = $Apple->find('all', array(
 			'fields' => array('Apple.id', 'Parent.id', 'Parent.name', 'Parent.mytime'),
-			'conditions' => array('Apple.id <' => '4')
+			'conditions' => array('Apple.id <' => '4'),
+			'order' => 'Apple.id ASC',
 		));
 		$this->assertEquals($expected2, $result2);
 
 		$Apple->Parent->Behaviors->disable('Test');
-		$result = $Apple->find('all');
+		$result = $Apple->find('all', $conditions);
 		$this->assertEquals($expected, $result);
 
 		$Apple->Parent->Behaviors->attach('Test', array('after' => 'off'));
-		$this->assertEquals($expected, $Apple->find('all'));
+		$this->assertEquals($expected, $Apple->find('all', $conditions));
 
 		$Apple->Parent->Behaviors->attach('Test', array('after' => 'test'));
-		$this->assertEquals($expected, $Apple->find('all'));
+		$this->assertEquals($expected, $Apple->find('all', $conditions));
 
 		$Apple->Parent->Behaviors->attach('Test', array('after' => 'test2'));
-		$this->assertEquals($expected, $Apple->find('all'));
+		$this->assertEquals($expected, $Apple->find('all', $conditions));
 	}
 
 /**
@@ -1136,7 +1101,7 @@ class BehaviorCollectionTest extends CakeTestCase {
  * @return void
  */
 	public function testHasMethodBasic() {
-		$Sample = new Sample();
+		new Sample();
 		$Collection = new BehaviorCollection();
 		$Collection->init('Sample', array('Test', 'Test2'));
 
@@ -1152,7 +1117,7 @@ class BehaviorCollectionTest extends CakeTestCase {
  * @return void
  */
 	public function testHasMethodMappedMethods() {
-		$Sample = new Sample();
+		new Sample();
 		$Collection = new BehaviorCollection();
 		$Collection->init('Sample', array('Test', 'Test2'));
 
@@ -1166,7 +1131,7 @@ class BehaviorCollectionTest extends CakeTestCase {
  * @return void
  */
 	public function testHasMethodAsCallback() {
-		$Sample = new Sample();
+		new Sample();
 		$Collection = new BehaviorCollection();
 		$Collection->init('Sample', array('Test', 'Test2'));
 

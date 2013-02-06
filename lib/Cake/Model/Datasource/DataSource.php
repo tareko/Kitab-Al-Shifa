@@ -226,7 +226,7 @@ class DataSource extends Object {
  *
  * @param Model $model The model class having record(s) deleted
  * @param mixed $conditions The conditions to use for deleting.
- * @return void
+ * @return boolean Success
  */
 	public function delete(Model $model, $id = null) {
 		return false;
@@ -264,7 +264,7 @@ class DataSource extends Object {
 
 /**
  * Check whether the conditions for the Datasource being available
- * are satisfied.  Often used from connect() to check for support
+ * are satisfied. Often used from connect() to check for support
  * before establishing a connection.
  *
  * @return boolean Whether or not the Datasources conditions for use are met.
@@ -322,7 +322,6 @@ class DataSource extends Object {
  * @param Model $linkModel Instance of model to replace $__cakeForeignKey__$
  * @param array $stack
  * @return string String of query data with placeholders replaced.
- * @todo Remove and refactor $assocData, ensure uses of the method have the param removed too.
  */
 	public function insertQueryData($query, $data, $association, $assocData, Model $model, Model $linkModel, $stack) {
 		$keys = array('{$__cakeID__$}', '{$__cakeForeignKey__$}');
@@ -356,7 +355,7 @@ class DataSource extends Object {
 						$type = $model->getColumnType($model->primaryKey);
 					break;
 					case '{$__cakeForeignKey__$}':
-						foreach ($model->associations() as $id => $name) {
+						foreach ($model->associations() as $name) {
 							foreach ($model->$name as $assocName => $assoc) {
 								if ($assocName === $association) {
 									if (isset($assoc['foreignKey'])) {
@@ -420,7 +419,7 @@ class DataSource extends Object {
 
 /**
  * Closes a connection. Override in subclasses
- * 
+ *
  * @return boolean
  * @access public
  */

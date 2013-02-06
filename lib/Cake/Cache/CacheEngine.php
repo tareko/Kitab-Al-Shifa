@@ -32,7 +32,7 @@ abstract class CacheEngine {
  * prefixes to be prepeded to every key in this cache engine
  *
  * @var string
- **/
+ */
 	protected $_groupPrefix = null;
 
 /**
@@ -65,7 +65,7 @@ abstract class CacheEngine {
  * Garbage collection
  *
  * Permanently remove all expired and deleted data
- * 
+ *
  * @param integer $expires [optional] An expires timestamp, invalidataing all data before.
  * @return void
  */

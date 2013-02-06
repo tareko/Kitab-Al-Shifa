@@ -552,6 +552,13 @@ class ModifiedComment extends CakeTestModel {
 	public $useTable = 'comments';
 
 /**
+ * Property used to toggle filtering of results
+ *
+ * @var boolean
+ */
+	public $remove = false;
+
+/**
  * belongsTo property
  *
  * @var array
@@ -566,6 +573,9 @@ class ModifiedComment extends CakeTestModel {
 	public function afterFind($results, $primary = false) {
 		if (isset($results[0])) {
 			$results[0]['Comment']['callback'] = 'Fire';
+		}
+		if ($this->remove) {
+			return array();
 		}
 		return $results;
 	}
@@ -2003,28 +2013,28 @@ class CallbackPostTestModel extends CakeTestModel {
 /**
  * variable to control return of beforeValidate
  *
- * @var string
+ * @var boolean
  */
 	public $beforeValidateReturn = true;
 
 /**
  * variable to control return of beforeSave
  *
- * @var string
+ * @var boolean
  */
 	public $beforeSaveReturn = true;
 
 /**
  * variable to control return of beforeDelete
  *
- * @var string
+ * @var boolean
  */
 	public $beforeDeleteReturn = true;
 
 /**
  * beforeSave callback
  *
- * @return void
+ * @return boolean
  */
 	public function beforeSave($options = array()) {
 		return $this->beforeSaveReturn;
@@ -2033,7 +2043,7 @@ class CallbackPostTestModel extends CakeTestModel {
 /**
  * beforeValidate callback
  *
- * @return void
+ * @return boolean
  */
 	public function beforeValidate($options = array()) {
 		return $this->beforeValidateReturn;
@@ -2042,7 +2052,7 @@ class CallbackPostTestModel extends CakeTestModel {
 /**
  * beforeDelete callback
  *
- * @return void
+ * @return boolean
  */
 	public function beforeDelete($cascade = true) {
 		return $this->beforeDeleteReturn;
@@ -4976,7 +4986,7 @@ class CustomArticle extends AppModel {
  * Alters title data
  *
  * @return void
- **/
+ */
 	public function beforeValidate($options = array()) {
 		$this->data[$this->alias]['title'] = 'foo';
 		if ($this->findMethods['unPublished'] === true) {

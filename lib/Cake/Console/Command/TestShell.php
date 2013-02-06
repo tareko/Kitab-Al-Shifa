@@ -57,7 +57,7 @@ class TestShell extends Shell {
 			'help' => __d('cake_console', '<file> Log test execution in JUnit XML format to file.'),
 			'default' => false
 		))->addOption('log-json', array(
-			'help' => __d('cake_console', '<file> Log test execution in TAP format to file.'),
+			'help' => __d('cake_console', '<file> Log test execution in JSON format to file.'),
 			'default' => false
 		))->addOption('log-tap', array(
 			'help' => __d('cake_console', '<file> Log test execution in TAP format to file.'),
@@ -114,7 +114,7 @@ class TestShell extends Shell {
 		))->addOption('stop-on-failure', array(
 			'help' => __d('cake_console', 'Stop execution upon first failure.'),
 			'boolean' => true
-		))->addOption('stop-on-skipped ', array(
+		))->addOption('stop-on-skipped', array(
 			'help' => __d('cake_console', 'Stop execution upon first skipped test.'),
 			'boolean' => true
 		))->addOption('stop-on-incomplete', array(
@@ -132,7 +132,7 @@ class TestShell extends Shell {
 		))->addOption('no-globals-backup', array(
 			'help' => __d('cake_console', 'Do not backup and restore $GLOBALS for each test.'),
 			'boolean' => true
-		))->addOption('static-backup ', array(
+		))->addOption('static-backup', array(
 			'help' => __d('cake_console', 'Backup and restore static attributes for each test.'),
 			'boolean' => true
 		))->addOption('syntax-check', array(
@@ -303,7 +303,7 @@ class TestShell extends Shell {
 		$this->out($title);
 		$i = 1;
 		$cases = array();
-		foreach ($testCases as $testCaseFile => $testCase) {
+		foreach ($testCases as $testCase) {
 			$case = str_replace('Test.php', '', $testCase);
 			$this->out("[$i] $case");
 			$cases[$i] = $case;
@@ -335,10 +335,10 @@ class TestShell extends Shell {
  * Find the test case for the passed file. The file could itself be a test.
  *
  * @param string $file
- * @param string $category 
- * @param boolean $throwOnMissingFile 
+ * @param string $category
+ * @param boolean $throwOnMissingFile
  * @access protected
- * @return array(type, case)
+ * @return array array(type, case)
  * @throws Exception
  */
 	protected function _mapFileToCase($file, $category, $throwOnMissingFile = true) {

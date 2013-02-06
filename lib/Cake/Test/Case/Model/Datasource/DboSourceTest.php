@@ -160,6 +160,19 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
+ * test that booleans work on empty set.
+ *
+ * @return void
+ */
+	public function testBooleanEmptyConditionsParsing() {
+		$result = $this->testDb->conditions(array('OR' => array()));
+		$this->assertEquals(' WHERE  1 = 1', $result, 'empty conditions failed');
+
+		$result = $this->testDb->conditions(array('OR' => array('OR' => array())));
+		$this->assertEquals(' WHERE  1 = 1', $result, 'nested empty conditions failed');
+	}
+
+/**
  * test that order() will accept objects made from DboSource::expression
  *
  * @return void
@@ -512,7 +525,7 @@ class DboSourceTest extends CakeTestCase {
  * @return void
  */
 	public function testDirectCallThrowsException() {
-		$result = $this->db->query('directCall', array(), $this->Model);
+		$this->db->query('directCall', array(), $this->Model);
 	}
 
 /**
@@ -937,7 +950,7 @@ class DboSourceTest extends CakeTestCase {
  * Tests that transaction commands are logged
  *
  * @return void
- **/
+ */
 	public function testTransactionLogging() {
 		$conn = $this->getMock('MockPDO');
 		$db = new DboTestSource;
@@ -1049,7 +1062,10 @@ class DboSourceTest extends CakeTestCase {
  * @return void
  */
 	public function testBuildStatementDefaults() {
-		$conn = $this->getMock('MockPDO');
+		$conn = $this->getMock('MockPDO', array('quote'));
+		$conn->expects($this->at(0))
+			->method('quote')
+			->will($this->returnValue('foo bar'));
 		$db = new DboTestSource;
 		$db->setConnection($conn);
 		$subQuery = $db->buildStatement(
@@ -1063,6 +1079,8 @@ class DboSourceTest extends CakeTestCase {
 			),
 			$this->Model
 		);
+		$expected = 'SELECT DISTINCT(AssetsTag.asset_id) FROM assets_tags AS AssetsTag   WHERE Tag.name = foo bar  GROUP BY AssetsTag.asset_id  ';
+		$this->assertEquals($expected, $subQuery);
 	}
 
 /**
@@ -1101,6 +1119,75 @@ class DboSourceTest extends CakeTestCase {
 			->will($this->returnValue('cakephp'));
 		$result = $db->buildJoinStatement($join);
 		$this->assertEquals($expected, $result);
+	}
+
+/**
+ * Test conditionKeysToString()
+ *
+ * @return void
+ */
+	public function testConditionKeysToString() {
+		$Article = ClassRegistry::init('Article');
+		$conn = $this->getMock('MockPDO', array('quote'));
+		$db = new DboTestSource;
+		$db->setConnection($conn);
+
+		$conn->expects($this->at(0))
+			->method('quote')
+			->will($this->returnValue('just text'));
+
+		$conditions = array('Article.name' => 'just text');
+		$result = $db->conditionKeysToString($conditions, true, $Article);
+		$expected = "Article.name = just text";
+		$this->assertEquals($expected, $result[0]);
+
+		$conn->expects($this->at(0))
+			->method('quote')
+			->will($this->returnValue('just text'));
+		$conn->expects($this->at(1))
+			->method('quote')
+			->will($this->returnValue('other text'));
+
+		$conditions = array('Article.name' => array('just text', 'other text'));
+		$result = $db->conditionKeysToString($conditions, true, $Article);
+		$expected = "Article.name IN (just text, other text)";
+		$this->assertEquals($expected, $result[0]);
+	}
+
+/**
+ * Test conditionKeysToString() with virtual field
+ *
+ * @return void
+ */
+	public function testConditionKeysToStringVirtualField() {
+		$Article = ClassRegistry::init('Article');
+		$Article->virtualFields = array(
+			'extra' => 'something virtual'
+		);
+		$conn = $this->getMock('MockPDO', array('quote'));
+		$db = new DboTestSource;
+		$db->setConnection($conn);
+
+		$conn->expects($this->at(0))
+			->method('quote')
+			->will($this->returnValue('just text'));
+
+		$conditions = array('Article.extra' => 'just text');
+		$result = $db->conditionKeysToString($conditions, true, $Article);
+		$expected = "(" . $Article->virtualFields['extra'] . ") = just text";
+		$this->assertEquals($expected, $result[0]);
+
+		$conn->expects($this->at(0))
+			->method('quote')
+			->will($this->returnValue('just text'));
+		$conn->expects($this->at(1))
+			->method('quote')
+			->will($this->returnValue('other text'));
+
+		$conditions = array('Article.extra' => array('just text', 'other text'));
+		$result = $db->conditionKeysToString($conditions, true, $Article);
+		$expected = "(" . $Article->virtualFields['extra'] . ") IN (just text, other text)";
+		$this->assertEquals($expected, $result[0]);
 	}
 
 }

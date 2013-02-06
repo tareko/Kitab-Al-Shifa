@@ -18,6 +18,7 @@
  * @since         CakePHP v .0.10.3.1400
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+App::uses('HttpSocket', 'Network/Http');
 
 /**
  * XML handling for Cake.
@@ -74,7 +75,7 @@ class Xml {
  * ### Options
  *
  * - `return` Can be 'simplexml' to return object of SimpleXMLElement or 'domdocument' to return DOMDocument.
- * - `loadEntities` Defaults to false.  Set to true to enable loading of `<!ENTITY` definitions.  This
+ * - `loadEntities` Defaults to false. Set to true to enable loading of `<!ENTITY` definitions. This
  *   is disabled by default for security reasons.
  * - If using array as input, you can pass `options` from Xml::fromArray.
  *
@@ -97,9 +98,15 @@ class Xml {
 			return self::fromArray((array)$input, $options);
 		} elseif (strpos($input, '<') !== false) {
 			return self::_loadXml($input, $options);
-		} elseif (file_exists($input) || strpos($input, 'http://') === 0 || strpos($input, 'https://') === 0) {
-			$input = file_get_contents($input);
-			return self::_loadXml($input, $options);
+		} elseif (file_exists($input)) {
+			return self::_loadXml(file_get_contents($input), $options);
+		} elseif (strpos($input, 'http://') === 0 || strpos($input, 'https://') === 0) {
+			$socket = new HttpSocket(array('request' => array('redirect' => 10)));
+			$response = $socket->get($input);
+			if (!$response->isOk()) {
+				throw new XmlException(__d('cake_dev', 'XML cannot be read.'));
+			}
+			return self::_loadXml($response->body, $options);
 		} elseif (!is_string($input)) {
 			throw new XmlException(__d('cake_dev', 'Invalid input.'));
 		}
@@ -110,8 +117,8 @@ class Xml {
  * Parse the input data and create either a SimpleXmlElement object or a DOMDocument.
  *
  * @param string $input The input to load.
- * @param array  $options The options to use. See Xml::build()
- * @return SimpleXmlElement|DOMDocument.
+ * @param array $options The options to use. See Xml::build()
+ * @return SimpleXmlElement|DOMDocument
  */
 	protected static function _loadXml($input, $options) {
 		$hasDisable = function_exists('libxml_disable_entity_loader');
@@ -174,7 +181,7 @@ class Xml {
 			throw new XmlException(__d('cake_dev', 'Invalid input.'));
 		}
 		$key = key($input);
-		if (is_integer($key)) {
+		if (is_int($key)) {
 			throw new XmlException(__d('cake_dev', 'The key of input must be alphanumeric'));
 		}
 
@@ -205,7 +212,7 @@ class Xml {
  * @param DOMDocument $dom Handler to DOMDocument
  * @param DOMElement $node Handler to DOMElement (child)
  * @param array $data Array of data to append to the $node.
- * @param string $format Either 'attribute' or 'tags'.  This determines where nested keys go.
+ * @param string $format Either 'attribute' or 'tags'. This determines where nested keys go.
  * @return void
  * @throws XmlException
  */

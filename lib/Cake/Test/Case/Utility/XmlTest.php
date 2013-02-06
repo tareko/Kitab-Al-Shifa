@@ -177,6 +177,7 @@ class XmlTest extends CakeTestCase {
 			array(null),
 			array(false),
 			array(''),
+			array('http://localhost/notthere.xml'),
 		);
 	}
 
@@ -1019,7 +1020,7 @@ XML;
 </records>
 </data>
 XML;
-		$result = $obj->asXML();
+		$obj->asXML();
 		$this->assertXmlStringEqualsXmlString($expected, $obj->asXML());
 	}
 

@@ -422,7 +422,7 @@ class TranslateBehaviorTest extends CakeTestCase {
 		$TestModel = new TranslatedItem();
 		$TestModel->locale = 'rus';
 		$result = $TestModel->read(null, 1);
-		$this->assertFalse($result);
+		$this->assertSame(array(), $result);
 
 		$TestModel->locale = array('rus');
 		$result = $TestModel->read(null, 1);
@@ -460,10 +460,10 @@ class TranslateBehaviorTest extends CakeTestCase {
 			Configure::write('debug', 0);
 
 			$result = $TestModel->find('list', array('recursive' => 1, 'callbacks' => false));
-			$this->assertEquals(array(), $result);
+			$this->assertSame(array(), $result);
 
 			$result = $TestModel->find('list', array('recursive' => 1, 'callbacks' => 'after'));
-			$this->assertEquals(array(), $result);
+			$this->assertSame(array(), $result);
 			Configure::write('debug', $debug);
 		}
 
@@ -531,6 +531,76 @@ class TranslateBehaviorTest extends CakeTestCase {
 	}
 
 /**
+ * test save multiple locales method
+ *
+ * @return void
+ */
+	public function testSaveMultipleLocales() {
+		$this->loadFixtures('Translate', 'TranslatedItem');
+
+		$TestModel = new TranslatedItem();
+		$data = array(
+			'slug' => 'fourth_translated',
+			'title' => array(
+				'eng' => 'Title #4',
+				'spa' => 'Leyenda #4',
+			),
+			'content' => array(
+				'eng' => 'Content #4',
+				'spa' => 'Contenido #4',
+			),
+			'translated_article_id' => 1,
+		);
+		$TestModel->create();
+		$TestModel->save($data);
+
+		$translations = array('title' => 'Title', 'content' => 'Content');
+		$TestModel->bindTranslation($translations, false);
+		$TestModel->locale = array('eng', 'spa');
+		$result = $TestModel->read();
+
+		$this->assertCount(2, $result['Title']);
+		$this->assertEquals($result['Title'][0]['locale'], 'eng');
+		$this->assertEquals($result['Title'][0]['content'], 'Title #4');
+		$this->assertEquals($result['Title'][1]['locale'], 'spa');
+		$this->assertEquals($result['Title'][1]['content'], 'Leyenda #4');
+
+		$this->assertCount(2, $result['Content']);
+	}
+
+/**
+ * testSaveAssociatedCreate method
+ *
+ * @return void
+ */
+	public function testSaveAssociatedMultipleLocale() {
+		$this->loadFixtures('Translate', 'TranslatedItem');
+
+		$TestModel = new TranslatedItem();
+		$data = array(
+			'slug' => 'fourth_translated',
+			'title' => array(
+				'eng' => 'Title #4',
+				'spa' => 'Leyenda #4',
+			),
+			'content' => array(
+				'eng' => 'Content #4',
+				'spa' => 'Contenido #4',
+			),
+			'translated_article_id' => 1,
+		);
+		$TestModel->create();
+		$TestModel->saveAssociated($data);
+
+		$translations = array('title' => 'Title', 'content' => 'Content');
+		$TestModel->bindTranslation($translations, false);
+		$TestModel->locale = array('eng', 'spa');
+		$result = $TestModel->read();
+		$this->assertCount(2, $result['Title']);
+		$this->assertCount(2, $result['Content']);
+	}
+
+/**
  * Test that saving only some of the translated fields allows the record to be found again.
  *
  * @return void
@@ -554,6 +624,76 @@ class TranslateBehaviorTest extends CakeTestCase {
 				'locale' => 'spa',
 				'content' => '',
 			) + $data
+		);
+		$this->assertEquals($expected, $result);
+	}
+
+/**
+ * Test that all fields are create with partial data + multiple locales.
+ *
+ * @return void
+ */
+	public function testSavePartialFieldMultipleLocales() {
+		$this->loadFixtures('Translate', 'TranslatedItem');
+
+		$TestModel = new TranslatedItem();
+		$TestModel->locale = 'eng';
+		$data = array(
+			'slug' => 'fifth_translated',
+			'title' => array('eng' => 'Title #5', 'spa' => 'Leyenda #5'),
+		);
+		$TestModel->create($data);
+		$TestModel->save();
+		$TestModel->unbindTranslation();
+
+		$translations = array('title' => 'Title', 'content' => 'Content');
+		$TestModel->bindTranslation($translations, false);
+		$result = $TestModel->read(null, $TestModel->id);
+		$expected = array(
+			'TranslatedItem' => array(
+				'id' => '4',
+				'translated_article_id' => null,
+				'slug' => 'fifth_translated',
+				'locale' => 'eng',
+				'title' => 'Title #5',
+				'content' => ''
+			),
+			'Title' => array(
+				0 => array(
+					'id' => '19',
+					'locale' => 'eng',
+					'model' => 'TranslatedItem',
+					'foreign_key' => '4',
+					'field' => 'title',
+					'content' => 'Title #5'
+				),
+				1 => array(
+					'id' => '20',
+					'locale' => 'spa',
+					'model' => 'TranslatedItem',
+					'foreign_key' => '4',
+					'field' => 'title',
+					'content' => 'Leyenda #5'
+				)
+			),
+			'Content' => array(
+				0 => array(
+					'id' => '21',
+					'locale' => 'eng',
+					'model' => 'TranslatedItem',
+					'foreign_key' => '4',
+					'field' => 'content',
+					'content' => ''
+				),
+				1 => array(
+					'id' => '22',
+					'locale' => 'spa',
+					'model' => 'TranslatedItem',
+					'foreign_key' => '4',
+					'field' => 'content',
+					'content' => ''
+				)
+			)
 		);
 		$this->assertEquals($expected, $result);
 	}

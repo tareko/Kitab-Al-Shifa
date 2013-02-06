@@ -34,6 +34,8 @@ class TimeHelper extends AppHelper {
 
 /**
  * CakeTime instance
+ *
+ * @var stdClass
  */
 	protected $_engine = null;
 
@@ -66,7 +68,7 @@ class TimeHelper extends AppHelper {
  *
  * @param string $name Name of the attribute to set.
  * @param string $value Value of the attribute to set.
- * @return mixed
+ * @return void
  */
 	public function __set($name, $value) {
 		switch ($name) {
@@ -358,7 +360,6 @@ class TimeHelper extends AppHelper {
  */
 	public function timeAgoInWords($dateTime, $options = array()) {
 		$element = null;
-		$stringDate = '';
 
 		if (is_array($options) && !empty($options['element'])) {
 			$element = array(

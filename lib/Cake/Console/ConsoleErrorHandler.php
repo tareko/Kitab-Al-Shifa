@@ -81,15 +81,19 @@ class ConsoleErrorHandler {
 		$message = __d('cake_console', '%s in [%s, line %s]', $description, $file, $line);
 		$stderr->write(__d('cake_console', "<error>%s Error:</error> %s\n", $name, $message));
 
-		if (Configure::read('debug') == 0) {
+		if (!Configure::read('debug')) {
 			CakeLog::write($log, $message);
+		}
+
+		if ($log === LOG_ERR) {
+			$this->_stop(1);
 		}
 	}
 
 /**
  * Wrapper for exit(), used for testing.
  *
- * @param $code int The exit code.
+ * @param int $code The exit code.
  */
 	protected function _stop($code = 0) {
 		exit($code);
