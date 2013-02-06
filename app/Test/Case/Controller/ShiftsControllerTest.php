@@ -38,7 +38,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @var array
  */
 	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.calendar', 'app.trade', 'app.user_usergroup_map_j17', 'app.usergroup_j17', 'app.trades_detail');
-	
+
 /**
  * setUp method
  *
@@ -54,7 +54,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 						'_requestAllowed'
 				),
 		));
-		
+
 		$Shifts->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -85,7 +85,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/users/view/2">Harold Morrissey</a>&nbsp;</td>
 		<td>2011-10-19 08:23:49&nbsp;</td>', $result);
 	}
-	
+
 	public function testIndexId() {
 		$result = $this->testAction('/shifts/index/id:1');
 		$this->assertContains('<td>2013-12-28&nbsp;</td>
@@ -94,7 +94,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/users/view/1">James Bynum</a>&nbsp;</td>
 		<td>2011-10-19 16:57:23&nbsp;</td>', $result);
 	}
-	
+
 	//TODO: This is probably wrong. Calendar #1 doesn't include the dates shown.
 	public function testIndexCalendar() {
 		$result = $this->testAction('/shifts/index/calendar:1');
@@ -109,7 +109,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
 		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
 	}
-	
+
 
 	public function testIndexCalendarId() {
 		$result = $this->testAction('/shifts/index/calendar:1/id:1');
@@ -160,7 +160,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/calendarEdit/calendar:1');
 		debug($result);
 	}
-	
+
 /**
  * testCalendarView method
  *
@@ -170,7 +170,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/calendarView');
 		debug($result);
 	}
-	
+
 	public function testCalendarViewCalGiven() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1');
 		debug($result);
@@ -184,7 +184,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/calendarView/id:2');
 		debug($result);
 	}
-	
+
 /**
  * testPdfView method
  *
@@ -194,7 +194,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/pdfView');
 		debug($result);
 	}
-	
+
 /**
  * testIcsView method
  *
@@ -208,7 +208,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/icsView/id:1');
 		debug($result);
 	}
-	
+
 /**
  * testIcsList method
  *
@@ -241,7 +241,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/delete/52');
 		debug($result);
 	}
-	
+
 /**
  * testEdit method
  *
@@ -257,12 +257,12 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		debug($result);
 	}
 
-	
+
 /**
  * testCalendarViewProperFormURL method
  *  Addresses Issue #61
  */
-	
+
 	public function testCalendarViewProperFormURL() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1');
 		$this->assertContains('form action="/kitab/shifts/calendarView/calendar:1', $result);
@@ -272,7 +272,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * testCalendarEditProperFormURL method
  *  Addresses Issue #61
  */
-	
+
 	public function testCalendarEditProperFormURL() {
 		$result = $this->testAction('/shifts/calendarEdit/calendar:1/id:1');
 		$this->assertContains('form action="/kitab/shifts/calendarEdit/calendar:1/id:1', $result);
@@ -282,16 +282,16 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * testIndexProperFormURL method
  *  Addresses Issue #61
  */
-	
+
 	public function testIndexViewProperFormURL() {
 		$result = $this->testAction('/shifts/index/calendar:1');
 		$this->assertContains('form action="/kitab/shifts/index/calendar:1', $result);
 	}
-	
+
 /**
 * testHome method
 */
-	
+
 	public function testHome() {
 		$this->Shifts->constructClasses();
 		$Shifts = $this->generate('Shifts', array(
@@ -300,14 +300,14 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 								'_usersId'
 					),
 		));
-		
+
 		$Shifts->expects($this->any())
 			->method('_requestAllowed')
 			->will($this->returnValue(true));
 		$Shifts->expects($this->any())
 			->method('_usersId')
 			->will($this->returnValue(1));
-		
+
 
 		$result = $this->testAction('/shifts/home');
 		$this->assertContains('<tr>
@@ -318,10 +318,10 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 /**
 * testWizard method
 */
-	
+
 	public function testWizard() {
 		$result = $this->testAction('/shifts/wizard');
 		$this->assertContains('<legend>Shifts To Show</legend>', $result);
 	}
-	
+
 }

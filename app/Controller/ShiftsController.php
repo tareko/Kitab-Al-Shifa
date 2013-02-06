@@ -1,5 +1,7 @@
 <?php
 App::uses('Sanitize', 'Utility');
+App::uses('AppController', 'Controller');
+
 
 class ShiftsController extends AppController {
 	var $name = 'Shifts';
