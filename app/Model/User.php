@@ -176,8 +176,8 @@ class User extends AppModel
  						),
 				),
  				'fields' => array('id', 'name'),
+ 				'conditions' => array('User.id' => $id)
  		));
-
  		return $data['Profile']['cb_ohip'];
  	}
 

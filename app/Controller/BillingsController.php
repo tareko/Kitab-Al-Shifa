@@ -121,8 +121,13 @@ class BillingsController extends AppController {
 	function patientsPerDay() {
 		$this->loadModel('BillingsItem');
 
+		//set variables to null.
+		$ohipNumber = null;
+		$start_date = null;
+		$end_date = null;
+
 		// If query is received, then start all the DB magic
-		if (isPost()) {
+		if ($this->request->query) {
 			// Figure out if start date and end date are in simple YYYY-MM-DD or as array
 			if (isset($this->request->query['start_date']['year'])) {
 				$start_date = $this->request->query['start_date']['year'].'-'.$this->request->query['start_date']['month'].'-'.$this->request->query['start_date']['day'];
@@ -141,15 +146,10 @@ class BillingsController extends AppController {
 			//Get OHIP Number
 			$ohipNumber = $this->User->getOhipNumber($this->request->query['id']);
 			//Figure out patients seen
-			$patientsSeen = $this->BillingsItem->distinctPatientsPerDayRange($ohipNumber, $start_date, $end_date);
-			debug($patientsSeen);
 		}
 
+		$data = $this->BillingsItem->distinctPatientsPerDay($ohipNumber, $start_date, $end_date);
 
-		$conditions = array();
-		$conditions = (isset())
-
-		$data = $this->BillingsItem->distinctPatientsPerDay($conditions);
 		$headers = array(
 				'healthcare_provider' => 'Provider',
 				'service_date' => 'Service date',
@@ -159,8 +159,6 @@ class BillingsController extends AppController {
 		array_unshift($data,$headers);
 		$this->set('data', $data);
 		$this->render();
-<<<<<<< Updated upstream
-=======
 	}
 
 	function spentPerPatient() {
@@ -176,7 +174,6 @@ class BillingsController extends AppController {
 		else {
 			echo "enter stuff";
 		}
->>>>>>> Stashed changes
 	}
 
 }

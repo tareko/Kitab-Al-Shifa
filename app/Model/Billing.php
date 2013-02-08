@@ -181,8 +181,6 @@ class Billing extends AppModel {
 								'length' => 8)
 				),
 		);
-<<<<<<< Updated upstream
-=======
 
 		//OHIP Number
 		if (Configure::read('save_ohip') == true) {
@@ -191,7 +189,6 @@ class Billing extends AppModel {
 				'length' => 10);
 		}
 
->>>>>>> Stashed changes
 		$fields = array();
 		foreach($schema[$section] as $field => $opts) {
 			$fields[$field] = substr($row, $opts['start'], $opts['length']);
@@ -219,8 +216,6 @@ class Billing extends AppModel {
 		}
 		return $output;
 	}
-<<<<<<< Updated upstream
-=======
 
 	/**
 	 * How much was spent per Patient. Receive patient identifier as OHIP number.
@@ -237,5 +232,4 @@ class Billing extends AppModel {
 				)
 		)[0][0]['SUM(fee_submitted)'];
 	}
->>>>>>> Stashed changes
 }

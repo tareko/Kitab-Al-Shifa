@@ -52,9 +52,13 @@ class BillingsItem extends AppModel {
 		return date('Y-m-d', strtotime($dateString));
 	}
 
-	public function distinctPatientsPerDay ($conditions = array()) {
+	public function distinctPatientsPerDay ($ohipNumber = null, $start_date = null, $end_date = null, $conditions = array()) {
 		$i = 0;
 		$output = array();
+		$conditions = $conditions
+			+ (isset($ohipNumber)? array('Billing.healthcare_provider' => $ohipNumber): array())
+			+ (isset($start_date)? array('BillingsItem.service_date >=' => $start_date): array())
+			+ (isset($end_date)? array('BillingsItem.service_date <=' => $end_date): array());
 		$data = $this->find('all', array(
 				'fields' => array('Billing.healthcare_provider', 'service_date', 'COUNT(DISTINCT billing_id)'),
 				'conditions' => $conditions,
@@ -92,7 +96,7 @@ class BillingsItem extends AppModel {
 				'service_date' => $shift['Shift']['date'],
 				'Billing.healthcare_provider' => $shift['User']['Profile']['cb_ohip'],
 				);
-		$output = $this->distinctPatientsPerDay($conditions);
+		$output = $this->distinctPatientsPerDay(null, null, null, $conditions);
 		return $output;
 	}
 }
