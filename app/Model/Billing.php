@@ -101,12 +101,10 @@ class Billing extends AppModel {
 	 * @param string $filename
 	 */
 	function import ($filename) {
-		// Set the filename to read from
-		$filename = $filename;
-
 		// Open the file
-		if (!$file = fopen($filename, 'r')) {
-			return false;
+		ini_set('track_errors', 1);
+		if (!$file = @fopen($filename, 'r')) {
+			throw new NotFoundException("Failed opening file: error was ".$php_errormsg);
 		}
 
 		// Start parsing for health encounters
