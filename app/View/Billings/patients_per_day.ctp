@@ -1,4 +1,4 @@
-<?php 
+<?php
 echo $this->Form->create('Billing', array('type' => 'get'));
 
 echo $this->Form->select('id', $userList);
@@ -13,16 +13,14 @@ echo $this->Form->end('Submit');
 
 ?>
 <table>
-	<tr><th>Physician</th><th>Date</th><th>Location</th><th>Shift</th><th>Patients seen</th></tr>
-<?php 
+	<tr><th>Physician</th><th>Date</th><th>Patients seen</th></tr>
+<?php
 
-foreach ($patientsSeen as $shift) {
+foreach ($data as $date) {
 	echo "<tr>";
-	echo "<td>".$shift['User']['name']."</td>";
-	echo "<td>".$shift['Shift']['date']."</td>";
-	echo "<td>".$shift['ShiftsType']['Location']['location']."</td>";
-	echo "<td>".$shift['ShiftsType']['shift_start']." - ".$shift['ShiftsType']['shift_end'] ."</td>";
-	echo "<td>".$shift['Billing']['count']."</td>";
+	echo "<td>".$date['healthcare_provider']."</td>";
+	echo "<td>".$date['service_date']."</td>";
+	echo "<td>".$date['count']."</td>";
 	echo "</tr>";
 }
 

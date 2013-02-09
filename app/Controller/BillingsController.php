@@ -120,6 +120,7 @@ class BillingsController extends AppController {
 
 	function patientsPerDay() {
 		$this->loadModel('BillingsItem');
+		$this->loadModel('User');
 
 		//set variables to null.
 		$ohipNumber = null;
@@ -146,18 +147,16 @@ class BillingsController extends AppController {
 			//Get OHIP Number
 			$ohipNumber = $this->User->getOhipNumber($this->request->query['id']);
 			//Figure out patients seen
+
+			$data = $this->BillingsItem->distinctPatientsPerDay($ohipNumber, $start_date, $end_date);
+
+			// Add headers to start of data array
+			$this->set('data', $data);
+
 		}
+		$userList = $this->User->getList(NULL, NULL, true);
+		$this->set(compact('userList'));
 
-		$data = $this->BillingsItem->distinctPatientsPerDay($ohipNumber, $start_date, $end_date);
-
-		$headers = array(
-				'healthcare_provider' => 'Provider',
-				'service_date' => 'Service date',
-				'COUNT(DISTINCT billing_id)' => 'Unique patients seen',
-		);
-		// Add headers to start of data array
-		array_unshift($data,$headers);
-		$this->set('data', $data);
 		$this->render();
 	}
 
