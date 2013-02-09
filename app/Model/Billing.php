@@ -7,6 +7,8 @@ App::uses('AppModel', 'Model');
  */
 class Billing extends AppModel {
 
+	public $actsAs = array('Containable');
+
 	/**
 	 * Associations
 	 * @var unknown_type
@@ -17,7 +19,16 @@ class Billing extends AppModel {
 					'foreignKey' => 'billing_id',
 			)
 	);
-	
+	public $belongsTo = array(
+
+			//Not working
+			'Profile' => array(
+					'classname' => 'Profile',
+					'foreignKey' => 'cb_ohip',
+					'associationForeignKey'  => 'healthcare_provider',
+			),
+	);
+
 /**
  * Validation rules
  *
@@ -68,18 +79,18 @@ class Billing extends AppModel {
  		),
 */
 	);
-	
+
 	public function beforeValidate($options = array()) {
 		if (!empty($this->data['Billing']['patient_birthdate'])) {
 			$this->data['Billing']['patient_birthdate'] = $this->dateFormatBeforeSave($this->data['Billing']['patient_birthdate']);
 		}
 		return true;
 	}
-	
+
 	public function dateFormatBeforeSave($dateString) {
 		return date('Y-m-d', strtotime($dateString));
 	}
-	
+
 	/**
 	 * Imports MOHLTC file into DB
 	 * See MOHLTC Technical specifications: Interface to Health Care Systems
@@ -92,17 +103,17 @@ class Billing extends AppModel {
 	function import ($filename) {
 		// Set the filename to read from
 		$filename = $filename;
-	
+
 		// Open the file
 		if (!$file = fopen($filename, 'r')) {
 			return false;
 		}
-	
+
 		// Start parsing for health encounters
 		$data = array();
 		$i = 0;
 		$j = 0;
-	
+
 		while($row = fgets($file)) {
 			if (substr($row, 0, 3) == 'HEB') {
 				$i = $i + 1;
@@ -125,7 +136,7 @@ class Billing extends AppModel {
 		}
 		return $data;
 	}
-	
+
 	function parseFields($row, $section) {
 		$schema = array(
 				'HEB' => array(
@@ -174,19 +185,19 @@ class Billing extends AppModel {
 				'start' => 3,
 				'length' => 10);
 		}
-		
+
 		$fields = array();
 		foreach($schema[$section] as $field => $opts) {
 			$fields[$field] = substr($row, $opts['start'], $opts['length']);
 		}
 		return $fields;
 	}
-	
+
 	/**
 	 * Recombine billings into one array for ease of CSV export
 	 * @param array $data
 	 */
-	
+
 	public function recombineBilling ($data) {
 		$i = 0;
 		foreach ($data as $row) {
@@ -202,14 +213,14 @@ class Billing extends AppModel {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * How much was spent per Patient. Receive patient identifier as OHIP number.
-	 * 
+	 *
 	 * @param string $ohip
 	 * @param array $conditions
 	 */
-	
+
 	public function spentPerPatient($ohip = null, $conditions = array()) {
 		$conditions = $conditions + array('Billing.ohip' => $ohip);
 		return $this->BillingsItem->find('all', array(

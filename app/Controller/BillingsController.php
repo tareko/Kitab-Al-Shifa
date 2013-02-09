@@ -1,4 +1,4 @@
-<?php 
+<?php
 App::uses('Sanitize', 'Utility');
 
 class BillingsController extends AppController {
@@ -11,7 +11,7 @@ class BillingsController extends AppController {
 		$i = 0;
 		$this->loadModel('BillingsItem');
 		$this->loadModel('Shift');
-		
+
 		// If query is received, then start all the DB magic
 		if (isset($this->request->query['id']) && isset($this->request->query['start_date']) && isset($this->request->query['end_date'])) {
 
@@ -22,7 +22,7 @@ class BillingsController extends AppController {
 			else {
 				$start_date = $this->request->query['start_date'];
 			}
-			
+
 			if (isset($this->request->query['end_date']['year'])) {
 				$end_date = $this->request->query['end_date']['year'].'-'.$this->request->query['end_date']['month'].'-'.$this->request->query['end_date']['day'];
 			}
@@ -48,17 +48,17 @@ class BillingsController extends AppController {
 				else {
 					$patientsSeen[$i]['Billing']['count'] = 'Unavailable';
 				}
-				$i = $i + 1; 
+				$i = $i + 1;
 			}
 		}
 		$userList = $this->Shift->User->getList(NULL, NULL, true);
 		$this->set(compact('patientsSeen', 'userList'));
 		$this->render();
 	}
-	
-	
+
+
 	/* Upload function
-	 * 
+	 *
 	 */
 	function upload() {
 		$status = array();
@@ -90,7 +90,7 @@ class BillingsController extends AppController {
 		$this->set(compact('status'));
 		$this->render();
 	}
-	
+
 	function export() {
 		//set_time_limit(300);
 		// Find fields needed without recursing through associated models
@@ -117,21 +117,48 @@ class BillingsController extends AppController {
 		// Make the data available to the view (and the resulting CSV file)
 		$this->set(compact('data'));
 	}
-	
+
 	function patientsPerDay() {
 		$this->loadModel('BillingsItem');
-		$data = $this->BillingsItem->distinctPatientsPerDay();
-		$headers = array(
-				'healthcare_provider' => 'Provider',
-				'service_date' => 'Service date',
-				'COUNT(DISTINCT billing_id)' => 'Unique patients seen',
-		);
-		// Add headers to start of data array
-		array_unshift($data,$headers);
-		$this->set('data', $data);
+		$this->loadModel('User');
+
+		//set variables to null.
+		$ohipNumber = null;
+		$start_date = null;
+		$end_date = null;
+
+		// If query is received, then start all the DB magic
+		if ($this->request->query) {
+			// Figure out if start date and end date are in simple YYYY-MM-DD or as array
+			if (isset($this->request->query['start_date']['year'])) {
+				$start_date = $this->request->query['start_date']['year'].'-'.$this->request->query['start_date']['month'].'-'.$this->request->query['start_date']['day'];
+			}
+			else {
+				$start_date = $this->request->query['start_date'];
+			}
+
+			if (isset($this->request->query['end_date']['year'])) {
+				$end_date = $this->request->query['end_date']['year'].'-'.$this->request->query['end_date']['month'].'-'.$this->request->query['end_date']['day'];
+			}
+			else {
+				$end_date = $this->request->query['end_date'];
+			}
+
+			//Get OHIP Number
+			$ohipNumber = $this->User->getOhipNumber($this->request->query['id']);
+			//Figure out patients seen
+
+			$data = $this->BillingsItem->distinctPatientsPerDay($ohipNumber, $start_date, $end_date);
+
+			// Add headers to start of data array
+			$this->set('data', $data);
+
+		}
+		$userList = $this->User->getList(NULL, NULL, true);
+		$this->set(compact('userList'));
+
 		$this->render();
 	}
-	
 	function spentPerPatient() {
 		if (isset($this->request->query['ohip']) && isset($this->request->query['start_date']) && isset($this->request->query['end_date'])) {
 			$ohip = $this->request->query['ohip'];
@@ -146,6 +173,5 @@ class BillingsController extends AppController {
 			echo "enter stuff";
 		}
 	}
-	
 }
 ?>

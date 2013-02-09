@@ -12,7 +12,9 @@ class User extends AppModel
 				'fields' => array('cb_displayname', 'firstname', 'lastname'),
 				'order' => '')
 	);
-	public $hasMany = array('Shifts');
+	public $hasMany = array(
+			'Shift',
+			);
 	public $hasAndBelongsToMany = array(
 		'Usergroup' =>
 			array(
@@ -49,7 +51,7 @@ class User extends AppModel
 		),
 	);
 
-	
+
 	public function getList($conditions = array(), $full = NULL, $list = false) {
 		$userList = array();
 		if ($full) {
@@ -111,10 +113,10 @@ class User extends AppModel
  		}
  		$conditions = array_merge(array('Usergroup.id' => $group, 'User.block' => 0), $conditions);
 
- 		
- 		
+
+
  		$userList = $this->find('all', array(
- 				'conditions' => $conditions, 
+ 				'conditions' => $conditions,
  				'recursive' => '0',
  				'fields' => array_merge(array('User.id'), $userFields),
  				'order' => array('Profile.lastname' => 'ASC', 'Profile.firstname' => 'ASC', 'Profile.cb_displayname' => 'ASC'),
@@ -140,7 +142,7 @@ class User extends AppModel
  				)
 			)
  		);
- 		
+
  		if ($list == true) {
  			$newUserList = array();
  			foreach ($userList as $user) {
@@ -156,7 +158,7 @@ class User extends AppModel
 
  		return $userList;
  	}
- 	
+
  	/**
  	 * Function will query user's preferred communication method and return it
  	 * @param integer $toUser
@@ -165,5 +167,19 @@ class User extends AppModel
  		//FIX: Stubbed for now
  		return 'email';
  	}
+
+ 	public function getOhipNumber ($id = NULL) {
+ 		$data = $this->find('first', array(
+ 				'contain' => array(
+ 						'Profile' => array(
+ 								'fields' => array('cb_ohip'),
+ 						),
+				),
+ 				'fields' => array('id', 'name'),
+ 				'conditions' => array('User.id' => $id)
+ 		));
+ 		return $data['Profile']['cb_ohip'];
+ 	}
+
 }
 ?>
