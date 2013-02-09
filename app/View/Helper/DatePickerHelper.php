@@ -43,7 +43,7 @@ class DatePickerHelper extends AppHelper {
 		function shiftsWorking(date) {
 		    for (i = 0; i < shiftDays.shiftList.length; i++) {
 		      dateDB = new Date(Date.UTC.apply(Date, shiftDays.shiftList[i].Shift.date.split('-').map(function (d, i) { return parseInt(d, 10) - (i === 1 ? 1 : 0); })));
-		      dateDB.setDate (dateDB.getDate());
+		      dateDB.setDate (dateDB.getDate()+1);
 		      if (date.getYear() == dateDB.getYear()
 		          && date.getMonth() == dateDB.getMonth()
 		          && date.getDate() == dateDB.getDate()) {
