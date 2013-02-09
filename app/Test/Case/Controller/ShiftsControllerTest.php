@@ -237,6 +237,14 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->setExpectedException('NotFoundException');
 		$result = $this->testAction('/shifts/delete');
 	}
+	public function testDeleteNotPost() {
+		$this->setExpectedException('NotFoundException');
+		$Shift = $this->getMockForModel('request', array('is'));
+		$Shift->expects($this->once())
+		->method('is')
+		->will($this->returnValue(false));
+		$result = $this->testAction('/shifts/delete');
+	}
 	public function testDeleteId() {
 		$result = $this->testAction('/shifts/delete/52');
 		debug($result);
