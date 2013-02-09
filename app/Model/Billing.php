@@ -221,10 +221,11 @@ class Billing extends AppModel {
 
 	public function spentPerPatient($ohip = null, $conditions = array()) {
 		$conditions = $conditions + array('Billing.ohip' => $ohip);
-		return $this->BillingsItem->find('all', array(
+		$output = $this->BillingsItem->find('all', array(
 					'fields' => array('SUM(fee_submitted)'),
 					'conditions' => $conditions,
 				)
-		)[0][0]['SUM(fee_submitted)'];
+		);
+		return $output[0][0]['SUM(fee_submitted)'];
 	}
 }
