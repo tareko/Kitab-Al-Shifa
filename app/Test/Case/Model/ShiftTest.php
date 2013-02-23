@@ -23,6 +23,25 @@ class ShiftTestCase extends CakeTestCase {
 		$this->Shift = ClassRegistry::init('Shift');
 	}
 
+
+	/**
+	 * Check if two entries with the same date and shift_types_id can be added
+	 */
+
+	public function testPreventDuplicateShifts() {
+
+		// Set the data to a duplicate set as per the fixture
+		$data = array(
+			'user_id' => '1',
+			'date' => '2011-12-01',
+			'shifts_type_id' => '1',
+		);
+
+		$this->Shift->set($data);
+
+		//Ensure the data does not validate
+		$this->assertFalse($this->Shift->validates());
+	}
 /**
  * tearDown method
  *

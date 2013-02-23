@@ -18,7 +18,7 @@ class ShiftsController extends AppController {
 	public $presetVars = array(
 		array('field' => 'month', 'type' => 'value'),
 		array('field' => 'year', 'type' => 'value'),
-        array('field' => 'location', 'type' => 'value', 'formField' => 'location', 'modelField' => 'location', 'model' => 'Location')
+		array('field' => 'location', 'type' => 'value', 'formField' => 'location', 'modelField' => 'location', 'model' => 'Location')
 		);
 
 	function index() {
@@ -71,6 +71,16 @@ class ShiftsController extends AppController {
 		$this->loadModel('Profile');
 		# Check if there is form data to be processed
 		$saved = null;
+
+		# If no data, present an add form
+		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
+		$this->set('shifts', $this->paginate());
+		$this->set('users', $this->Shift->User->getList(NULL, NULL, true));
+
+		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
+				'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
+				'recursive' => '0')));
+
 		if (!empty($this->data)){
 			foreach ($this->data['Shift'] as $dataRaw) {
 				if ($dataRaw['user_id'] != '') {
@@ -81,21 +91,12 @@ class ShiftsController extends AppController {
 			if ($saved == 1) {
 				if ($this->Shift->saveAll($data['Shift'])) {
 					$this->Session->setFlash('Shift saved');
-					$this->redirect(array('action' => $this->request->params['named']['Action'].'/calendar:'.$this->request->params['named']['calendar']));
+					return;
 				}
 				$this->Session->setFlash(__('Shift was not saved'));
-				$this->redirect(array('action' => $this->request->params['named']['Action']));
+				return;
  			}
 		}
-
-		# If no data, present an add form
-		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
-		$this->set('shifts', $this->paginate());
-		$this->set('users', $this->Shift->User->getList(NULL, NULL, true));
-
-		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
-			'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
-			'recursive' => '0')));
 	}
 
 	/** Function to update all PDFs that need updating

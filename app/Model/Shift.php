@@ -34,6 +34,10 @@ class Shift extends AppModel {
 			),
 		),
 		'date' => array(
+			'checkMultipleUnique' => array(
+				'rule' => array('checkMultipleUnique', array('date', 'shifts_type_id')),
+				'message' => 'There is already another shift that matches this one. Please select a different date or shift.'
+			),
 			'date' => array(
 				'rule' => array('date'),
 				'message' => 'Please enter a shift date',
@@ -257,5 +261,20 @@ class Shift extends AppModel {
 			$hours = $seconds / 3600;
 		}
 		return $hours;
+	}
+
+	/**
+	 * Check multiple fields to see if they are unique
+	 *
+	 * @param array $data
+	 * @param array $fields
+	 * @return boolean
+	 */
+	function checkMultipleUnique ($data, $fields) {
+		$data = $this->data;
+		if (!is_array($fields)) {
+			$fields = array($fields);
+		}
+		return $this->isUnique($fields, false);
 	}
 }
