@@ -5,19 +5,19 @@ App::uses('AppModel', 'Model');
  *
  * @property Users $Users
  * @property Shifts $Shifts
- * 
+ *
  * Status legend:
  * 	0 - Unprocessed
  *  1 - In progress
  *  2 - Complete
  *  3 - Cancelled
- *  
+ *
  * User_status legend:
  * 	0 - Unprocessed
  *  1 - Email sent
  *  2 - Accepted
  *  3 - Rejected
- *  
+ *
  */
 class Trade extends AppModel {
 
@@ -38,10 +38,10 @@ class Trade extends AppModel {
  *
  * @var array
  */
- 	
- 	//TODO: Add a validation rule so that a shift must actually belong to a user for him/her to 
+
+ 	//TODO: Add a validation rule so that a shift must actually belong to a user for him/her to
  	// trade it away - form security stuff
- 	
+
 	public $validate = array(
 		'user_id' => array(
 			'numeric' => array(
@@ -145,6 +145,6 @@ class Trade extends AppModel {
 				'conditions' => array_merge(
 						array('status' => 0),
 						$conditions),
-		));		
+		));
 	}
 }

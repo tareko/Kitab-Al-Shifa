@@ -843,6 +843,9 @@ input#TradeFromUserId, .ui-widget ul#tags {
 	float: left;
 	clear: none;
 }
+.highlight {
+	color: #ff0000;
+}
 
 div.checkbox {
 	float:left;

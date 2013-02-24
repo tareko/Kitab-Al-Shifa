@@ -14,6 +14,8 @@ class User extends AppModel
 	);
 	public $hasMany = array(
 			'Shift',
+			'Trade',
+			'TradesDetail'
 			);
 	public $hasAndBelongsToMany = array(
 		'Usergroup' =>

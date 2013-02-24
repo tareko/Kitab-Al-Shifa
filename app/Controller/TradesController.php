@@ -13,7 +13,7 @@ class TradesController extends AppController {
  *
  * @var array
  */
-	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time');
+	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time', 'TradeStatus', 'Text');
 	public $components = array('RequestHandler', 'Search.Prg');
 	public $scaffold = 'admin';
 	var $paginate = array(
@@ -33,33 +33,70 @@ class TradesController extends AppController {
  * @return void
  */
 	public function index() {
-		$this->loadModel('Shift');
 		$this->loadModel('User');
-		$this->loadModel('TradesDetail');
-		$this->Prg->commonProcess();
+
+		//Set paginate conditions from passed arguments
 		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
-		$this->Trade->recursive = 0;
+
+		//Set usersId to either the query or the current user's ID if not available
+		$usersId = (isset($this->request->query['id']) ? $this->request->params['named']['id'] : $this->_usersId());
+
 		$this->set('usersId', $this->_usersId());
+
+		// Set up the pagination to draw all trades associated with the user.
 		$this->paginate = array(
-				'recursive' => 3,
-				'limit' => 5
+				'paramType' => 'querystring',
+				'recursive' => -1,
+				'order' => 'Trade.status ASC',
+				'fields' => array(
+						'status',
+						'user_id',
+						'user_status',
+						'token',
+						'shift_id'),
+				'joins' => array(array(
+						'table' => 'trades_details',
+						'alias' => 'TradesDetail',
+						'type' => 'LEFT',
+						'conditions' => array(
+								'Trade.id = TradesDetail.trade_id',
+								)
+						)),
+				'contain' => array(
+						'User' => array(
+								'fields' => array(
+										'name',
+										'id')),
+						'TradesDetail' => array(
+								'fields' => array(
+										'user_id',
+										'status'),
+								'User' => array(
+										'fields' => array(
+												'id',
+												'name'))
+								),
+						'Shift' => array(
+								'fields' => array(
+										'date',
+										'shifts_type_id'),
+								'ShiftsType' => array(
+										'fields' => array(
+												'location_id',
+												'times'),
+										'Location' => array(
+												'fields' => array(
+														'location')
+										)
+								)
+						)
+				)
 		);
 
+		$this->set('trades', $this->paginate(array('OR' => array(
+				'Trade.user_id' => $usersId,
+				'TradesDetail.user_id' => $usersId))));
 
-		if (isset($this->request->params['named']['id'])) {
-			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->request->params['named']['id'])));
-			$this->paginate = array(
-				'recursive' => 3,
-				'order' => 'Trade.status ASC');
-			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->request->params['named']['id'])));
-		}
-		else {
-			$this->set('tradesRecipient', $this->paginate('TradesDetail', array('TradesDetail.user_id' => $this->_usersId())));
-			$this->paginate = array(
-				'recursive' => 3,
-				'order' => 'Trade.status ASC');
-			$this->set('tradesOriginator', $this->paginate(array('Trade.user_id' => $this->_usersId())));
-		}
 		$this->render();
 	}
 
