@@ -397,6 +397,5 @@ class ShiftsController extends AppController {
 		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
 		$this->set('_serialize', array('shiftList'));
 	}
-
 }
 ?>
