@@ -39,7 +39,7 @@ class TradesController extends AppController {
 		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
 
 		//Set usersId to either the query or the current user's ID if not available
-		$usersId = (isset($this->request->query['id']) ? $this->request->params['named']['id'] : $this->_usersId());
+		$usersId = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
 
 		$this->set('usersId', $this->_usersId());
 
