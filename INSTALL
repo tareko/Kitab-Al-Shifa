@@ -1,7 +1,10 @@
 To install:
 
 1. Go to the directory where you want the to install to
-2. git clone git://github.com/tareko/Kitab-Al-Shifa.git kitab
+2. EITHER:
+        a. git clone git://github.com/tareko/Kitab-Al-Shifa.git kitab
+   OR:
+        b. git pull git://github.com/tareko/Kitab-Al-Shifa.git
    (you can choose another name then kitab if you like)
 3. cd kitab
 4. mkdir app/webroot/pdf
