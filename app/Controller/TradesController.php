@@ -69,6 +69,8 @@ class TradesController extends AppController {
 										'id')),
 						'TradesDetail' => array(
 								'fields' => array(
+										'id',
+										'token',
 										'user_id',
 										'status'),
 								'User' => array(

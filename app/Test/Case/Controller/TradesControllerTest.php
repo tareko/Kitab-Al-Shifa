@@ -56,7 +56,23 @@ class TradesControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testIndex() {
-		$result = $this->testAction('/trades/index');
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+//		$result = $this->testAction('/trades/index');
+		echo $this->testAction('/trades/index');
+		die;
 		debug($result);
 	}
 /**
@@ -254,7 +270,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 		$result = $this->testAction('/trades/compare');
 		$this->assertContains('itemName: \'data[User]', $result);
-		$this->assertContains('<div class="input select"><select name="data[Calendar][id]" required="1" id="CalendarId">', $result);
+		$this->assertContains('<div class="input select"><select name="data[Calendar][id]" required="required" id="CalendarId">', $result);
 	}
 
 /**
