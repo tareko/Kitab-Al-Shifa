@@ -32,14 +32,14 @@
 		<td><?php echo h($trade['Shift']['ShiftsType']['times']); ?>&nbsp;</td>
 		<td><?php echo h($this->TradeStatus->TradeStatus($trade, $usersId)); ?>&nbsp;</td>
 		<td class="actions">
-		<?php if ($trade['Trade']['status'] == 0 && $trade['Trade']['user_status'] == 1 && $usersId == $trade['Trade']['user_id']) {?>
+		<?php if ($trade['Trade']['status'] == 0 && $trade['Trade']['user_status'] == 1 && $usersId == $trade['Trade']['user_id'] || $admin) {?>
 				<?php echo $this->Html->link(__('Accept'), array('action' => 'accept', '?' => array('id' => $trade['Trade']['id'], 'token' => $trade['Trade']['token']))); ?>
 				<?php echo $this->Html->link(__('Reject'), array('action' => 'reject', '?' => array('id' => $trade['Trade']['id'], 'token' => $trade['Trade']['token']))); ?>
 		<?php }
 
-		if ($trade['Trade']['status'] == 1 && $trade['Trade']['user_status'] == 2 && $usersId == $trade['TradesDetail'][0]['user_id'] && $trade['TradesDetail'][0]['status'] == 1) {?>
-			<?php echo $this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail']['id'], 'token' => $trade['TradesDetail']['token']))); ?>
-			<?php echo $this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail']['id'], 'token' => $trade['TradesDetail']['token']))); ?>
+		if ($trade['Trade']['status'] == 1 && $trade['Trade']['user_status'] == 2 && $usersId == $trade['TradesDetail'][0]['user_id'] && $trade['TradesDetail'][0]['status'] == 1 || $admin) {?>
+			<?php echo $this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token']))); ?>
+			<?php echo $this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token']))); ?>
 		<?php }
 
 
