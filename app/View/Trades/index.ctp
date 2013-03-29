@@ -16,7 +16,16 @@
 		<td><?php
 			//Highlight name if it's the user's
 			echo ($trade['User']['id'] == $usersId ? '<span class="highlight">': '<span>');
-			echo h($trade['User']['name']); ?>&nbsp;</span></td>
+			echo h($trade['User']['name']);
+			if ($admin) {
+				if ($trade['Trade']['status'] == 0 && $trade['Trade']['user_status'] == 1 && $usersId == $trade['Trade']['user_id']) {
+					echo $this->Html->link(__('Accept'), array('action' => 'accept', '?' => array('id' => $trade['Trade']['id'], 'token' => $trade['Trade']['token'])));
+					echo $this->Html->link(__('Reject'), array('action' => 'reject', '?' => array('id' => $trade['Trade']['id'], 'token' => $trade['Trade']['token'])));
+				}
+
+				echo " ". $this->Html->link(__('[Edit]'), array('controller' => 'admin', 'action' => 'trades', 'edit', $trade['Trade']['id']));
+			}?>
+			&nbsp;</span></td>
 		<td><?php
 			if (count($trade['TradesDetail']) > 1) {
 				foreach ($trade['TradesDetail'] as $TradesDetail) {
@@ -27,25 +36,31 @@
 			else {
 				echo ($trade['TradesDetail'][0]['User']['id'] == $usersId ? '<span class="highlight">': '<span>');
 				echo h($trade['TradesDetail'][0]['User']['name']);
-			}?>&nbsp;</span></td>
+			}
+
+			if ($admin) {
+				if ($trade['Trade']['status'] == 1 && $trade['Trade']['user_status'] == 2 && $usersId == $trade['TradesDetail'][0]['user_id'] && $trade['TradesDetail'][0]['status'] == 1) {
+					echo $this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token'])));
+					echo $this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token'])));
+				}
+				echo " " .$this->Html->link(__('[Edit]'), array('controller' => 'admin', 'action' => 'tradesDetails', 'edit', $trade['TradesDetail'][0]['id']));
+			}
+			?>
+			&nbsp;</span></td>
 		<td><?php echo h($trade['Shift']['date']); ?>&nbsp;</td>
 		<td><?php echo h($trade['Shift']['ShiftsType']['times']); ?>&nbsp;</td>
 		<td><?php echo h($this->TradeStatus->TradeStatus($trade, $usersId)); ?>&nbsp;</td>
 		<td class="actions">
-		<?php if ($trade['Trade']['status'] == 0 && $trade['Trade']['user_status'] == 1 && $usersId == $trade['Trade']['user_id'] || $admin) {?>
+		<?php if ($trade['Trade']['status'] == 0 && $trade['Trade']['user_status'] == 1 && $usersId == $trade['Trade']['user_id']) {?>
 				<?php echo $this->Html->link(__('Accept'), array('action' => 'accept', '?' => array('id' => $trade['Trade']['id'], 'token' => $trade['Trade']['token']))); ?>
 				<?php echo $this->Html->link(__('Reject'), array('action' => 'reject', '?' => array('id' => $trade['Trade']['id'], 'token' => $trade['Trade']['token']))); ?>
 		<?php }
 
-		if ($trade['Trade']['status'] == 1 && $trade['Trade']['user_status'] == 2 && $usersId == $trade['TradesDetail'][0]['user_id'] && $trade['TradesDetail'][0]['status'] == 1 || $admin) {?>
-			<?php echo $this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token']))); ?>
-			<?php echo $this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token']))); ?>
-		<?php }
-
-
-		if ($admin) {
-				echo $this->Html->link(__('Edit'), array('controller' => 'admin', 'action' => 'trades', 'edit', $trade['Trade']['id']));
-		}?>
+		if ($trade['Trade']['status'] == 1 && $trade['Trade']['user_status'] == 2 && $usersId == $trade['TradesDetail'][0]['user_id'] && $trade['TradesDetail'][0]['status'] == 1) {
+			echo $this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token'])));
+			echo $this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token'])));
+		}
+		?>
 		&nbsp;
 		</td>
 	</tr>
