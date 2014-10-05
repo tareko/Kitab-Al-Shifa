@@ -1,3 +1,6 @@
 [submodule "CakePdf"]
 	path = app/Plugin/CakePdf
 	url = https://github.com/FriendsOfCake/CakePdf.git
+[submodule "lib/Cake"]
+	path = lib/Cake
+	url = https://github.com/tareko/CakeLib.git
