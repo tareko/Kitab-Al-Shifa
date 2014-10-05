@@ -7,16 +7,12 @@ To install:
         b. git pull git://github.com/tareko/Kitab-Al-Shifa.git
    (you can choose another name then kitab if you like)
 3. cd kitab
-4. mkdir app/webroot/pdf
-5. Either
-	a. chown www-data.www-data app/webroot/pdf   # or
-	b. chmod 777 app/webroot/pdf
 
-6. Make sure app/tmp/ and subdirectories are writeable by the webserver
+4. Make sure app/tmp/ and subdirectories are writeable by the webserver
 
-7. Config directory
+5. Config directory
 	a. cp app/Config/core.php.default app/Config/core.php
 	b. cp app/Config/database.php.default app/Config/database.php.default
 	c. cp app/Config/email.php.default app/Config/email.php
 
-8. Add the kitab.sql scheme and joomla.sql schema if needed
+6. Add the kitab.sql scheme and joomla.sql schema if needed
