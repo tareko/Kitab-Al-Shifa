@@ -1,11 +1,8 @@
 Kitab Al-Shifa
 
-Named for Ibn Sina's "The Book of Healing", Kitab Al-Shifa is a 
-program designed for the needs of the Emergency Medicine department
-in London, Ontario, Canada.
-
-The ultimate goal is to provide a robust shift scheduling and trading
-system.
+Named for Ibn Sina's "The Book of Healing", Kitab Al-Shifa aims to be 
+a robust shift scheduling and trading system. It is designed for the needs
+of the Emergency Medicine department in London, Ontario, Canada.
 
 The work is released as AGPL v3
 
