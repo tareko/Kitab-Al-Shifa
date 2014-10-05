@@ -161,6 +161,10 @@ abstract class BaseAuthenticate {
  */
 	public function logout($user) { }
 
+
+	public function unauthenticated($user) {
+	}
+	
 /**
  * Get a user based on information in the request.  Primarily used by stateless authentication
  * systems like basic and digest auth.
