@@ -8,8 +8,11 @@
    - php5
    - libapache2-mod-php5
    - php5-xdebug
+   - phpunit
 
-- name: Correctly configure XDebug
+- name: Correctly configure XDebug and Apache
   lineinfile: dest=/etc/php5/apache2/conf.d/20-xdebug.ini line="xdebug.remote_enable = on"
 - lineinfile: dest=/etc/php5/apache2/conf.d/20-xdebug.ini line="xdebug.remote_connect_back = on"
+- lineinfile: dest=/etc/apache2/sites-enabled/000-default regexp="^AllowOverride None" line="AllowOverride All"
+- lineinfile: dest=/etc/apache2/sites-enabled/000-default regexp="^AllowOverride None" line="AllowOverride All"
 - service: name=apache2 state=reloaded
