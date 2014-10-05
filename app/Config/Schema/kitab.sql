@@ -1,67 +1,41 @@
--- phpMyAdmin SQL Dump
--- version 3.4.11.1deb1
--- http://www.phpmyadmin.net
+-- MySQL dump 10.13  Distrib 5.1.63, for debian-linux-gnu (x86_64)
 --
--- Host: localhost
--- Generation Time: Feb 03, 2013 at 11:11 PM
--- Server version: 5.5.29
--- PHP Version: 5.4.6-1ubuntu1.1
-
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
+-- Database: kitab
+-- ------------------------------------------------------
+-- Server version	5.1.56-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-
---
--- Database: `kitabalshifa`
---
-
--- --------------------------------------------------------
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `accountings`
 --
 
-CREATE TABLE IF NOT EXISTS `accountings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hour_of_week_start` int(11) NOT NULL,
-  `hour_of_week_end` int(11) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `value` float NOT NULL,
-  `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `accountings_exceptions`
---
-
-CREATE TABLE IF NOT EXISTS `accountings_exceptions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `start` datetime NOT NULL,
-  `end` datetime NOT NULL,
-  `premium` float NOT NULL,
-  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `accountings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `accountings` (
+  `id` varchar(5) NOT NULL,
+  `id2` varchar(5) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `billings`
 --
 
-CREATE TABLE IF NOT EXISTS `billings` (
+DROP TABLE IF EXISTS `billings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `billings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `healthcare_provider` int(6) NOT NULL,
   `patient_birthdate` date NOT NULL,
@@ -69,15 +43,17 @@ CREATE TABLE IF NOT EXISTS `billings` (
   `payee` varchar(1) NOT NULL,
   `referring` int(6) NOT NULL,
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=477645 ;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=477645 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `billings_items`
 --
 
-CREATE TABLE IF NOT EXISTS `billings_items` (
+DROP TABLE IF EXISTS `billings_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `billings_items` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `service_code` varchar(5) NOT NULL,
   `fee_submitted` int(11) NOT NULL,
@@ -85,15 +61,17 @@ CREATE TABLE IF NOT EXISTS `billings_items` (
   `service_date` date NOT NULL,
   `billing_id` int(11) NOT NULL,
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=615413 ;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=615413 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `calendars`
 --
 
-CREATE TABLE IF NOT EXISTS `calendars` (
+DROP TABLE IF EXISTS `calendars`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `calendars` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `usergroups_id` int(32) NOT NULL,
   `name` text NOT NULL,
@@ -103,56 +81,64 @@ CREATE TABLE IF NOT EXISTS `calendars` (
   `comments` text,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `groups`
 --
 
-CREATE TABLE IF NOT EXISTS `groups` (
+DROP TABLE IF EXISTS `groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `groups` (
   `id` int(4) NOT NULL AUTO_INCREMENT,
   `usergroups_id` int(11) NOT NULL,
   `acl` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `locations`
 --
 
-CREATE TABLE IF NOT EXISTS `locations` (
+DROP TABLE IF EXISTS `locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `locations` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `location` text NOT NULL,
   `abbreviated_name` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `shifts`
 --
 
-CREATE TABLE IF NOT EXISTS `shifts` (
+DROP TABLE IF EXISTS `shifts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shifts` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `user_id` int(32) NOT NULL,
   `date` date NOT NULL,
   `shifts_type_id` int(32) NOT NULL,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12189 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=24015 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `shifts_types`
 --
 
-CREATE TABLE IF NOT EXISTS `shifts_types` (
+DROP TABLE IF EXISTS `shifts_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shifts_types` (
   `id` int(32) NOT NULL AUTO_INCREMENT,
   `location_id` int(32) NOT NULL,
   `shift_start` time NOT NULL,
@@ -162,15 +148,17 @@ CREATE TABLE IF NOT EXISTS `shifts_types` (
   `start_date` date NOT NULL,
   `expiry_date` date DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=55 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `trades`
 --
 
-CREATE TABLE IF NOT EXISTS `trades` (
+DROP TABLE IF EXISTS `trades`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trades` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `shift_id` int(11) NOT NULL,
@@ -179,29 +167,33 @@ CREATE TABLE IF NOT EXISTS `trades` (
   `token` varchar(64) NOT NULL,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2028 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=9146 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `trades_considerations`
 --
 
-CREATE TABLE IF NOT EXISTS `trades_considerations` (
+DROP TABLE IF EXISTS `trades_considerations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trades_considerations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trade1` int(11) NOT NULL,
   `trade2` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `trades_details`
 --
 
-CREATE TABLE IF NOT EXISTS `trades_details` (
+DROP TABLE IF EXISTS `trades_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trades_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trade_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -209,8 +201,16 @@ CREATE TABLE IF NOT EXISTS `trades_details` (
   `status` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2024 ;
+) ENGINE=MyISAM AUTO_INCREMENT=9142 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2014-10-04 16:57:39
