@@ -26,6 +26,7 @@ class Trade extends AppModel {
 	 */
 	public $actsAs = array('Search.Searchable', 'Containable');
 	public $components = array('sendTradeRequest');
+	public $findMethods = array('tradeIndex' => true);
 	public $order = array('Trade.updated' => 'DESC');
  	public $filterArgs = array(
 /* 			array('name' => 'month', 'type' => 'value', 'field' => 'MONTH(Shift.date)'),

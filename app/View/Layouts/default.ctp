@@ -46,7 +46,7 @@
     			</li>
     			<li><?php 
 	    			$isLive = '';
-	    			if ($currentPage == Router::url('/trades/index') || $currentPage == Router::url('/trades') || $currentPage == Router::url('/trades/compare') || $currentPage == Router::url('/trades/add')) {
+	    			if ($currentPage == Router::url('/trades/index') || $currentPage == Router::url('/trades') || $currentPage == Router::url('/trades/compare') || $currentPage == Router::url('/trades/history')) {
 	    				$isLive = array('class' => 'menu-current');
 	    			}
     				echo $this->Html->link('Shift trading', array('controller' => 'trades', 'action' => 'index'), $isLive); ?>
@@ -70,14 +70,14 @@
 			</ul>
     		<div class="clear"></div>
     	</nav>
-		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/compare') && $currentPage != Router::url('/trades/add')) {echo 'style="display: none;"';}?>>
+		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/compare') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
 		<ul>
 			<li><?php
 				$isLive = '';
 					if ($currentPage == Router::url('/trades/index') || $currentPage == Router::url('/trades')) {
 					$isLive = array('class' => 'menu-current');
 				}
-				echo $this->Html->link('Trade home', array('controller' => 'trades', 'action' => 'index'), $isLive) ?>
+				echo $this->Html->link('Make a trade', array('controller' => 'trades', 'action' => 'index'), $isLive) ?>
 			</li>
 			<li><?php 
 				$isLive = '';
@@ -88,10 +88,10 @@
 			</li>
 			<li><?php
 				$isLive = '';
-				if ($currentPage == Router::url('/trades/add')) {
+				if ($currentPage == Router::url('/trades/history')) {
 					$isLive = array('class' => 'menu-current');
 				}
-				echo $this->Html->link('Make a trade', array('controller' => 'trades', 'action' => 'add'), $isLive) ?>
+				echo $this->Html->link('Trading history', array('controller' => 'trades', 'action' => 'history'), $isLive) ?>
 			</li>
 			</ul>
 		<div class="clear"></div>

@@ -32,22 +32,21 @@ class TradesController extends AppController {
  *
  * @return void
  */
-	public function index() {
-		$this->loadModel('User');
-
+	public function history() {
 		//Set paginate conditions from passed arguments
 		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
+		$this->paginate['limit'] = 10;
 
 		//Set usersId to either the query or the current user's ID if not available
 		$usersId = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
 
-		$this->set('usersId', $this->_usersId());
+		$this->set('usersId', $usersId);
 
-		// Set up the pagination to draw all trades associated with the user.
 		$this->paginate = array(
 				'paramType' => 'querystring',
 				'recursive' => -1,
 				'order' => 'Trade.status ASC',
+				'limit' => 10,
 				'fields' => array(
 						'status',
 						'user_id',
@@ -57,11 +56,11 @@ class TradesController extends AppController {
 				'joins' => array(array(
 						'table' => 'trades_details',
 						'alias' => 'TradesDetail',
-						'type' => 'LEFT',
+						'type' => 'RIGHT',
 						'conditions' => array(
 								'Trade.id = TradesDetail.trade_id',
-								)
-						)),
+						)
+				)),
 				'contain' => array(
 						'User' => array(
 								'fields' => array(
@@ -77,7 +76,7 @@ class TradesController extends AppController {
 										'fields' => array(
 												'id',
 												'name'))
-								),
+						),
 						'Shift' => array(
 								'fields' => array(
 										'date',
@@ -94,11 +93,11 @@ class TradesController extends AppController {
 						)
 				)
 		);
-
-		$this->set('trades', $this->paginate(array('OR' => array(
-				'Trade.user_id' => $usersId,
-				'TradesDetail.user_id' => $usersId))));
-
+		$this->set('trades', $this->paginate(array(
+				'OR' => array(
+					'Trade.user_id' => $usersId,
+					'TradesDetail.user_id' => $usersId))));
+		
 		$this->render();
 	}
 
@@ -107,7 +106,7 @@ class TradesController extends AppController {
  *
  * @return void
  */
-	public function add() {
+	public function index() {
 		$recipientNotPresent = false;
 		$originatorNotPresent = false;
 		$checkDuplicate = false;
