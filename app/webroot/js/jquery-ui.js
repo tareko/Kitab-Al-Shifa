@@ -1,1 +1,1 @@
-/var/www/kitab/app/webroot/js/jquery-ui-1.8.20.custom.min.js
+jquery-ui-1.8.20.custom.min.js
