@@ -1,0 +1,9 @@
+---
+- name: Install Web, SQL and then get kitab files linked
+  hosts: all
+
+  roles:
+    - base
+    - web
+    - db
+    - kitab
