@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
   
-  config.vm.synced_folder "kitab", "/var/www",
+  config.vm.synced_folder "../", "/vagrant/kitab",
   owner: "www-data", group: "www-data"
 
   # Provider-specific configuration so you can fine-tune various
