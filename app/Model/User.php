@@ -124,14 +124,14 @@ class User extends AppModel
  				'order' => array('Profile.lastname' => 'ASC', 'Profile.firstname' => 'ASC', 'Profile.cb_displayname' => 'ASC'),
  				'joins' => array(
 						array(
-								'table' => 'j17_user_usergroup_map',
+								'table' => 'jem5_user_usergroup_map',
 								'alias' => 'UsersUsergroup',
 								'type' => 'inner',
 								'foreignKey' => false,
 								'conditions'=> array('UsersUsergroup.user_id = User.id')
 						),
 						array(
-								'table' => 'j17_usergroups',
+								'table' => 'jem5_usergroups',
 								'alias' => 'Usergroup',
 								'type' => 'inner',
 								'foreignKey' => false,
