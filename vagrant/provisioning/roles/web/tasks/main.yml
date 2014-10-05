@@ -8,3 +8,8 @@
    - php5
    - libapache2-mod-php5
    - php5-xdebug
+
+- name: Correctly configure XDebug
+  lineinfile: dest=/etc/php5/apache2/conf.d/20-xdebug.ini line="xdebug.remote_enable = on"
+- lineinfile: dest=/etc/php5/apache2/conf.d/20-xdebug.ini line="xdebug.remote_connect_back = on"
+- service: name=apache2 state=reloaded
