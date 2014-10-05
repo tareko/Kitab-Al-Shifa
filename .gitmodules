@@ -1,3 +1,0 @@
-[submodule "app/Plugin/CakePdf"]
-	path = app/Plugin/CakePdf
-	url = https://github.com/FriendsOfCake/CakePdf.git
