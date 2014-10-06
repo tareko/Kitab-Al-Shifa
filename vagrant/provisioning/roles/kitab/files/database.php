@@ -78,4 +78,15 @@ class DATABASE_CONFIG {
 			'prefix' => 'j17_',
 	//'encoding' => 'utf8',
 	);
+
+	public $test = array(
+			'datasource' => 'Database/Mysql',
+			'persistent' => false,
+			'host' => '127.0.0.1',
+			'login' => 'kitab',
+			'password' => 'kitab',
+			'database' => 'test',
+			'prefix' => '',
+			//'encoding' => 'utf8',
+	);
 }
