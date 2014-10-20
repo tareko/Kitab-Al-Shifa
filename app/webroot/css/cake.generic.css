@@ -249,6 +249,11 @@ table tr td {
 	vertical-align: top;
 	border-bottom:1px solid #ddd;
 }
+
+table tr:nth-child(odd) {
+	background: #fff;
+}
+
 table tr:nth-child(even) {
 	background: #eee;
 }
