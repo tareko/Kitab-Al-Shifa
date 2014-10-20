@@ -1,6 +1,6 @@
 <?php 
 echo $this->Html->script('jquery');
-echo $this->Html->script('jquery.stickytableheaders');
+echo $this->Html->script('jquery.fixedheadertable');
 
 echo $this->Form->create('Shift', array(
     'url' => array('action' => 'calendarEdit') + $this->request->params['named']
@@ -13,9 +13,13 @@ echo $this->Form->end();
 <?= $this->Calendar->makeCalendarEdit($masterSet); ?>
 
     <script type='text/javascript'>//<![CDATA[ 
-
 $(function(){
-    $("table").stickyTableHeaders();
+	$('#Calendar').fixedHeaderTable({
+		footer: false,
+		fixedColumns: 1,
+		width: '100%',
+		height: '100%',
+	})
 });
 
 //]]>  

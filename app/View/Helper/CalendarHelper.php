@@ -24,7 +24,8 @@ class CalendarHelper extends AppHelper {
 		)));
 		// Create headers
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
-		$output .= "<table>";
+		$output .= "<div class=\"height400\">";
+		$output .= "<table id=\"Calendar\" class=\"calendarTable\">";
 		$output .= "<thead><tr><th rowspan=\"2\">Date</th>";
 
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
@@ -61,7 +62,8 @@ class CalendarHelper extends AppHelper {
 		}
 		$output .= $this->Html->tableCells($output1, array ('class' => 'calendarHeaderTimes'));
 		$output .= "</thead>";
-
+		$output .= "<tbody>";
+		
 
 		//Output Days of the month
 		while ($k <= $calendar['Calendar']['end_date']) {
@@ -86,7 +88,7 @@ class CalendarHelper extends AppHelper {
 			$k = date('Y-m-d', strtotime("$k + 1 day"));
 		}
 
-		$output .= "</table>";
+		$output .= "</tbody></table></div>";
 		$output .= $this->Form->end('Save');
 		return $output;
 	}
