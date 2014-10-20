@@ -75,7 +75,7 @@ class DATABASE_CONFIG {
 			'login' => 'kitab',
 			'password' => 'kitab',
 			'database' => 'joomla',
-			'prefix' => 'j17_',
+			'prefix' => 'jem5_',
 	//'encoding' => 'utf8',
 	);
 
