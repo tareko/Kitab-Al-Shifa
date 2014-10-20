@@ -339,7 +339,9 @@ class ShiftsController extends AppController {
 		$params = array();
 		$this->loadModel('Calendar');
 		$this->set('physicians', $this->User->getList(null, true, true));
-		$this->set('calendars', $this->Calendar->find('list'));
+		$this->set('calendars', $this->Calendar->find('list', array(
+				'conditions' => array(
+						'end_date >=' => date('Y-m-d', strtotime("-2 months"))))));
 
 		if (isset($this->request->data['Shift']['list'])) {
 			if ($this->request->data['Shift']['list'] == 'all') {
@@ -397,5 +399,24 @@ class ShiftsController extends AppController {
 		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
 		$this->set('_serialize', array('shiftList'));
 	}
+	
+	/*
+	 * List calendars
+	 */
+	public function listCalendars() {
+		$this->loadModel('Calendar');
+		$conditions = array ();
+		if (isset($this->request->query['end_date']) && $this->request->query['end_date'] == "current") {
+			$conditions = array (
+				'end_date >=' => date('Y-m-d', strtotime("-2 months")));
+		}
+
+		$this->set('calendars', $this->Calendar->find('all', array(
+				'fields' => array(
+						'id', 
+						'name',),
+				'conditions' => $conditions)));
+		$this->set('_serialize', array('calendars'));
+	}	
 }
 ?>

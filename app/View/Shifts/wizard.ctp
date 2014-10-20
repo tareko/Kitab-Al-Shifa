@@ -55,16 +55,37 @@ $(document).ready(function() {
 				'options' => $calendars));
 	?>
 </fieldset>
-	<div class="Options">
+
+	<?= $this->Form->checkbox('archive');?>Include archived calendars
+	<?= $this->Js->get('#ShiftArchive')->event('click', 'shiftArchive()', array ('stop' => false));?>
+
+<div class="Options">
 <?php echo $this->Form->radio('Output Format', array ('webcal' => 'Web calendar', 'list' => 'List of shifts', 'print' => 'Print copy', 'ics' => 'ICS'),
 		array (
 				'name' => 'data[Shift][output]')
 		);
 ?>
 </div>
-<?php
-	echo $this->Form->submit();
-	
-echo $this->Js->writeBuffer(); // Write cached scripts
+<?= $this->Form->submit();?>
 
-?>
+<script>
+	function shiftArchive(data) {
+		if ($('input[name="data[Shift][archive]"]').is(':checked') == true) { 
+			var endDate = 'archive';
+		} else {
+			var endDate = 'current';
+		}
+		$.getJSON('<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listCalendars.json')); ?>', {end_date: endDate}, function(data){
+				$("select#ShiftCalendar").empty();
+				var html = '';
+				var len = data.calendars.length;
+				for (var i = 0; i< len; i++) {
+					html += '<option value="' + data.calendars[i].Calendar.id + '">' + data.calendars[i].Calendar.name + '</option>';
+				}
+				$('select#ShiftCalendar').append(html);
+			});
+	}
+</script>	
+
+	
+<?= $this->Js->writeBuffer(); // Write cached scripts ?>
