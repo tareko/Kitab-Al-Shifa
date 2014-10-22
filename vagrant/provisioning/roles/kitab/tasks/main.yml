@@ -13,11 +13,11 @@
  
 - name: Create database for Kitab
   mysql_db: name=kitab state=present
-- mysql_db: name=kitab state=import target=/vagrant/kitab/app/Config/Schema/kitab.sql
+#- mysql_db: name=kitab state=import target=/vagrant/kitab/app/Config/Schema/kitab.sql
  
 - name: Create database for Joomla
   mysql_db: name=joomla state=present
-- mysql_db: name=joomla state=import target=/vagrant/kitab/app/Config/Schema/joomla.sql
+#- mysql_db: name=joomla state=import target=/vagrant/kitab/app/Config/Schema/joomla.sql
 
 - name: Create database for testing
   mysql_db: name=test state=present
