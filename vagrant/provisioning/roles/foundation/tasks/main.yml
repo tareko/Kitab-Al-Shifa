@@ -1,0 +1,25 @@
+---
+# This task will install the Foundation framework
+
+- name: Add required packages
+  action: apt pkg={{ item }} state=present
+  with_items:
+   - nodejs
+   - gem
+   - ruby1.9.3
+   - bundler
+  
+- name: Add Node.JS
+  apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+- apt_repository: repo='deb https://deb.nodesource.com/node wheezy main' state=present
+
+- apt_repository: repo='deb-src https://deb.nodesource.com/node wheezy main' state=present update_cache=yes
+
+- name: Install foundation and dependencies
+  gem: name=foundation state=present
+
+- gem: name=thor state=present
+- gem: name=compass state=present
+- npm: name=bower state=present global=yes
+- npm: name=grunt-cli state=present global=yes
