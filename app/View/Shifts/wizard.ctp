@@ -7,29 +7,31 @@ echo $this->Html->css('ui-lightness/jquery-ui');
 echo $this->Form->create();
 ?>
 
-<style media="screen, print" type="text/css">
-.fg-button { 
-   outline: 0; 
-   margin:0; 
-   padding: .4em 1em; 
-   text-decoration:none !important; 
-   cursor:pointer; 
-   position: relative; 
-   text-align: center; 
-   zoom: 1; 
-   float: left;
-   }
-</style>
 
-<script type="text/javascript">
-$(document).ready(function() {
-    $(".Options").buttonset();
+    <div class="btn-group" data-toggle="buttons">
 
-});
+        <label class="btn btn-primary">
 
-</script>
+            <input type="radio" name="options" value="1"> Option 1
 
-<div class="Options list">
+        </label>
+
+        <label class="btn btn-primary">
+
+            <input type="radio" name="options" value="2"> Option 2
+
+        </label>
+
+        <label class="btn btn-primary">
+
+            <input type="radio" name="options" value="3"> Option 3
+
+        </label>
+
+    </div>
+
+
+<div class="btn-group" data-toggle="buttons">
 	<?php
 	$this->Js->get('[for=\'ShiftShiftsToShowAll\']')->event('click', '$(\'#pick-doctor\').hide()', array ('stop' => false));
 	$this->Js->get('[for=\'ShiftShiftsToShowMine\']')->event('click', '$(\'#pick-doctor\').hide()', array ('stop' => false));
@@ -37,11 +39,12 @@ $(document).ready(function() {
 	
 	echo $this->Form->radio('Shifts to show', array ('mine' => 'My shifts only', 'all' => 'Everybody\'s shifts', 'some' => 'Let me pick'),
 			array (
-					'name' => 'data[Shift][list]')
-			);
+					'name' => 'data[Shift][list]',
+					'label' => array(
+							'class' => 'radio-inline btn btn-primary'
+			)));
 	?>
 </div>
-
 <div id="pick-doctor" style="display:none">
 	<?= $this->PhysicianPicker->makePhysicianPicker($physicians, 'data[Shift]'); ?>
 </div>
@@ -59,13 +62,11 @@ $(document).ready(function() {
 	<?= $this->Form->checkbox('archive');?>Include archived calendars
 	<?= $this->Js->get('#ShiftArchive')->event('click', 'shiftArchive()', array ('stop' => false));?>
 
-<div class="Options">
 <?php echo $this->Form->radio('Output Format', array ('webcal' => 'Web calendar', 'list' => 'List of shifts', 'print' => 'Print copy', 'ics' => 'ICS'),
 		array (
 				'name' => 'data[Shift][output]')
 		);
 ?>
-</div>
 <?= $this->Form->submit();?>
 
 <script>

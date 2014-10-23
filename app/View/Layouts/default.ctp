@@ -21,55 +21,52 @@
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
-		Kitab Al-Shifa: <?php echo $title_for_layout; ?>
+		Kitab: <?php echo $title_for_layout; ?>
 	</title>
 	<?php
 //		echo $this->Html->meta('icon');
 		echo $this->Html->css('cake.generic');
+		echo $this->Html->css('bootstrap.min');
+
 		echo $scripts_for_layout;
 	?>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-	<div id="container">
-		<div id="header">
-    		<h1><?php echo $this->Html->link('Kitab Al Shifa', array('controller' => 'shifts', 'action' => 'home')); ?></h1>
-		<nav> <!-- HTML5 navigation tag -->
-    		<ul>
-    			<li>
-    				<?php
-					$isLive = '';
-					$currentPage = 	$_SERVER['REQUEST_URI'];
-					if ($currentPage == Router::url('/shifts/wizard')) {
-						$isLive = array('class' => 'menu-current');
-					}
-    				echo $this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard'), $isLive); ?>
-    			</li>
-    			<li><?php 
-	    			$isLive = '';
-	    			if ($currentPage == Router::url('/trades/index') || $currentPage == Router::url('/trades') || $currentPage == Router::url('/trades/compare') || $currentPage == Router::url('/trades/history')) {
-	    				$isLive = array('class' => 'menu-current');
-	    			}
-    				echo $this->Html->link('Shift trading', array('controller' => 'trades', 'action' => 'index'), $isLive); ?>
-    			</li>
-				<?php
-					if ($admin) { ?>
-		   				<li><?php 
-			   				$isLive = '';
-							if ($currentPage == Router::url('/pages/admin')) {
-								$isLive = array('class' => 'menu-current');
-							}
-			   				echo $this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin'), $isLive); ?>
-		   				</li>
-				<?php } ?>
-    		</ul>
-				<?php if($logged_in) { ?>
-		    		<ul style="float:right">
-						<li><?php echo $this->Html->link($users_username .' (Logout)', array('controller' => ' users', 'action' => 'logout'));
-				} ?>
-				</li>
-			</ul>
-    		<div class="clear"></div>
-    	</nav>
+    <!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Kitab Al Shifa</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><?=$this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard'));?></li>
+            <li><?=$this->Html->link('Shift trading', array('controller' => 'trades', 'action' => 'index'));?></li>
+            <li><?=$this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin'));?></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+		  <li><?php if($logged_in) {
+		  	echo $this->Html->link($users_username .' (Logout)', array('controller' => ' users', 'action' => 'logout'));
+		  } ?>
+          </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+<div id="container-fluid">
+	<?php
+		$isLive = '';
+		$currentPage = 	$_SERVER['REQUEST_URI'];
+	?>
 		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/compare') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
 		<ul>
 			<li><?php
@@ -96,19 +93,16 @@
 			</ul>
 		<div class="clear"></div>
 		</nav>
-		</div>
     	<div id="content">
 			<?php echo $this->Session->flash(); ?>
 			<?php echo $content_for_layout; ?>
 		</div>
 		<footer>
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt'=> __('CakePHP: the rapid development php framework'), 'border' => '0')),
-					'http://www.cakephp.org/',
-					array('target' => '_blank', 'escape' => false)
-				);
-			?>
 		</footer>
 	</div>
-</body>
+	<?php
+		echo $this->Html->script("bootstrap.min");
+		echo $this->Html->script("jquery");
+	?>
+	</body>
 </html>

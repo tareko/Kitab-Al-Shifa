@@ -100,7 +100,7 @@ Cache::config('default', array('engine' => 'File'));
  		'download' => true,
  		'pageSize' => 'Letter',
  ));
-
+ 
  /* Option to save OHIP numbers for patients when entering billing information
   * Note: Do not enable this unless you have a very, very secure system
   * as it compromises patient safety if in the public.

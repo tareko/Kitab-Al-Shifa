@@ -10,7 +10,6 @@ class PhysicianPickerHelper extends AppHelper {
 		echo $this->Html->script('jquery-ui'); // Include jQuery UI library
 		echo $this->Html->css('ui-lightness/jquery-ui');
 		echo $this->Html->script('jquery.tagit'); // Include jQuery library
-		echo $this->Html->script('jquery.autocomplete'); // Include jQuery library
 		echo $this->Html->css('jquery.tagit');
 ?>
 
