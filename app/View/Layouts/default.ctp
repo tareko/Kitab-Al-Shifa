@@ -51,7 +51,9 @@
           <ul class="nav navbar-nav">
             <li><?=$this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard'));?></li>
             <li><?=$this->Html->link('Shift trading', array('controller' => 'trades', 'action' => 'index'));?></li>
+			<?php if ($admin) { ?>
             <li><?=$this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin'));?></li>
+			<?php } ?>
           </ul>
           <ul class="nav navbar-nav navbar-right">
 		  <li><?php if($logged_in) {
