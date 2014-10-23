@@ -1,5 +1,4 @@
 <?php
-
 class AppController extends Controller {
 	public $uses = array('User', 'Usergroup', 'Group');
 
@@ -23,7 +22,7 @@ class AppController extends Controller {
 //		'DebugKit.Toolbar'
 	);
  	
- 	public $helpers = array(
+ 	var $helpers = array(
 		'Session',
 		'Html' => array('className' => 'BoostCake.BoostCakeHtml'),
 		'Form' => array('className' => 'BoostCake.BoostCakeForm'),

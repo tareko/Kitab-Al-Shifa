@@ -23,8 +23,10 @@
 	<title>
 		Kitab: <?php echo $title_for_layout; ?>
 	</title>
-	<?php
+<?php
 //		echo $this->Html->meta('icon');
+		echo $this->Html->script("jquery");
+		
 		echo $this->Html->css('cake.generic');
 		echo $this->Html->css('bootstrap.min');
 
@@ -43,7 +45,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Kitab Al Shifa</a>
+          <?= $this->Html->link('Kitab Al Shifa', array('controller' => 'shifts', 'action' => 'home'), array('class' => 'navbar-brand')); ?>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">

@@ -7,8 +7,8 @@ class ShiftsController extends AppController {
 	var $name = 'Shifts';
 	var $components = array('RequestHandler', 'Search.Prg');
 	var $scaffold = 'admin';
-	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal', 'PhysicianPicker', 'Html');
-//	public $cacheAction = "1 hour";
+	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal', 'PhysicianPicker');
+	//	public $cacheAction = "1 hour";
 
 	var $paginate = array(
 		'recursive' => '2',
