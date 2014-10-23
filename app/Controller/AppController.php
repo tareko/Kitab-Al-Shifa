@@ -1,5 +1,4 @@
 <?php
-
 class AppController extends Controller {
 	public $uses = array('User', 'Usergroup', 'Group');
 
@@ -12,8 +11,22 @@ class AppController extends Controller {
 			'authError' => 'Please login to view this page',
 			'loginError' => 'Incorrect username and/or password',
 			'logoutRedirect' => array('controller' => '/'),
-		),
+			'flash' => array(
+					'element' => 'alert',
+ 					'key' => 'auth',
+ 					'params' => array(
+ 							'class' => 'alert-danger'
+ 					)
+ 			)
+ 		),
 //		'DebugKit.Toolbar'
+	);
+ 	
+ 	var $helpers = array(
+		'Session',
+		'Html' => array('className' => 'BoostCake.BoostCakeHtml'),
+		'Form' => array('className' => 'BoostCake.BoostCakeForm'),
+		'Paginator' => array('className' => 'BoostCake.BoostCakePaginator'),
 	);
 
 	function beforeFilter() {

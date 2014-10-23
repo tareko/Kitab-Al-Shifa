@@ -65,7 +65,7 @@ class UsersController extends AppController {
 				$this->Session->setFlash(__('The user has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The user could not be saved. Please, try again.'), 'alert');
 			}
 		} else {
 			$this->request->data = $this->User->read(null, $id);
@@ -90,7 +90,7 @@ class UsersController extends AppController {
 			$this->Session->setFlash(__('User deleted'));
 			$this->redirect(array('action'=>'index'));
 		}
-		$this->Session->setFlash(__('User was not deleted'));
+		$this->Session->setFlash(__('User was not deleted'), 'alert');
 		$this->redirect(array('action' => 'index'));
 	}
 /**
@@ -129,7 +129,7 @@ class UsersController extends AppController {
 				$this->Session->setFlash(__('The user has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The user could not be saved. Please, try again.'), 'alert');
 			}
 		}
 	}
@@ -150,7 +150,7 @@ class UsersController extends AppController {
 				$this->Session->setFlash(__('The user has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The user could not be saved. Please, try again.'), 'alert');
 			}
 		} else {
 			$this->request->data = $this->User->read(null, $id);
@@ -175,7 +175,7 @@ class UsersController extends AppController {
 			$this->Session->setFlash(__('User deleted'));
 			$this->redirect(array('action'=>'index'));
 		}
-		$this->Session->setFlash(__('User was not deleted'));
+		$this->Session->setFlash(__('User was not deleted'), 'alert');
 		$this->redirect(array('action' => 'index'));
 	}
 	
@@ -184,10 +184,9 @@ class UsersController extends AppController {
 			$this->redirect($this->Auth->redirect());
 		} else {
 			if ($this->request->isPost()) {
-				$this->Session->setFlash(__('Invalid username or password, try again'));
+				$this->Session->setFlash(__('Invalid username or password, try again'), 'alert');
 			}
 			else {
-				$this->Session->setFlash(__('Please enter your login and password'));
 			}
 			
 		}
@@ -204,7 +203,7 @@ class UsersController extends AppController {
 		$userList = array();
 
 		if (isset($this->request->query['full'])) {
-			$full = true;
+ 				$full = true;
 		}
 		if (isset($this->request->query['term'])) {
 			$conditions = array(

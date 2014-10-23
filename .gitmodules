@@ -4,3 +4,6 @@
 [submodule "lib/Cake"]
 	path = lib/Cake
 	url = https://github.com/tareko/CakeLib.git
+[submodule "app/Plugin/BoostCake"]
+	path = app/Plugin/BoostCake
+	url = https://github.com/slywalker/cakephp-plugin-boost_cake.git
