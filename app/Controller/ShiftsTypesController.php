@@ -14,7 +14,7 @@ class ShiftsTypesController extends AppController {
  *
  * @var array
  */
-	public $components = array('Paginator', 'Session');
+	public $components = array('Paginator', 'Session', 'RequestHandler');
 
 /**
  * index method
@@ -22,6 +22,14 @@ class ShiftsTypesController extends AppController {
  * @return void
  */
 	public function index() {
+		if  (isset($this->request->query['hideExpired']) && $this->request->query['hideExpired'] == 1) {
+			$conditions =  array(
+					'expiry_date >=' => date('Y-m-d'),
+					);
+			$this->Paginator->settings = array(
+					'conditions' => $conditions,
+			);
+		}
 		$this->ShiftsType->recursive = 0;
 		$this->set('shiftsTypes', $this->Paginator->paginate());
 	}
