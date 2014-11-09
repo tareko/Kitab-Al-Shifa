@@ -131,6 +131,7 @@ class TradesController extends AppController {
 		else {
 			$this->set('usersId', $this->_usersId());
 		}
+		$this->set('groupList', $this->User->getGroupsForUser($this->_usersId(), array(), true, true));
 		$this->set('recipientNotPresent', $recipientNotPresent);
 		$this->set('originatorNotPresent', $originatorNotPresent);
 		$this->set('checkDuplicate', $checkDuplicate);

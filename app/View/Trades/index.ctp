@@ -47,7 +47,9 @@ $originatorErrorMessage = '';
 	</div>
 	<div class="block required <?= $recipientError?>">
 		<label><?=__('Who are you offering the trade to?')?></label>
-		<?php 
+		<?php echo $this->Form->select('Model.field', $groupList, array(
+			'multiple' => 'checkbox'
+		));
 		echo $this->Html->div('TradesDetail.user_id',
 			$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail]', 'user_id'),
 				array('div' => 'pick-doctor'));
@@ -55,7 +57,6 @@ $originatorErrorMessage = '';
 		<?=$recipientErrorMessage?>
 	</div>
 
-	</div>
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
 	</div>
