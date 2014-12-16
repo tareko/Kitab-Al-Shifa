@@ -192,7 +192,7 @@ class CalendarHelper extends AppHelper {
 		//Create headers
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
 		$output .= "<table>";
-		$output .= "<tr><td rowspan=\"2\" class=\"locations\"><div style=\"width: 100px;\">Date</div></td>";
+		$output .= "<tr><td rowspan=\"2\" class=\"locations\"><div style=\"width: 60px;\">Date</div></td>";
 
 		//Roll out locations
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
