@@ -5,7 +5,12 @@
 #  git: repo=https://github.com/tareko/Kitab-Al-Shifa.git
 #       dest=/vagrant/kitab
 #       accept_hostkey=yes
-       
+
+- name: Install Kitab dependencies
+  action: apt pkg={{ item }} state=present
+  with_items:
+   - wkhtmltopdf
+
 - name: Copy configuration files
   copy: src=core.php dest=/vagrant/kitab/app/Config/core.php owner=www-data group=www-data mode=0600 force=no
 - copy: src=database.php dest=/vagrant/kitab/app/Config/database.php owner=www-data group=www-data mode=0600 force=no
