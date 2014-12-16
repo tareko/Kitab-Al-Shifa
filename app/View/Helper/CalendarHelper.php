@@ -26,7 +26,7 @@ class CalendarHelper extends AppHelper {
 		$output .= "<h1>".$calendar['Calendar']['name']."</h1>";
 		$output .= "<div class=\"height400\">";
 		$output .= "<table id=\"Calendar\" class=\"calendarTable\">";
-		$output .= "<thead><tr><th rowspan=\"2\">Date</th>";
+		$output .= "<thead><tr><th rowspan=\"2\"><div style=\"height: 64px; width: 100px\">Date</th>";
 
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
 			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
@@ -78,7 +78,8 @@ class CalendarHelper extends AppHelper {
 					$this->Form->hidden("Shift.$i.shifts_type_id", array('value' => $shiftsType['ShiftsType']['id'] )) .
 					$this->Form->hidden("Shift.$i.date", array('value' => $k )) .
 					$this->Form->input("Shift.$i.user_id", array(
-						'label' => false
+						'label' => false,
+						'required' => false
 					));
 					$i++;
 				}
