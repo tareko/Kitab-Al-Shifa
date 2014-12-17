@@ -16,3 +16,5 @@ To install:
 	c. cp app/Config/email.php.default app/Config/email.php
 
 6. Add the kitab.sql scheme and joomla.sql schema if needed
+
+7. Add to your php.ini: max_input_vars = 10000
