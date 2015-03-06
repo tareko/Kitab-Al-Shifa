@@ -49,6 +49,9 @@ class CalendarHelper extends AppHelper {
 		if ($colspan == 1) {
 			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 		}
+		else {
+			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
+		}
 		$output .= "</tr>";
 
 
@@ -135,6 +138,9 @@ class CalendarHelper extends AppHelper {
 		if ($colspan == 1) {
 			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 		}
+		else {
+			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
+		}
 		$output .= "</tr>";
 
 
@@ -207,6 +213,9 @@ class CalendarHelper extends AppHelper {
 		}
 		if ($colspan == 1) {
 			$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</td>";
+		}
+		else {
+			$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</td>";
 		}
 		$output .= "</tr>";
 
