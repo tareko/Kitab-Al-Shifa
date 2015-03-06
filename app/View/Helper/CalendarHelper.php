@@ -190,14 +190,6 @@ class CalendarHelper extends AppHelper {
 				if (!isset($masterSet['ShiftsType'][$j + 1]['ShiftsType']['display_order']) || $masterSet['ShiftsType'][$j + 1]['ShiftsType']['display_order'] != $shiftsType['ShiftsType']['display_order']) {
 					$colspan++;
 				}
-				if ($j == count($masterSet['ShiftsType']) - 1) {
-					if ($colspan == 1) {
-						$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</td>";
-					}
-					else {
-						$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</td>";
-					}
-				}
 			}
 			else {
 				if (isset($firstLocation)) {
@@ -212,6 +204,9 @@ class CalendarHelper extends AppHelper {
 				$firstLocation = true;
 				$previousLocation = $shiftsType['ShiftsType']['location_id'];
 			}
+		}
+		if ($colspan == 1) {
+			$output .= "<td colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</td>";
 		}
 		$output .= "</tr>";
 
