@@ -187,7 +187,7 @@ class CalendarHelper extends AppHelper {
 		//Roll out locations
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
 			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
-				if (!isset($masterSet['ShiftsType'][$j + 1]['ShiftsType']['display_order']) || $masterSet['ShiftsType'][$j + 1]['ShiftsType']['display_order'] != $shiftsType['ShiftsType']['display_order']) {
+				if ($masterSet['ShiftsType'][$j - 1]['ShiftsType']['display_order'] != $shiftsType['ShiftsType']['display_order']) {
 					$colspan++;
 				}
 			}
