@@ -31,17 +31,9 @@ class CalendarHelper extends AppHelper {
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
 			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
 				$colspan++;
-				if ($j == count($masterSet['ShiftsType']) - 1) {
-					if ($colspan == 1) {
-						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
-					}
-					else {
-						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
-					}
-				}
 			}
 			else {
-				if (isset($firstLocation)) {
+				if (isset($firstLocation) ) {
 					if ($colspan == 1) {
 						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 					}
@@ -53,6 +45,9 @@ class CalendarHelper extends AppHelper {
 				$firstLocation = true;
 				$previousLocation = $shiftsType['ShiftsType']['location_id'];
 			}
+		}
+		if ($colspan == 1) {
+			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 		}
 		$output .= "</tr>";
 
@@ -122,14 +117,6 @@ class CalendarHelper extends AppHelper {
 		foreach ($masterSet['ShiftsType'] as $j => $shiftsType) {
 			if ($previousLocation == $shiftsType['ShiftsType']['location_id']) {
 				$colspan++;
-				if ($j == count($masterSet['ShiftsType']) - 1) {
-					if ($colspan == 1) {
-						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
-					}
-					else {
-						$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['location'] ."</th>";
-					}
-				}
 			}
 			else {
 				if (isset($firstLocation)) {
@@ -145,6 +132,8 @@ class CalendarHelper extends AppHelper {
 				$previousLocation = $shiftsType['ShiftsType']['location_id'];
 			}
 		}
+		if ($colspan == 1) {
+			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
 		$output .= "</tr>";
 
 
