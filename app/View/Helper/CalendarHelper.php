@@ -134,6 +134,7 @@ class CalendarHelper extends AppHelper {
 		}
 		if ($colspan == 1) {
 			$output .= "<th colspan=\"". $colspan ."\" class=\"locations locationColour".$previousLocation."\">". $masterSet['locations'][$previousLocation]['abbreviated_name'] ."</th>";
+		}
 		$output .= "</tr>";
 
 
