@@ -33,13 +33,13 @@ class Usergroup extends AppModel
 	public $validate = array(
 		'usergroups_id' => array(
 			'required' => array(
-				'rule' => array('notEmpty'),
+				'rule' => array('notBlank'),
 				'message' => 'You must enter a usergroup'
 			)
 		),
 		'acl' => array(
 			'required' => array(
-				'rule' => array('notEmpty'),
+				'rule' => array('notBlank'),
 				'message' => 'Please enter permissions for this group'
 			)
 		),

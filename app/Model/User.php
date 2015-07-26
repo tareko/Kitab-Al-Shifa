@@ -41,13 +41,13 @@ class User extends AppModel
 	public $validate = array(
 		'username' => array(
 			'required' => array(
-				'rule' => array('notEmpty'),
+				'rule' => array('notBlank'),
 				'message' => 'A username is required'
 			)
 		),
 		'password' => array(
 			'required' => array(
-				'rule' => array('notEmpty'),
+				'rule' => array('notBlank'),
 				'message' => 'A password is required'
 			)
 		),
