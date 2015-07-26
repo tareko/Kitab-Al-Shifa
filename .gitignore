@@ -8,6 +8,7 @@
 .settings
 tags
 app/Plugin/DebugKit
+app/Plugin/debug_kit
 .buildpath
 .project
 
