@@ -1,7 +1,7 @@
 <?php
 	echo $this->Form->create('User', array(
 			'action' => 'login',
-			'class' => 'form-signin'));?>
+			'class' => 'form-signin col-md-3'));?>
 	<h2 class="form-signin-heading">Please sign in</h2>
 <?php
 
