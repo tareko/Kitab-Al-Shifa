@@ -18,3 +18,7 @@ To install:
 6. Add the kitab.sql scheme and joomla.sql schema if needed
 
 7. Add to your php.ini: max_input_vars = 10000
+
+8. Install wkhtmltopdf from the site (otherwise, you may not have proper PDFs):
+	a. http://wkhtmltopdf.org/downloads.html
+	b. Configure the location in bootstrap.php
