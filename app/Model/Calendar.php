@@ -19,8 +19,8 @@ class Calendar extends AppModel {
  */
 	public $validate = array(
 		'usergroups_id' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				'required' => true,
@@ -29,8 +29,8 @@ class Calendar extends AppModel {
 			),
 		),
 		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				'message' => 'Please enter a calendar name',
 				//'allowEmpty' => false,
 				'required' => true,
@@ -39,8 +39,8 @@ class Calendar extends AppModel {
 			),
 		),
 		'start_date' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				'required' => true,
@@ -65,8 +65,8 @@ class Calendar extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				'required' => true,

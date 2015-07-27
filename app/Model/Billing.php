@@ -47,8 +47,8 @@ class Billing extends AppModel {
 		),
 
 		'payment_program' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				'required' => true,
@@ -57,8 +57,8 @@ class Billing extends AppModel {
 			),
 		),
 		'payee' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				'required' => true,

@@ -53,9 +53,9 @@ class Trade extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Please select a proper shift (notempty)',
+			'notBlank' => array(
+				'rule' => array('notBlank'),
+				//'message' => 'Please select a proper shift (notBlank)',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
@@ -71,9 +71,9 @@ class Trade extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				'message' => 'Please select a proper shift (notempty)',
+			'notBlank' => array(
+				'rule' => array('notBlank'),
+				'message' => 'Please select a proper shift (notBlank)',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
