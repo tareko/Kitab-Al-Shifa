@@ -221,6 +221,7 @@ class ShiftsController extends AppController {
 
 
 	function icsView() {
+		$masterSet = array();
 		$this->Prg->commonProcess();
 
 		if (strlen(strstr($this->request->referer(), 'wizard'))>0) {
