@@ -1,4 +1,6 @@
-<?= $this->Form->create('Trade');?>
+<h2><?php echo __('Make a Trade'); ?></h2>
+
+<?= $this->Form->create('Trade', array('class' => 'form-horizontal'));?>
 
 <?php 
 $recipientError = '';
@@ -20,47 +22,81 @@ $originatorErrorMessage = '';
 		echo '<div class="error">This shift is already in the process of being traded! Please cancel the pre-existing trade before trying to trade this shift again</div>';
 	}
 ?>
-<fieldset>
-	<legend><?php echo __('Make a Trade'); ?></legend>
-	<div class="block">
-		<?php
-		echo $this->Form->input('from_user_id', array(
-				'type' => 'text', 
-				'default' => "me",
-				'label' => __('Person making the trade'),
-				'div' => 'TradeFromUserIdDiv required' . $originatorError));
-		echo $this->Form->input('Trade.user_id', array(
-				'type' => 'text', 
-				'default' => $usersId, 
-				'div' => 'input text TradeFromUserIdHiddenDiv',
-				'type' => 'hidden',
-				'label' => false,
-				'id' => 'TradeFromUserIdHidden'));
-		?>
-	</div>
-	<div class="block">
-		<label for="datepicker1"><?= __('Please select the date of the shift you would like to trade')?></label>
-		<?php
-		echo $this->DatePicker->makeDatePicker('#TradeFromUserIdHidden', 1);
-		echo $this->Form->input('shift_id', array('label' => __('Which shift would you like to trade?')));
-		?>
-	</div>
-	<div class="block required <?= $recipientError?>">
-		<label><?=__('Who are you offering the trade to?')?></label>
-		<?php echo $this->Form->select('Model.field', $groupList, array(
-			'multiple' => 'checkbox'
-		));
-		echo $this->Html->div('TradesDetail.user_id',
-			$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail]', 'user_id'),
-				array('div' => 'pick-doctor'));
-		?>
-		<?=$recipientErrorMessage?>
-	</div>
 
+<div class="col-med-10">
+	<div class="form-inline">
+		<div class="form-group">
+			<?php
+			echo $this->Form->input('from_user_id', array(
+					'type' => 'text', 
+					'placeholder' => "me",
+					'label' => __('From'),
+					'class' => 'form-control',
+					'div' => 'TradeFromUserIdDiv required' . $originatorError));
+	
+			echo $this->Form->input('Trade.user_id', array(
+					'type' => 'text', 
+					'default' => $usersId, 
+					'div' => 'input text TradeFromUserIdHiddenDiv',
+					'type' => 'hidden',
+					'label' => false,
+					'id' => 'TradeFromUserIdHidden'));
+			?>
+		</div>
+		<div class="form-group required">
+			<label for="datepicker1"><?= __('Date of shift')?></label>
+			<?php
+			echo $this->DatePicker->makeDatePicker('#TradeFromUserIdHidden', 1);?>
+		</div>
+		<div class="form-group">
+			<?php echo $this->Form->input('shift_id', array(
+					'label' => __('Time of shift'),
+					'class' => 'form-control'));
+			?>
+		</div>
+	</div>
+</div>
+<br />
+<div class="col-med-10">
+	<div class="form-inline">
+		<div class="form-group <?= $recipientError?>">
+			<div class="required">
+				<label><?=__('Offered to')?></label>
+			</div>
+				<div class="checkbox">
+					<?php 
+				
+					// Allow user to send request to entire group of users
+					echo $this->Form->select('usergroup', $groupList, array(
+						'multiple' => 'checkbox',
+						'class' => 'usergroupSelected'
+					));?>
+				</div>
+				<?php
+				echo $this->Html->div('TradesDetail.user_id',
+					$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail]', 'user_id'),
+						array('id' => 'pick-doctor'));
+				?>
+				<?=$recipientErrorMessage?>
+		</div></div>
+		<div class="form-group">
+			<div class="checkbox">
+				<?php echo $this->Form->checkbox('excludeWorking', array('checked' => true));?>
+				Exclude doctors working for 8 hours before or after this shift.
+			</div>
+		</div>
+	</div>
+</div>
+<br/>
+	<div class="form-group">
+		<?php echo $this->Form->textarea('messageBody', array(
+			'class' => 'form-control',
+			'rows' => '3',
+			'placeholder' => 'Enter a message explaining why you\'d like to trade this shift'));?>
+	</div>	
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
 	</div>
-	</fieldset>
 
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -125,5 +161,21 @@ $originatorErrorMessage = '';
 		});
         return false;
 	}
-	</script>
+
+	/*
+	 * This function populates the physicians when a group is selected
+	 *
+	 *
+	 */
+
+	    $('#TradeUsergroup32').change(function() {
+	        if($(this).is(":checked")) {
+	        	$("#tags").tagit("createTag", "294", "Tarek Loubani");
+	        }
+	        else {		        
+	        	$("#tags").tagit("removeTagByLabel", "294");
+	        }
+	    });	    
+
+		</script>
 	<?echo $this->Js->writeBuffer();?>

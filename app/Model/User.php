@@ -196,6 +196,7 @@ class User extends AppModel
 		 * 
 		 */
 		if ($tradeable == true) {
+			$newGroupList = array();
 			foreach($groupList['Usergroup'] as $group) {
 				if (isset($group['Group']['tradeable']) && $group['Group']['tradeable'] == 1) {
 					$newGroupList[] = $group;

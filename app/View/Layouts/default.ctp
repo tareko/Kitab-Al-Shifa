@@ -29,7 +29,8 @@
 		
 		echo $this->Html->css('cake.generic');
 		echo $this->Html->css('bootstrap.min');
-
+		echo $this->Html->css('bootstrap-custom');
+		
 		echo $scripts_for_layout;
 	?>
 	<meta name="viewport" content="width=device-width, initial-scale=1">

@@ -21,8 +21,8 @@ class DatePickerHelper extends AppHelper {
 
 		<?= $this->Html->script('jquery-ui'); // Include jQuery UI library ?>
 
-	 	<?= $this->Html->div('', '', array('id' => 'datepicker' . $calendarId)); ?>
-
+	 	<?= "<div class='input text'><input type='date' id='datepicker" . $calendarId . "' class='form-control'></div>"; ?>
+		
 		<script type="text/javascript">
 		$(document).ready(function() {
 
