@@ -28,4 +28,4 @@
   mysql_db: name=test state=present
   
 - name: Create user for Kitab
-  mysql_user: name=kitab password=kitab priv=kitab.*:ALL/joomla.*:ALL state=present
+  mysql_user: name=kitab password=kitab priv=kitab.*:ALL/joomla.*:ALL/test.*:ALL state=present
