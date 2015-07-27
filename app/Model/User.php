@@ -162,6 +162,65 @@ class User extends AppModel
  	}
 
  	/**
+ 	 * Get all of the groups for a user
+ 	 * 
+ 	 * @param unknown_type $user
+ 	 * @param unknown_type $conditions
+ 	 * @param unknown_type $list If true, will display as list (good for select). Otherwise, array.
+ 	 * @param unknown_type $tradeable Should only tradeable groups be displayed?
+ 	 * @throws BadRequestException
+ 	 */
+
+	public function getGroupsForUser($user = null, $conditions = array(), $list = false, $tradeable = false) {
+		if (!isset($user)) {
+			throw new BadRequestException();
+		}
+
+		$conditions = array_merge(array('User.id' => $user), $conditions);
+
+		$groupList = $this->find('first', array(
+ 				'conditions' => $conditions,
+ 				'recursive' => '-1',
+ 				'fields' => array('User.id'),
+ 				'contain' => array(
+ 						'Usergroup' => array(
+								'id',
+								'title',
+								'Group.tradeable',
+ 						)
+ 				)
+ 		));
+
+		/* 
+		 * If $tradeable is true, then will exclude all groups that are not tradeable
+		 * 
+		 */
+		if ($tradeable == true) {
+			foreach($groupList['Usergroup'] as $group) {
+				if (isset($group['Group']['tradeable']) && $group['Group']['tradeable'] == 1) {
+					$newGroupList[] = $group;
+				}
+			}
+			$conditionsUsergroup = array('tradeable' => 1);
+			$groupList['Usergroup'] = $newGroupList;
+		}
+
+		/*
+		 * Will display a list instead of a complete array, with array ([id] => [value])
+		 * 
+		 */
+		if ($list == true) {
+ 			$newGroupList = array();
+ 			foreach ($groupList['Usergroup'] as $group) {
+				$newGroupList[$group['id']] = $group['title'];
+ 			}
+			$groupList = $newGroupList ;
+ 		}
+ 	
+ 		return $groupList;
+ 	}
+
+ 	/**
  	 * Function will query user's preferred communication method and return it
  	 * @param integer $toUser
  	 */
