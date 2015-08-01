@@ -63,13 +63,13 @@ $originatorErrorMessage = '';
 			<div class="required">
 				<label><?=__('Offered to')?></label>
 			</div>
-				<div class="checkbox">
+				<div id="usergroupSelected" class="checkbox">
 					<?php 
 				
 					// Allow user to send request to entire group of users
 					echo $this->Form->select('usergroup', $groupList, array(
 						'multiple' => 'checkbox',
-						'class' => 'usergroupSelected'
+						'class' => 'checkbox'
 					));?>
 				</div>
 				<?php
@@ -97,6 +97,10 @@ $originatorErrorMessage = '';
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
 	</div>
+
+<?= $this->Js->get("#usergroupSelected input")->event('change', 'addGroupUsers(event)', array ('stop' => false)); ?>
+	
+	
 
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -167,15 +171,44 @@ $originatorErrorMessage = '';
 	 *
 	 *
 	 */
-
-	    $('#TradeUsergroup32').change(function() {
-	        if($(this).is(":checked")) {
-	        	$("#tags").tagit("createTag", "294", "Tarek Loubani");
+		function addGroupUsers(event) {
+			var add = 0;
+	        if($("#usergroupSelected input:checkbox:checked").length > 0) {
+				$("input#TradeExcludeWorking").attr("disabled", true);
 	        }
-	        else {		        
-	        	$("#tags").tagit("removeTagByLabel", "294");
+	        else {
+	        	$("input#TradeExcludeWorking").attr("disabled", false);
 	        }
-	    });	    
+		    
+	        if($("input#" + event.target.id).is(":checked")) {
+		        var add = 1;
+	        }
+	        
+	        // Add shift for exclusion if the option to exclude shifts is selected.
+	        if ($("input#TradeExcludeWorking").is(':checked')) {
+		        var exclude = $("select#TradeShiftId option").val()
+	        }
+	        else { var exclude = undefined; }
 
+	        $.getJSON('<?= Router::url(array(
+					'controller' => 'users', 
+					'action' => 'listUsers.json'));
+			?>', {
+					full: "1",
+					group: event.target.id.slice(14),
+					excludeShift: exclude
+			}, 
+				function(data){
+					var len = data.length;
+					for (var i = 0; i< len; i++) {
+						if (add == 1) {
+				        	$("#tags").tagit("createTag", data[i].value, data[i].label);
+						} else {		        
+				        	$("#tags").tagit("removeTagByLabel", data[i].value);
+				        }
+					}
+				});
+				
+		    }
 		</script>
 	<?echo $this->Js->writeBuffer();?>

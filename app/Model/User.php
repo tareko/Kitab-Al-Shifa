@@ -288,7 +288,16 @@ class User extends AppModel
  			$isworking = false;
  			$isworking = $this->Shift->find('all', array(
  					'recursive' => 1,
- 					'contain' => array('ShiftsType'),
+ 					'contain' => array(
+ 							'ShiftsType' => array(
+ 									'fields' => array(
+ 											'id',
+ 											'shift_start',
+ 											'shift_end'))),
+ 					'fields' => array(
+ 							'id',
+ 							'shifts_type_id',
+ 							'date'),
  					'conditions' => array(
  							'Shift.user_id' => $user['User']['id'],
  							"OR" => array(
