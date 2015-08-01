@@ -201,6 +201,7 @@ class UsersController extends AppController {
 		$full = null;
 		$conditions = array();
 		$userList = array();
+		$excludeShift = null;
 
 		if (isset($this->request->query['full'])) {
  				$full = true;
@@ -213,8 +214,12 @@ class UsersController extends AppController {
 						'Profile.cb_displayname LIKE' => $this->request->query['term'].'%')
 			);
 		}
+		if (isset($this->request->query['excludeShift'])) {
+			$excludeShift = $this->request->query['excludeShift'];
+		}
+
 		if (isset($this->request->query['group'])) {
-			$users = $this->User->getActiveUsersForGroup($this->request->query['group'], $full, $conditions);
+			$users = $this->User->getActiveUsersForGroup($this->request->query['group'], $full, $conditions, false, $excludeShift);
 		}
 		else {
 			$users = $this->User->getList($conditions, $full);

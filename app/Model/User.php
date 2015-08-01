@@ -103,7 +103,7 @@ class User extends AppModel
 	}
 
 
- 	public function getActiveUsersForGroup($group = null, $full = false, $conditions = array(), $list = false) {
+ 	public function getActiveUsersForGroup($group = null, $full = false, $conditions = array(), $list = false, $excludeShift = false) {
  		if (!isset($group)) {
  			throw new BadRequestException();
  		}
@@ -113,10 +113,13 @@ class User extends AppModel
  		else {
  			$userFields = array('Profile.cb_displayname');
  		}
+ 		$containArray = array('Profile' => array(
+ 				'fields' => $userFields
+ 		));
+
  		$conditions = array_merge(array('Usergroup.id' => $group, 'User.block' => 0), $conditions);
 
-
-
+ 		// Get list of active users for the group
  		$userList = $this->find('all', array(
  				'conditions' => $conditions,
  				'recursive' => '0',
@@ -138,13 +141,15 @@ class User extends AppModel
 								'conditions'=> array('Usergroup.id = UsersUsergroup.group_id')
  						)
 				),
- 				'contain' => array('Profile' => array(
- 						'fields' => $userFields
- 						)
- 				)
+ 				'contain' => $containArray
 			)
  		);
 
+ 		// If shifts are present, then exclude users working shifts during these times
+ 		if (isset($excludeShift)) {
+ 			$userList = $this->excludeWorkingUsers($userList, $excludeShift);
+ 		}
+ 		
  		if ($list == true) {
  			$newUserList = array();
  			foreach ($userList as $user) {
@@ -191,21 +196,9 @@ class User extends AppModel
  				)
  		));
 
-		/* 
-		 * If $tradeable is true, then will exclude all groups that are not tradeable
-		 * 
-		 */
-		if ($tradeable == true) {
-			$newGroupList = array();
-			foreach($groupList['Usergroup'] as $group) {
-				if (isset($group['Group']['tradeable']) && $group['Group']['tradeable'] == 1) {
-					$newGroupList[] = $group;
-				}
-			}
-			$conditionsUsergroup = array('tradeable' => 1);
-			$groupList['Usergroup'] = $newGroupList;
-		}
-
+		// If $tradeable is true, then will exclude all groups that are not tradeable
+		if ($tradeable == true) { $groupList['Usergroup'] = $this->returnTradeable($groupList); }
+		
 		/*
 		 * Will display a list instead of a complete array, with array ([id] => [value])
 		 * 
@@ -242,6 +235,111 @@ class User extends AppModel
  		));
  		return $data['Profile']['cb_ohip'];
  	}
+ 	
+ 	/**
+ 	 * Return tradeable group from array
+ 	 */
+ 	
+ 	public function returnTradeable($groupList = array()) {
+ 		$newGroupList = array();
+ 		foreach($groupList['Usergroup'] as $group) {
+ 			if (isset($group['Group']['tradeable']) && $group['Group']['tradeable'] == 1) {
+ 				$newGroupList[] = $group;
+ 			}
+ 		}
+ 		$conditionsUsergroup = array('tradeable' => 1);
+ 		return $newGroupList;
+ 	}
+ 	
+ 	/**
+ 	 * Exclude users working during the specified shifts
+ 	 */
+ 	
+ 	public function excludeWorkingUsers ($userList = array(), $excludeShift = false, $excludeTime = "08:00:00") {
 
+ 		//Figure out which times need excluding
+		$excludeDetail = $this->Shift->find('all', array(
+				'conditions' => array('Shift.id' => $excludeShift),
+				'recursive' => 0,
+				'fields' => array(
+						'date',
+						'shifts_type_id',
+						'user_id'),
+				'contain' => array(
+						'ShiftsType' => array(
+								'fields' => array('ShiftsType.shift_start', 'ShiftsType.shift_end'),
+						))));
+
+		//Set times for the shift type start and exclude time
+		$excludeTime = new DateTime($excludeTime);
+		$excludeTime = "PT" . $excludeTime->format('H') . "H";
+		
+		$excludeStart = new DateTime($excludeDetail[0]['Shift']['date'] . " " . $excludeDetail[0]['ShiftsType']['shift_start']);
+		$excludeStart->sub(new DateInterval($excludeTime)); 
+
+		$excludeEnd = new DateTime($excludeDetail[0]['Shift']['date'] . " " . $excludeDetail[0]['ShiftsType']['shift_end']);
+		$excludeEnd->add(new DateInterval($excludeTime));
+		
+
+		// Get shifts for $userList
+		
+		$newUserList = array();
+ 		foreach ($userList as $user) {
+ 			$isworking = false;
+ 			$isworking = $this->Shift->find('all', array(
+ 					'recursive' => 1,
+ 					'contain' => array('ShiftsType'),
+ 					'conditions' => array(
+ 							'Shift.user_id' => $user['User']['id'],
+ 							"OR" => array(
+	 							array(
+	 									'Shift.date >=' => $excludeStart->format('Y-m-d'),
+	 									'Shift.date <=' => $excludeEnd->format('Y-m-d'),
+	 									"OR" => array(
+	 											'ShiftsType.shift_start >' => $excludeStart->format('H:i:s'),
+	 											'ShiftsType.shift_end >' => $excludeStart->format('H:i:s')
+	 									)),
+	 							array(
+	 									'Shift.date >=' => $excludeStart->format('Y-m-d'),
+	 									'Shift.date <=' => $excludeEnd->format('Y-m-d'),
+	 									"OR" => array(
+	 											'ShiftsType.shift_start <' => $excludeEnd->format('H:i:s'),
+	 											'ShiftsType.shift_end <' => $excludeEnd->format('H:i:s')
+	 									)),
+ 							))));
+
+ 			
+	 			// Check if shift is truly within the limits
+	 			if (!empty($isworking)) {
+	 				$working = false;
+	 				foreach ($isworking as $isworkingShift) {
+		 				// Declare proper variable and set as proper date time for start
+		 				
+		 				$start = new DateTime($isworkingShift['Shift']['date'] . " " . $isworkingShift['ShiftsType']['shift_start']);
+		 				
+		 				// Calculate proper end date and time
+		 				$end = new DateTime($isworkingShift['Shift']['date'] . " " . $isworkingShift['ShiftsType']['shift_end']);
+		 				
+		 				if ($isworkingShift['ShiftsType']['shift_end'] < $isworkingShift['ShiftsType']['shift_start']) {
+		 					$end->add(new DateInterval('P1D'));
+		 				}
+		 				
+		 				// Assess more carefully whether shift falls in exclusion area
+		 				if (($excludeEnd >= $start && $start >= $excludeStart) or ($excludeEnd >= $end && $end >= $excludeStart)) {
+		 					$working = true;
+		 				}
+	 				}
+	 				if ($working == false) { $newUserList[] = $user; }
+	 			} 
+ 				if (empty($isworking)) {
+ 					$newUserList[] = $user;
+ 				}
+ 		}
+ 		
+ 		// Check userList against each shift
+
+ 		// Return new userList
+ 		return $newUserList ;
+ 	}
 }
 ?>

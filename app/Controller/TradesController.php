@@ -1,5 +1,5 @@
 <?php
-App::uses('AppController', 'Controller', 'Sanitize', 'Utility');
+App::uses('AppController', 'Controller', 'Sanitize', 'Utility', 'Router');
 
 /**
  * Trades Controller
