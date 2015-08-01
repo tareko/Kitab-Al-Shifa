@@ -63,15 +63,26 @@ $originatorErrorMessage = '';
 			<div class="required">
 				<label><?=__('Offered to')?></label>
 			</div>
-				<div id="usergroupSelected" class="checkbox">
-					<?php 
-				
-					// Allow user to send request to entire group of users
-					echo $this->Form->select('usergroup', $groupList, array(
-						'multiple' => 'checkbox',
-						'class' => 'checkbox'
-					));?>
-				</div>
+			<div id="usergroupSelected" class="checkbox">
+				<?php 
+			
+				// Allow user to send request to entire group of users
+				echo $this->Form->select('usergroup', $groupList, array(
+					'multiple' => 'checkbox',
+					'class' => 'checkbox'
+				));?>
+			</div>
+		</div>
+	</div>
+<div class="col-med-10">
+	<div class="form-horizontal">
+		<div class="checkbox">
+			<label>
+				<?php echo $this->Form->checkbox('excludeWorking', array('checked' => true));?>
+				Exclude doctors working for 8 hours before or after this shift.
+			</label>
+		</div>
+		<div class="form-group" <?= $recipientError?>>		
 				<?php
 				echo $this->Html->div('TradesDetail.user_id',
 					$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail]', 'user_id'),
@@ -79,21 +90,17 @@ $originatorErrorMessage = '';
 				?>
 				<?=$recipientErrorMessage?>
 		</div></div>
-		<div class="form-group">
-			<div class="checkbox">
-				<?php echo $this->Form->checkbox('excludeWorking', array('checked' => true));?>
-				Exclude doctors working for 8 hours before or after this shift.
-			</div>
-		</div>
 	</div>
 </div>
 <br/>
+<div class="col-med-6">
 	<div class="form-group">
 		<?php echo $this->Form->textarea('messageBody', array(
 			'class' => 'form-control',
-			'rows' => '3',
+			'rows' => '5',
 			'placeholder' => 'Enter a message explaining why you\'d like to trade this shift'));?>
 	</div>	
+</div>
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
 	</div>
