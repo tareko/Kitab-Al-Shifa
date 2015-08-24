@@ -14,7 +14,7 @@ class TradesController extends AppController {
  * @var array
  */
 	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time', 'TradeStatus', 'Text');
-	public $components = array('RequestHandler', 'Search.Prg');
+	public $components = array('RequestHandler', 'Search.Prg', 'Flash');
 	public $scaffold = 'admin';
 	var $paginate = array(
 			'recursive' => '2',
@@ -107,34 +107,25 @@ class TradesController extends AppController {
  * @return void
  */
 	public function index() {
-		$recipientNotPresent = false;
-		$originatorNotPresent = false;
-		$checkDuplicate = false;
-		if ($this->request->isPost() && $this->request->data) {
-			if (isset($this->request->data['Trade']['shift_id']) && isset($this->request->data['Trade']['user_id'])) {
-				$checkDuplicate = $this->checkDuplicate($this->request->data['Trade']['shift_id'], $this->request->data['Trade']['user_id']);
-			}
-			if (!isset($this->request->data['TradesDetail'])) {
-				$recipientNotPresent = true;
-			}
-			if (isset($this->request->data['TradesDetail']) && !$checkDuplicate && $this->Trade->saveAssociated($this->request->data, array(
-				'validate' => 'first'))) {
-					$this->Session->setFlash(__('The trade has been saved'));
-				return $this->redirect(array('action' => 'index'));
+		debug($this->request->data);
+		
+		if ($this->request->isPost() && !empty($this->request->data)) {
+			(!empty($this->request->data['TradesDetail']) ? $this->Trade->TradesDetail->set($this->request->data['TradesDetail']['0']): false);
+			if ($this->Trade->TradesDetail->validates()) {
+			if ($this->Trade->saveAll($this->request->data)) {
+						$this->Flash->success(__('The trade has been saved'));
+				} else {
+					$this->Flash->alert(__('The trade could not be saved. Please fix the errors below and try again.'));
+				}
 			} else {
-				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
+				$this->Trade->set($this->request->data);
+				$this->Trade->validates();
+				$this->Flash->alert(__('The trade could not be saved. Please fix the errors below and try again.'));
 			}
 		}
-		if (isset($this->request->query['id'])) {
-			$this->set('usersId', $this->request->query['id']);
-		}
-		else {
-			$this->set('usersId', $this->_usersId());
-		}
+
+		$this->set('usersId', (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId()));
 		$this->set('groupList', $this->User->getGroupsForUser($this->_usersId(), array(), true, true));
-		$this->set('recipientNotPresent', $recipientNotPresent);
-		$this->set('originatorNotPresent', $originatorNotPresent);
-		$this->set('checkDuplicate', $checkDuplicate);
 		$this->render();
 	}
 
@@ -210,7 +201,7 @@ class TradesController extends AppController {
 						CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
 					}
 					else {
-						return $this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
+						return $this->Flash->alert(__('The trade could not be saved. Please, try again.'));
 					}
 
 				}
@@ -289,7 +280,7 @@ class TradesController extends AppController {
 	public function accept() {
 		$return = $this->changeStatus($this->request, 2);
 		if ($return == true) {
-			return $this->Session->setFlash(__('You have successfully accepted the trade.'));
+			return $this->Flash->success(__('You have successfully accepted the trade.'));
 		}
 		else {
 			return $return;
@@ -300,7 +291,7 @@ class TradesController extends AppController {
 	public function reject() {
 		$return = $this->changeStatus($this->request, 3);
 		if ($return == true) {
-			return $this->Session->setFlash(__('You have rejected this trade.'));
+			return $this->Flash->warning(__('You have rejected this trade.'));
 		}
 		else {
 			return $return;
@@ -374,32 +365,6 @@ class TradesController extends AppController {
 		else {
 			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Wrong token');
 			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
-		}
-	}
-
-	/*
-	 * Check duplicate trade and return true if duplicate found
-	 *
-	 */
-	public function checkDuplicate($shiftId, $userId) {
-		$trade = $this->Trade->find('first', array(
-					'fields' => array(
-						'Trade.user_id',
-						'Trade.shift_id',
-						'Trade.user_status',
-								'Trade.status'),
-							'conditions' => array(
-								'Trade.user_status <' => 2,
-								'Trade.status !=' => 2,
-								'Trade.user_id' => $userId,
-								'Trade.shift_id' => $shiftId),
-		));
-
-		if ($trade) {
-			return true;
-		}
-		else {
-			return false;
 		}
 	}
 }

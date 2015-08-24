@@ -3,25 +3,19 @@
 <?= $this->Form->create('Trade', array('class' => 'form-horizontal'));?>
 
 <?php 
-$recipientError = '';
-$recipientErrorMessage = '';
-$originatorError = '';
-$originatorErrorMessage = '';
-
-	if ($recipientNotPresent) {
-		$recipientError = 'error';
-		$recipientErrorMessage = '<div class="error-message">Please enter at least one recipient</div>'; 
-	}
-
-	if ($originatorNotPresent) {
-		$originatorError = 'error';
-		$originatorErrorMessage = '<div class="error-message">Who is offering this trade?</div>';
-	}
-	
-	if ($checkDuplicate) {
-		echo '<div class="error">This shift is already in the process of being traded! Please cancel the pre-existing trade before trying to trade this shift again</div>';
-	}
+$errors = '';
+foreach($this->validationErrors as $assoc) {
+    foreach ($assoc as $k => $v) {
+        $errors .= $this->Html->tag('li', $v[0]);
+    }
+}
 ?>
+<?php if (!empty($errors)) {?>
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <?echo $this->Html->tag('ul', $errors);?>
+    </div>
+<?php }?>
 
 <div class="col-med-10">
 	<div class="form-inline">
@@ -32,7 +26,7 @@ $originatorErrorMessage = '';
 					'placeholder' => "me",
 					'label' => __('From'),
 					'class' => 'form-control',
-					'div' => 'TradeFromUserIdDiv required' . $originatorError));
+					'div' => 'TradeFromUserIdDiv required'));
 	
 			echo $this->Form->input('Trade.user_id', array(
 					'type' => 'text', 
@@ -51,7 +45,8 @@ $originatorErrorMessage = '';
 		<div class="form-group">
 			<?php echo $this->Form->input('shift_id', array(
 					'label' => __('Time of shift'),
-					'class' => 'form-control'));
+					'class' => 'form-control',
+					'error' => false));
 			?>
 		</div>
 	</div>
@@ -59,7 +54,7 @@ $originatorErrorMessage = '';
 <br />
 <div class="col-med-10">
 	<div class="form-inline">
-		<div class="form-group <?= $recipientError?>">
+		<div class="form-group">
 			<div class="required">
 				<label><?=__('Offered to')?></label>
 			</div>
@@ -82,24 +77,49 @@ $originatorErrorMessage = '';
 				Exclude doctors working for 8 hours before or after this shift.
 			</label>
 		</div>
-		<div class="form-group" <?= $recipientError?>>		
+		<div class="form-group">
 				<?php
 				echo $this->Html->div('TradesDetail.user_id',
 					$this->PhysicianPicker->makePhysicianPicker(null, 'data[TradesDetail]', 'user_id'),
 						array('id' => 'pick-doctor'));
 				?>
-				<?=$recipientErrorMessage?>
 		</div></div>
 	</div>
 </div>
 <br/>
 <div class="col-med-6">
 	<div class="form-group">
-		<?php echo $this->Form->textarea('messageBody', array(
+		<?php echo $this->Form->textarea('message', array(
 			'class' => 'form-control',
 			'rows' => '5',
 			'placeholder' => 'Enter a message explaining why you\'d like to trade this shift'));?>
 	</div>	
+	<div class="form-group">
+		<div class="checkbox">
+			<label>
+				<?php echo $this->Form->checkbox('confirmed', array('checked' => false));?>
+				Don't send confirmation messages - all parties have already agreed to this trade.
+			</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		Trade this shift for: <div class="btn-group" data-toggle="buttons">
+			<?php
+				echo $this->Form->radio('TradeConsideration', array (
+						'0' => 'Cash',
+						'1' => 'Trade',
+						'2' => 'Future consideration'),
+						array (
+								'name' => 'data[Trade][consideration]',
+								'class' => 'btn btn-primary',
+								'value' => 1, 
+								'legend' => false,
+								'hiddenField' => false
+						));
+				?>
+		</div>
+	</div>
 </div>
 	<div class="block">
 		<?php echo $this->Form->end(__('Submit'));?>
@@ -111,6 +131,11 @@ $originatorErrorMessage = '';
 
 	<script type="text/javascript">
 	$(document).ready(function(){
+
+
+		//Add active class to default trade consideration
+		$( "label[for=TradeTradeConsideration1]" ).addClass( "active" );
+		
 		//Prevent enter from submitting form
 		 $(window).keydown(function(event){
 			    if(event.keyCode == 13) {

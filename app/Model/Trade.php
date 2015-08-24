@@ -47,7 +47,7 @@ class Trade extends AppModel {
 		'user_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				'message' => 'Please select a proper shift (numeric)',
+				'message' => 'Please select a proper user (numeric)',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
@@ -55,7 +55,7 @@ class Trade extends AppModel {
 			),
 			'notBlank' => array(
 				'rule' => array('notBlank'),
-				//'message' => 'Please select a proper shift (notBlank)',
+				'message' => 'Please select a proper user (notBlank)',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
@@ -65,7 +65,7 @@ class Trade extends AppModel {
 		'shift_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				'message' => 'Please select a proper shift (numeric)',
+				'message' => 'Please select a proper shift',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
@@ -73,11 +73,19 @@ class Trade extends AppModel {
 			),
 			'notBlank' => array(
 				'rule' => array('notBlank'),
-				'message' => 'Please select a proper shift (notBlank)',
+				'message' => 'Please select a proper shift',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+			'checkDuplicate' => array(
+				'rule' => 'checkDuplicate',
+				'message' => 'This shift is already in the process of being traded! Please cancel the pre-existing trade before trying to trade this shift again'
+			),
+			'checkShiftExists' => array(
+				'rule' => 'checkShiftExists',
+				'message' => 'This shift does not exist'
 			),
 		),
 	);
@@ -147,5 +155,33 @@ class Trade extends AppModel {
 						array('status' => 0),
 						$conditions),
 		));
+	}
+
+	/*
+	 * Check duplicate trade and return true if duplicate found
+	*
+	*/
+	public function checkDuplicate($check) {
+		$trade = $this->find('first', array(
+				'fields' => array(
+						'Trade.user_id',
+						'Trade.shift_id',
+						'Trade.user_status',
+						'Trade.status'),
+				'conditions' => array(
+						'Trade.user_status <' => 2,
+						'Trade.status !=' => 2,
+						'Trade.user_id' => $this->data['Trade']['user_id'],
+						'Trade.shift_id' => $this->data['Trade' ]['shift_id']),
+		));
+		return ($trade ? false : true);
+	}
+	
+	/*
+	 * Check if a shift exists in shift model
+	 * 
+	 */
+	public function checkShiftExists(){
+		return $this->Shift->exists($this->data[$this->alias]['shift_id']);
 	}
 }
