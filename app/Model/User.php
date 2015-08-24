@@ -146,7 +146,7 @@ class User extends AppModel
  		);
 
  		// If shifts are present, then exclude users working shifts during these times
- 		if (isset($excludeShift)) {
+ 		if ($excludeShift == true) {
  			$userList = $this->excludeWorkingUsers($userList, $excludeShift);
  		}
  		
@@ -256,6 +256,9 @@ class User extends AppModel
  	 */
  	
  	public function excludeWorkingUsers ($userList = array(), $excludeShift = false, $excludeTime = "08:00:00") {
+		if ($excludeShift == false) {
+			throw new BadRequestException();
+		}
 
  		//Figure out which times need excluding
 		$excludeDetail = $this->Shift->find('all', array(
@@ -279,7 +282,11 @@ class User extends AppModel
 
 		$excludeEnd = new DateTime($excludeDetail[0]['Shift']['date'] . " " . $excludeDetail[0]['ShiftsType']['shift_end']);
 		$excludeEnd->add(new DateInterval($excludeTime));
-		
+
+		if ($excludeDetail[0]['ShiftsType']['shift_end'] < $excludeDetail[0]['ShiftsType']['shift_start']) {
+			$excludeEnd->add(new DateInterval('P1D'));
+		}
+
 
 		// Get shifts for $userList
 		
@@ -332,7 +339,7 @@ class User extends AppModel
 		 				if ($isworkingShift['ShiftsType']['shift_end'] < $isworkingShift['ShiftsType']['shift_start']) {
 		 					$end->add(new DateInterval('P1D'));
 		 				}
-		 				
+		 					
 		 				// Assess more carefully whether shift falls in exclusion area
 		 				if (($excludeEnd >= $start && $start >= $excludeStart) or ($excludeEnd >= $end && $end >= $excludeStart)) {
 		 					$working = true;
