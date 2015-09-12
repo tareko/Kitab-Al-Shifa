@@ -61,6 +61,11 @@ class Trade extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
+		'checkConfirmAndMultiple' => array(
+				'rule' => array('checkConfirmAndMultiple'),
+				'message' => 'You cannot bypass confirmation when there are multiple recipients',
+				'required' => true,
+			)
 		),
 		'shift_id' => array(
 			'numeric' => array(
@@ -183,5 +188,17 @@ class Trade extends AppModel {
 	 */
 	public function checkShiftExists(){
 		return $this->Shift->exists($this->data[$this->alias]['shift_id']);
+	}
+	
+	/* 
+	 * Don't allow "no confirmation messages" if multiple recipients
+	 */
+	
+	public function checkConfirmAndMultiple() {
+		if ($this->data['Trade']['confirmed'] == 1 && count($this->data['TradesDetail']) > 1) {
+			$multiple = true;
+		}
+		else { $multiple = false; }
+		return ($multiple ? false : true);
 	}
 }
