@@ -127,26 +127,6 @@ class TradesController extends AppController {
 		$this->render();
 	}
 
-	function compare() {
-		$params = array();
-		$this->loadModel('Calendar');
-		if ($this->request->is('post')) {
-			if (isset($this->request->data['User']) && isset($this->request->data['Calendar'])) {
-				$i = 0;
-				$masterSet['calendar'] = $this->Calendar->findById($this->request->data['Calendar']['id']);
-					foreach ($this->request->data['User'] as $users) {
-						$params = $params + array('id[' .$i. ']' => $users['id']);
-						$i++;
-					}
-					$params = $params + array('calendar' => $this->request->data['Calendar']['id']);
-					$redirect = array('controller' => 'shifts', 'action' => 'calendarView') + $params;
-				return $this->redirect($redirect);
-			}
-		}
-		$this->set('calendars', $this->Calendar->find('list'));
-		$this->render();
-	}
-
 	/**
 	 *
 	 * Deal with unprocessed shift trade requests.
