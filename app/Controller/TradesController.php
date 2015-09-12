@@ -134,69 +134,13 @@ class TradesController extends AppController {
 	 *
 	 */
 	public function startUnprocessed() {
-		App::import('Lib', 'TradeRequest');
-		$this->_TradeRequest = new TradeRequest();
-
-		$unprocessedTrades = $this->Trade->getUnprocessedTrades();
-
-		//Find unprocessed trade details within the trade
-		foreach ($unprocessedTrades as $trade) {
-			//Has the trade been approved by the originator?
-			if ($trade['Trade']['user_status'] < 1) {
-				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
-				//Get communication method preference for receiving user
-				$method = $this->User->getCommunicationMethod($trade['User']['id']);
-
-				$sendOriginator = $this->_TradeRequest->sendOriginator($trade['Trade']['id'], $trade['User'], $trade['Shift'], $method);
-				if ($sendOriginator['return'] == true) {
-					// Assuming success, update Status of TradesDetail to 1
-					$this->Trade->read(null, $trade['Trade']['id']);
-					$this->Trade->set('user_status', 1);
-					$this->Trade->set('token', $sendOriginator['token']);
-					$this->Trade->save();
-
-					// Write log indicating trade detail was done
-					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
-				}
-				else {
-					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
-				}
-			}
-			if ($trade['Trade']['user_status'] == 2) {
-				foreach ($trade['TradesDetail'] as $tradesDetail) {
-					//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
-					//Get communication method preference for receiving user
-					$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
-					$sendDetails = $this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method);
-					if ($sendDetails['return'] == true) {
-						// Assuming success, update Status of TradesDetail to 1
-						$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
-						$this->Trade->TradesDetail->set('status', 1);
-						$this->Trade->TradesDetail->set('token', $sendDetails['token']);
-						$this->Trade->TradesDetail->save();
-
-						// Write log indicating trade detail was done
-						CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
-					}
-					else {
-						return $this->Flash->alert(__('The trade could not be saved. Please, try again.'));
-					}
-
-				}
-
-				// Assuming success, update Status of Trade to 1
-				$this->Trade->read(null, $trade['Trade']['id']);
-				$this->Trade->set('status', 1);
-				if ($this->Trade->save()) {
-					// Write log indicating trade was done
-					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
-				} else {
-					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Failed to process trade');
-				}
-			}
+		$success = $this->Trade->processTrades();
+		if ($success == true) {
+			$this->Flash->success(__('Pending trades successfully processed'));
 		}
-		$this->set('success', 1);
-		$this->render('/Trades/start_unprocessed');
+		else {
+			$this->Flash->alert(__('Pending trades not successfully processed.'));
+		}
 	}
 
 	/**
