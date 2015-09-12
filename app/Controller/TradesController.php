@@ -107,8 +107,6 @@ class TradesController extends AppController {
  * @return void
  */
 	public function index() {
-		debug($this->request->data);
-		
 		if ($this->request->isPost() && !empty($this->request->data)) {
 			(!empty($this->request->data['TradesDetail']) ? $this->Trade->TradesDetail->set($this->request->data['TradesDetail']['0']): false);
 			if ($this->Trade->TradesDetail->validates()) {
