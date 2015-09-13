@@ -5,7 +5,7 @@ App::uses('AppController', 'Controller');
 
 class ShiftsController extends AppController {
 	var $name = 'Shifts';
-	var $components = array('RequestHandler', 'Search.Prg');
+	var $components = array('RequestHandler', 'Search.Prg', 'Flash');
 	var $scaffold = 'admin';
 	var $helpers = array('Js', 'Calendar', 'Cache', 'iCal', 'PhysicianPicker');
 	//	public $cacheAction = "1 hour";
@@ -90,10 +90,10 @@ class ShiftsController extends AppController {
 			}
 			if ($saved == 1) {
 				if ($this->Shift->saveAll($data['Shift'])) {
-					$this->Session->setFlash('Shift saved');
+					$this->Flash->success(__('Shift saved'));
 					return;
 				}
-				$this->Session->setFlash(__('Shift was not saved'));
+				$this->Flash->alert(__('Shift was not saved'));
 				return;
  			}
 		}
@@ -235,7 +235,7 @@ class ShiftsController extends AppController {
 			$physicians = $this->User->getList(null, true, true);
 		}
 
-		$this->Session->setFlash(__('Please select a physician'));
+		$this->Flash->warning(__('Please select a physician'));
 		$this->set('physicianAction', $physicianAction);
 		$this->set('physicians', $physicians);
 		$this->render();
@@ -250,7 +250,7 @@ class ShiftsController extends AppController {
 		if (isset($this->request->params['named']['id'])) {
 			$this->set('passed_id', $this->request->params['named']['id']);
 		}
-		$this->Session->setFlash(__('Please select a calendar'));
+		$this->Flash->warning(__('Please select a calendar'));
 		$this->set('calendars', $this->Calendar->getList());
 	}
 
@@ -263,10 +263,10 @@ class ShiftsController extends AppController {
 			throw new NotFoundException(__('Invalid Shift'));
 		}
 		if ($this->Shift->delete()) {
-			$this->Session->setFlash(__('Shift deleted'));
+			$this->Flash->warning(__('Shift deleted'));
 			$this->redirect(array('action'=>'index'));
 		}
-		$this->Session->setFlash(__('Shift was not deleted'));
+		$this->Flash->alert(__('Shift was not deleted'));
 		$this->redirect(array('action' => 'index'));
 	}
 
@@ -277,10 +277,10 @@ class ShiftsController extends AppController {
 		}
 		if ($this->request->isPost() || $this->request->isPut()) {
 			if ($this->Shift->save($this->request->data)) {
-				$this->Session->setFlash(__('The shift has been saved'));
+				$this->Flash->success(__('The shift has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The shift could not be saved. Please, try again.'));
+				$this->Flash->alert(__('The shift could not be saved. Please, try again.'));
 			}
 		} else {
 			$this->set('physicians', $this->Shift->User->getList(NULL, NULL, true));
@@ -295,6 +295,7 @@ class ShiftsController extends AppController {
 		$this->set('physicians', $this->User->getList(null, true, true));
 		$this->set('calendars', $this->Calendar->find('list', array(
 				'conditions' => array(
+						'published' => 1,
 						'end_date >=' => date('Y-m-d', strtotime("-2 months"))))));
 
 		if (isset($this->request->data['Shift']['list'])) {
@@ -331,6 +332,9 @@ class ShiftsController extends AppController {
 				}
 				elseif ($this->request->data['Shift']['output'] == 'ics') {
 					return $this->redirect(array('controller' => 'shifts', 'action' => 'icsView') + $this->request->params['named'] + $params);
+				}
+				elseif ($this->request->data['Shift']['output'] == 'csv') {
+					return $this->redirect(array('controller' => 'shifts', 'action' => 'calendarView', 'ext' => 'csv') + $this->request->params['named'] + $params);
 				}
 			}
 		}
@@ -372,5 +376,49 @@ class ShiftsController extends AppController {
 				'conditions' => $conditions)));
 		$this->set('_serialize', array('calendars'));
 	}	
+	
+	/* 
+	 * Import shifts from CSV
+	 */
+	
+	public function import() {
+		/* Upload function
+		 *
+		*/
+		$status = array();
+		if ($this->request->isPost()) {
+			$failure = false;
+			foreach ($this->data['Shift']['upload'] as $upload) {
+				$data = $this->import($upload['tmp_name']);
+				if ($this->saveAll($data, array('deep' => true))) {
+					$status[] = $upload['name'] ." saved successfully";
+				}
+				else {
+					debug($this->validationErrors);
+					debug($data);
+					$status[] = $upload['name'] ." failed to save";
+					$failure = true;
+				}
+			}
+			if ($failure == true) {
+				$this->set(compact('status'));
+				$this->Flash->alert('I\'m sorry. One or more files did not successfully import.');
+				return $this->render();
+			}
+			else {
+				$this->set(compact('status'));
+				$this->Flash->success('Import successful.');
+				return $this->render();
+			}
+		}
+
+		$this->loadModel('Calendar');
+		$this->set('calendars', $this->Calendar->find('list', array(
+				'conditions' => array(
+						'published' => 0,
+						'end_date >=' => date('Y-m-d', strtotime("-2 months"))))));
+		$this->set(compact('status'));
+		$this->render();
+	}
 }
 ?>
