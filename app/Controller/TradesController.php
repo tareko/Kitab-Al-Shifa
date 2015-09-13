@@ -110,7 +110,8 @@ class TradesController extends AppController {
 		if ($this->request->isPost() && !empty($this->request->data)) {
 			(!empty($this->request->data['TradesDetail']) ? $this->Trade->TradesDetail->set($this->request->data['TradesDetail']['0']): false);
 			if ($this->Trade->TradesDetail->validates()) {
-			if ($this->Trade->saveAll($this->request->data)) {
+				$this->request->data['Trade']['submitted_by'] = $this->_usersId();
+				if ($this->Trade->saveAll($this->request->data)) {
 						$this->Flash->success(__('The trade has been saved'));
 				} else {
 					$this->Flash->alert(__('The trade could not be saved. Please fix the errors below and try again.'));
