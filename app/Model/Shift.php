@@ -286,6 +286,8 @@ class Shift extends AppModel {
 		// Get start dates for file
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
+		App::uses('User', 'Model');
+		$this->User = new User();
 		$calendar = $this->Calendar->getStartEndDates($calendar);
 
 		// Get all shift types for calendar
@@ -324,9 +326,14 @@ class Shift extends AppModel {
 				// If blank, continue
 				if (empty($data[$c])) { continue; }
 
-				// Look up each entry if not blank
+				// Look up user ID if entry not blank
+				$userId = $this->User->lookupUserId($data[$c], 'cb_displayname');
+				
+				// If entry is not found, skip to next entry and leave blank.
+				if ($userId == false) { continue ; }
+
 				$output[] = array(
-						'user_id' => $this->User->lookupUserId($data[$c], 'cb_displayname'),
+						'user_id' => $userId,
 						'date' => $date,
 						'shifts_type_id' => $shiftsType[$c-1]['ShiftsType']['id']
 						);
