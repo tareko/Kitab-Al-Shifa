@@ -5,13 +5,13 @@
  * UserUsergroupMapFixture
  *
  */
-class UserUsergroupMapJ17Fixture extends CakeTestFixture {
+class UserUsergroupMapJem5Fixture extends CakeTestFixture {
 /**
  * Table name
  *
  * @var string
  */
-	public $table = 'j17_user_usergroup_map';
+	public $table = 'jem5_user_usergroup_map';
 /**
  * Import
  *

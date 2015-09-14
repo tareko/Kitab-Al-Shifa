@@ -11,7 +11,7 @@ class UserTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.user_usergroup_map_j17', 'app.usergroup_j17');
+	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.trade', 'app.trades_detail', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.user_usergroup_map_jem5', 'app.usergroup_jem5');
 
 /**
  * setUp method
@@ -115,8 +115,21 @@ class UserTestCase extends CakeTestCase {
 		$expected = array('1' => 'Bynum');
 		$this->assertEquals($expected, $result);
 	}
-	
 
+	// Test lookupUserId function
+	public function testLookupUserId() {
+		$result = $this->User->lookupUserId('Bynum', 'lastname');
+		$expected = '1';
+		$this->assertEquals($expected, $result);
+	}
+	
+	// Test lookupUserId function with not found lastname
+	public function testLookupUserIdNoMatch() {
+		$result = $this->User->lookupUserId('Bynum22', 'lastname');
+		$expected = false;
+		$this->assertEquals($expected, $result);
+	}
+	
 /**
  * testGetCommunicationMethod method
  *

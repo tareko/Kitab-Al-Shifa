@@ -12,7 +12,7 @@ class CalendarTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.calendar', 'app.group');
+	public $fixtures = array('app.calendar', 'app.group', 'app.usergroup', 'app.user', 'app.shiftsType', 'app.trade', 'app.shift');
 
 /**
  * setUp method
@@ -23,6 +23,44 @@ class CalendarTestCase extends CakeTestCase {
 		parent::setUp();
 
 		$this->Calendar = ClassRegistry::init('Calendar');
+	}
+
+	/*
+	 * Test last-updated call
+	 */
+	public function testLastUpdated () {
+		$result = $this->Calendar->lastUpdated('1');
+		debug($result);
+		$expected = array(
+				'start_date' => '2011-12-01',
+				'end_date' => '2011-12-22'
+		);
+		
+		//TODO: EXPECTED FAIL DUE TO nested model call.
+		$this->assertEquals($expected, $result);
+	}
+	
+	/*
+	 * Test start and end dates call
+	 */
+	public function testGetStartEndDates() {
+		$result = $this->Calendar->getStartEndDates('1');
+		$expected = array(
+			'start_date' => '2011-12-01',
+			'end_date' => '2011-12-22'
+		);
+		$this->assertEquals($expected, $result);
+	}
+	
+	/*
+	 * Test get list
+	 */
+	public function testGetList() {
+		$result = $this->Calendar->getList();
+		$expected = array(
+			'2012-06-01' => 'June 2012'
+		);
+		$this->assertEquals($expected, $result[10]);
 	}
 
 /**

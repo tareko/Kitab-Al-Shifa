@@ -42,6 +42,14 @@ class ShiftTestCase extends CakeTestCase {
 		//Ensure the data does not validate
 		$this->assertFalse($this->Shift->validates());
 	}
+	
+	// Test import function
+	public function testImport() {
+		$result = $this->Shift->import(APP . 'Test' . DS . 'Files' . DS . 'shift-import.csv', 1);
+		debug ($result);
+		die;
+	}
+	
 /**
  * tearDown method
  *
