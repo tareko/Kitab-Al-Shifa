@@ -182,6 +182,19 @@ class User extends AppModel
  		));
  		return $data['Profile']['cb_ohip'];
  	}
+ 	
+ 	/*
+ 	 * Look up User_id of user when given the a field from profile
+ 	 */
+ 	
+ 	public function lookupUserId ($query, $field) {
+ 		$data = $this->find('first', array(
+ 				'recursive' => 0,
+ 				'fields' => array('id'),
+ 				'conditions' => array($field => $query)
+ 		));
+ 		return $data['User']['id'];
+ 	}
 
 }
 ?>
