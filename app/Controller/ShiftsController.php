@@ -382,20 +382,30 @@ class ShiftsController extends AppController {
 	 */
 	
 	public function import() {
-		/* Upload function
-		 *
-		*/
 		$status = array();
 		if ($this->request->isPost()) {
 			$failure = false;
+			
+			// If asked to delete previous data from date, go ahead and delete
+			if ($this->data['Shift']['delete'] == 1) {
+				// Retrieve calendar dates
+				$this->loadModel('Calendar');
+				$calendar = $this->Calendar->getStartEndDates($this->data['Shift']['calendar']);
+				
+				// Delete shifts
+				$this->Shift->deleteAll(array(
+						'date >=' => $calendar['start_date'],
+						'date <=' => $calendar['end_date']
+						));
+			}
+			// Process data
 			foreach ($this->data['Shift']['upload'] as $upload) {
-				$data = $this->import($upload['tmp_name']);
-				if ($this->saveAll($data, array('deep' => true))) {
+				$data = $this->Shift->import($upload['tmp_name'], $this->data['Shift']['calendar']);
+				if ($this->Shift->saveAll($data)) {
 					$status[] = $upload['name'] ." saved successfully";
 				}
 				else {
-					debug($this->validationErrors);
-					debug($data);
+					debug($this->Shift->validationErrors);
 					$status[] = $upload['name'] ." failed to save";
 					$failure = true;
 				}
@@ -403,12 +413,10 @@ class ShiftsController extends AppController {
 			if ($failure == true) {
 				$this->set(compact('status'));
 				$this->Flash->alert('I\'m sorry. One or more files did not successfully import.');
-				return $this->render();
 			}
 			else {
 				$this->set(compact('status'));
 				$this->Flash->success('Import successful.');
-				return $this->render();
 			}
 		}
 

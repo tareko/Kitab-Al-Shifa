@@ -277,4 +277,65 @@ class Shift extends AppModel {
 		}
 		return $this->isUnique($fields, false);
 	}
+	
+	/**
+	 * Import function to import shifts into database
+	 */
+	function import ($filename, $calendar, $discard = 3) {
+		
+		// Get start dates for file
+		App::uses('Calendar', 'Model');
+		$this->Calendar = new Calendar();
+		$calendar = $this->Calendar->getStartEndDates($calendar);
+
+		// Get all shift types for calendar
+
+		// Open the file
+		ini_set('track_errors', 1);
+		if (($handle = fopen($filename, "r")) === FALSE) {
+			throw new NotFoundException("Failed opening file: error was ".$php_errormsg);
+		}
+	
+		// Start parsing for shifts
+		$data = array();
+		$output = array();
+		
+		$row = 1;
+		
+		$shiftsType = $this->ShiftsType->find('all', array(
+				'fields' => array('id', 'display_order'),
+				'recursive' => 0,
+				'conditions' => array(
+						'start_date <=' => $calendar['start_date'],
+						'expiry_date >=' => $calendar['start_date'],
+				),
+				'order' => array('display_order ASC', 'shift_start ASC'),
+		));
+		
+		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+			// Discard first N lines. If none present, select 3
+			if ($row <= $discard) { $row++ ; continue; }
+			$num = count($data);
+			$date = date ( 'Y-m-j', strtotime( '+'.$row - $discard - 1 .' day', strtotime($calendar['start_date'])));
+			for ($c=0; $c < $num; $c++) {
+				// Discard first column
+				if ($c == 0) { continue; }
+
+				// If blank, continue
+				if (empty($data[$c])) { continue; }
+
+				// Look up each entry if not blank
+				$output[] = array(
+						'user_id' => $this->User->lookupUserId($data[$c], 'cb_displayname'),
+						'date' => $date,
+						'shifts_type_id' => $shiftsType[$c-1]['ShiftsType']['id']
+						);
+			
+				// Save information into overall save array (shifts_type and user_id)
+			}
+			$row++;
+		}
+		fclose($handle);
+		return $output;
+	}
 }
