@@ -5,14 +5,14 @@
  * UsergroupFixture
  *
  */
-class UsergroupJ17Fixture extends CakeTestFixture {
+class UsergroupJem5Fixture extends CakeTestFixture {
 /**
  * Import
  *
  * @var array
  */
 //	public $import = array('connection' => 'joomla');
-public $table = 'j17_usergroups';
+public $table = 'jem5_usergroups';
 
 /**
  * Fields
