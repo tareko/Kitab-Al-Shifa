@@ -132,22 +132,6 @@ class Calendar extends AppModel {
 		));
 		return $lastUpdated['Shift']['updated'];
 	}
-	/*
-	 * needsUpdate method
-	 * @id int calendar ID
-	 */
-	public function needsUpdate($id) {
-		App::uses('File', 'Utility');
-		$calendar = $this->findById($id, array(
-				'start_date'));
-		$lastUpdated = $this->lastUpdated($id);
-		$file = new File(WWW_ROOT ."pdf/EMA_Schedule-".$id."-".$calendar['Calendar']['start_date'].".pdf");
-		$lastChanged = $file->lastChange();
-		if ($lastChanged && strtotime($lastUpdated) < $lastChanged) {
-			return false;
-		}
-		return true;
-	}
 	
 	/* 
 	 * Get start and end dates for calendar
@@ -157,7 +141,7 @@ class Calendar extends AppModel {
 		$data = $this->find('first', array(
 				'recursive' => 0,
 				'fields' => array('start_date', 'end_date'),
-				'conditions' => array('id' => $id)
+				'conditions' => array('Calendar.id' => $id)
 		));
 		return $data['Calendar'];
 	}
