@@ -148,5 +148,18 @@ class Calendar extends AppModel {
 		}
 		return true;
 	}
+	
+	/* 
+	 * Get start and end dates for calendar
+	 */
+	
+	public function getStartEndDates ($id) {
+		$data = $this->find('first', array(
+				'recursive' => 0,
+				'fields' => array('start_date', 'end_date'),
+				'conditions' => array('id' => $id)
+		));
+		return $data['Calendar'];
+	}
 }
 ?>
