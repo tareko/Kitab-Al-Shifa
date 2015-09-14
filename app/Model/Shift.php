@@ -286,8 +286,6 @@ class Shift extends AppModel {
 		// Get start dates for file
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
-		App::uses('User', 'Model');
-		$this->User = new User();
 		$calendar = $this->Calendar->getStartEndDates($calendar);
 
 		// Get all shift types for calendar
