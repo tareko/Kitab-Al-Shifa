@@ -193,7 +193,7 @@ class User extends AppModel
  				'fields' => array('id'),
  				'conditions' => array($field => $query)
  		));
- 		return $data['User']['id'];
+ 		return (!empty($data) ? $data['User']['id'] : false);
  	}
 
 }
