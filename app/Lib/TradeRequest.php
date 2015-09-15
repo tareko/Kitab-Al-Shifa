@@ -151,7 +151,7 @@ class TradeRequest {
 			$email->template('tradeRequestRecipientStatusChangeToOriginator')
 				->emailFormat('text')
 				->to($tradesDetail['Trade']['User']['email'])
-				->subject('[Kitab] '.$tradesDetail['User']['name'].' accepted your trade')
+				->subject('[Kitab] '.$tradesDetail['User']['name'].' '.$statusWord .' your trade')
 				->viewVars(array(
 							'userOriginator' => $tradesDetail['Trade']['User'],
 							'userRecipient' => $tradesDetail['User'],
