@@ -97,6 +97,7 @@ class TradeRequest {
 					'user' => $trade['User'],
 					'shift' => $trade['Shift'],
 					'trade' => $trade['Trade'],
+					'submittedUser' => $trade['SubmittedUser'],
 					'tradesDetail' => $trade['TradesDetail']))
 					->send();
 				
