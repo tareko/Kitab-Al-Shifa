@@ -1,18 +1,28 @@
-Dear <?=$user['name']?>,
+<?php $consideration = array(
+		'0' => 'Cash',
+		'1' => 'Trade',
+		'2' => 'Future consideration')?>
+Dear <?=$tradesDetail[0]['User']['name']?>,
 
-You have <?=$statusWord?> your trade offer for the following shift:
+A trade has been completed for the following shift between you and <?=$user['name']?>:
+
+You TAKE for <?=$consideration[$trade['consideration']]?>:
 
 <?= $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times']; ?>
 
 <?php 
-if ($statusWord == 'ACCEPTED') { ?>
-This trade will now be sent to the people you have asked to consider this shift.
-<?php }
-if ($statusWord == 'REJECTED') { ?>
-This trade will now be removed, and you need not think about it any more.
-<?php }?>
+if ($submittedUser['id'] == $tradesDetail[0]['User']['id']) { ?>
 
-If you did not send this request, or if something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.
+This shift trade was requested and confirmed by you. Of course I trust you, but if <?=$user['name']?> reports an issue with this trade, I will be very cross and you might be punished for your deviousness.
+
+If something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.
+<?php }
+else { ?>
+
+This shift trade was requested and confirmed by <?=$submittedUser['name']?>. 
+
+If you did not agree to this trade or if something has gone wrong, please do not hesitate to contact the person responsible for trades at your institution.
+<?php }?>
 
 Thank you,
 
