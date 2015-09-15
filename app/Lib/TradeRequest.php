@@ -40,8 +40,13 @@ class TradeRequest {
 		return $returnArray;
 	}
 
-
-	public function sendOriginator($tradeId, $user, $shift, $method) {
+	/**
+	 * Send email to originator of trade
+	 * 
+	 * @param unknown_type $trade
+	 * @param unknown_type $method
+	 */
+	public function sendOriginator($trade = array(), $method = 'email') {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
 	
@@ -52,25 +57,69 @@ class TradeRequest {
 	
 		if ($method == 'email') {
 			$email = new CakeEmail('default');
-			$email->template('tradeRequestOriginator')
-			->emailFormat('text')
-			->to($user['email'])
-			->subject('[Kitab] Shift trade request by you')
-			->viewVars(array(
-					'user' => $user,
-					'shift' => $shift,
-					'tradeId' => $tradeId,
-					'token' => $token))
-					->send();
+			$success = $email->template('tradeRequestOriginator')
+				->emailFormat('text')
+				->to($trade['User']['email'], $trade['User']['name'])
+				->subject('[Kitab] Request to trade your shift')
+				->viewVars(array(
+						'user' => $trade['User'],
+						'shift' => $trade['Shift'],
+						'trade' => $trade['Trade'],
+						'tradesDetail' => $trade['TradesDetail'],
+						'submittedUser' => $trade['SubmittedUser'],
+						'token' => $token))
+				->send();
 		}
 		$returnArray = array(
-				'return' => true,
+				'return' => ($success ? true : false),
 				'token' => $token
 				);
 		
 		return $returnArray;
 	}
 
+	/*
+	 * For cases where there is pre-agreement (confirmed == 1), a message will be sent to originator and recipient confirming shift trade
+	 */
+	public function sendOriginatorRecipientConfirmed($trade = array(), $method = 'email') {
+		App::uses('CakeEmail', 'Network/Email');
+		App::uses('TimeHelper', 'View/Helper');
+
+		if ($method == 'email') {
+		
+			//Send out communication to originating user
+			$email = new CakeEmail('default');
+			$success1 = $email->template('tradeCompleteConfirmedOriginator')
+			->emailFormat('text')
+			->to($trade['User']['email'])
+			->subject('[Kitab] [pre-Confirmed] Shift trade has been made')
+			->viewVars(array(
+					'user' => $trade['User'],
+					'shift' => $trade['Shift'],
+					'trade' => $trade['Trade'],
+					'tradesDetail' => $trade['TradesDetail']))
+					->send();
+				
+			//Send out communication to receiving user
+		
+			$success2 = $email->template('tradeCompleteConfirmedRecipient')
+			->emailFormat('text')
+			->to($trade['User']['email'])
+			->subject('[Kitab] [pre-Confirmed] Shift trade has been made')
+			->viewVars(array(
+					'user' => $trade['User'],
+					'shift' => $trade['Shift'],
+					'trade' => $trade['Trade'],
+					'submittedUser' => $trade['SubmittedUser'],
+					'tradesDetail' => $trade['TradesDetail']))
+					->send();
+
+			$success = ($success1 && $success2 ? true : false);
+
+		}
+		return $success;
+	}
+	
 	
 	/**
 	 * sendOriginatorStatusChange method

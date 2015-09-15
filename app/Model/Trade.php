@@ -110,7 +110,14 @@ class Trade extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'Shift' => array(
+		'SubmittedUser' => array(
+			'className' => 'User',
+			'foreignKey' => 'submitted_by',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+			'Shift' => array(
 			'className' => 'Shift',
 			'foreignKey' => 'shift_id',
 			'conditions' => '',
@@ -155,7 +162,13 @@ class Trade extends AppModel {
 										'name',
 										'email'),
 								),
-						),
+						'SubmittedUser' => array(
+								'fields' => array(
+										'id',
+										'name',
+										'email'),
+								),
+				),
 				'conditions' => array_merge(
 						array('status' => 0),
 						$conditions),
@@ -220,15 +233,20 @@ class Trade extends AppModel {
 			// - Originator initiates the trade (from user account)
 			// - Originator confirms trade (if sent by another party)
 
-			if ($trade['Trade']['user_status'] < 1 && $trade['Trade']['submitted_by'] != $trade['Trade']['user_id']) {
+			if ($trade['Trade']['user_status'] < 1) {
 				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
 				//Get communication method preference for receiving user
+				
 				$method = $this->User->getCommunicationMethod($trade['User']['id']);
 
 				// If trade does not need confirmation, skip confirmation messages and set appropriate flags for completion.
+				// Send email to originating and receiving users telling them deal is done.
+
 				if ($trade['Trade']['confirmed'] == 1) {
+
 					// Send email confirming that trade has been made
-					if ($sendOriginator['return'] == true && CONFIRM == true) {
+					$sendOriginatorRecipientConfirmed = $this->_TradeRequest->sendOriginatorRecipientConfirmed($trade, $method);
+					if ($sendOriginatorRecipientConfirmed == true) {
 						// Assuming success, update Status of Trade to 1
 						$this->read(null, $trade['Trade']['id']);
 						$this->set('user_status', 2);
@@ -237,37 +255,57 @@ class Trade extends AppModel {
 
 						if ($this->save()) {
 							// Write log indicating trade detail was done
-							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email confirmation was sent to '. $trade['User']['name'] .' and ' . $trade['TradesDetail'][0]['User']['name'] . ' confirming the trade');
 						} else {
-							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED, but An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED, but an email confirmation was sent to '. $trade['User']['name'] .' and ' . $trade['TradesDetail'][0]['User']['name'] . ' confirming the trade');
+							debug($this->validationErrors);
 							$failure = true;
 						}
 					}
 					else {
-						CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
+						CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email confirmation FAILED to '. $trade['User']['name'] .' and ' . $trade['TradesDetail']['0']['User']['name'] . ' confirming the trade');
 					}
 				}
 				
 				else {
-		
-					$sendOriginator = $this->_TradeRequest->sendOriginator($trade['Trade']['id'], $trade['User'], $trade['Shift'], $method);
-					if ($sendOriginator['return'] == true) {
-						// Assuming success, update Status of Trade to 1
+					
+					// When user has submitted trade request, skip originator confirmation and
+					// Go onto DB writes
+					if ($trade['Trade']['submitted_by'] == $trade['Trade']['user_id']) {
+						// Update Status of Trade to 1
 						$this->read(null, $trade['Trade']['id']);
 						$this->set('user_status', 1);
-						$this->set('token', $sendOriginator['token']);
 						$this->validator()->remove('shift_id', 'checkDuplicate');
-						
-						if ($this->save()) {			
+							
+						if ($this->save()) {
 							// Write log indicating trade detail was done
-							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Changed status to 1. No confirmation sent');
 						} else {
-							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED, but An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED. Did not successfully change status to 1');
 							$failure = true;
 						}
 					}
+
 					else {
-						CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
+						$sendOriginator = $this->_TradeRequest->sendOriginator($trade, $method);
+						if ($sendOriginator['return'] == true) {
+							// Assuming success, update Status of Trade to 1
+							$this->read(null, $trade['Trade']['id']);
+							$this->set('user_status', 1);
+							$this->set('token', $sendOriginator['token']);
+							$this->validator()->remove('shift_id', 'checkDuplicate');
+							
+							if ($this->save()) {			
+								// Write log indicating trade detail was done
+								CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+							} else {
+								CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED, but An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
+								$failure = true;
+							}
+						}
+						else {
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
+						}
 					}
 				}
 			}
