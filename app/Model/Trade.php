@@ -289,7 +289,7 @@ class Trade extends AppModel {
 					}
 
 					else {
-						$sendOriginator = $this->_TradeRequest->send($trade['User'], $trade, $method, 'tradeRequestOriginator', 'Request to trade your shift: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+						$sendOriginator = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeRequestOriginator', 'Request to trade your shift: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 						if ($sendOriginator['return'] == true) {
 							// Assuming success, update Status of Trade to 1
 							$this->read(null, $trade['Trade']['id']);
