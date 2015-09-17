@@ -276,9 +276,9 @@ class Trade extends AppModel {
 					if ($trade['Trade']['submitted_by'] == $trade['Trade']['user_id']) {
 						// Update Status of Trade to 1
 						$this->read(null, $trade['Trade']['id']);
-						$this->set('user_status', 1);
+						$this->set('user_status', 2);
 						$this->validator()->remove('shift_id', 'checkDuplicate');
-							
+
 						if ($this->save()) {
 							// Write log indicating trade detail was done
 							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Changed status to 1. No confirmation sent');
