@@ -1,12 +1,16 @@
-Dear <?=$toUser['name']?>,
+Dear <?=$tradesDetail['User']['name']?>,
 
-You have received a trade request from <?=$fromUser['name']?>.
+You have received a trade request from <?=$user['name']?>.
+
+***Start message***
+<?=$trade['message']?>
+
+
+***End message***
 
 The proposed trade is as follows:
 
-You take: <?php
-		$fromShift = $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times'];
-		echo $fromShift?>
+You take: <?=$shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times'];?>
 
 <?php //TODO: Two-way trades
 //$fromUser['name'] takes 
@@ -19,7 +23,7 @@ To *ACCEPT*, click here:
 		'controller' => 'trades_details',
 		'action' => 'accept',
 		), true
-	) . '?id=' .$tradesDetailId .'&token=' .$token
+	) . '?id=' .$tradesDetail['id'] .'&token=' .$token
 ?>
 
 To *REJECT*, click here:
@@ -27,7 +31,7 @@ To *REJECT*, click here:
 		'controller' => 'trades_details',
 		'action' => 'reject',
 		), true
-	) . '?id=' .$tradesDetailId .'&token=' .$token
+	) . '?id=' .$tradesDetail['id'] .'&token=' .$token
 ?>
 
 

@@ -145,7 +145,8 @@ class Trade extends AppModel {
 										'fields' => array(
 												'times'),
 										'Location' => array(
-												'location')
+												'location',
+												'abbreviated_name')
 										)
 								),
 						'TradesDetail' => array(
@@ -245,8 +246,9 @@ class Trade extends AppModel {
 				if ($trade['Trade']['confirmed'] == 1) {
 
 					// Send email confirming that trade has been made
-					$sendOriginatorRecipientConfirmed = $this->_TradeRequest->sendOriginatorRecipientConfirmed($trade, $method);
-					if ($sendOriginatorRecipientConfirmed == true) {
+					$sendOriginatorConfirmed = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedOriginator', '[pre-Confirmed] Shift trade has been made: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+					$sendRecipientConfirmed = $this->_TradeRequest->send($trade['TradesDetail']['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedRecipient', '[pre-Confirmed] Shift trade has been made: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+					if ($sendOriginatorConfirmed && $sendRecipientConfirmed) {
 						// Assuming success, update Status of Trade to 1
 						$this->read(null, $trade['Trade']['id']);
 						$this->set('user_status', 2);
@@ -287,7 +289,7 @@ class Trade extends AppModel {
 					}
 
 					else {
-						$sendOriginator = $this->_TradeRequest->sendOriginator($trade, $method);
+						$sendOriginator = $this->_TradeRequest->send($trade['User'], $trade, $method, 'tradeRequestOriginator', 'Request to trade your shift: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 						if ($sendOriginator['return'] == true) {
 							// Assuming success, update Status of Trade to 1
 							$this->read(null, $trade['Trade']['id']);
@@ -317,7 +319,7 @@ class Trade extends AppModel {
 					// If user has already received email (TradesDetail['status'] == 1), then do not send email.
 					if ($tradesDetail['status'] == 0) {
 						$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
-						$sendDetails = $this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method);
+						$sendDetails = $this->_TradeRequest->send($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestRecipient', 'Trade request from ' .$trade['User']['name'] . ': '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 
 						if ($sendDetails['return'] == true) {
 							// Assuming success, update Status of TradesDetail to 1
