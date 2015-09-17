@@ -136,14 +136,6 @@ foreach($this->validationErrors as $assoc) {
 		//Add active class to default trade consideration
 		$( "label[for=TradeTradeConsideration1]" ).addClass( "active" );
 		
-		//Prevent enter from submitting form
-		 $(window).keydown(function(event){
-			    if(event.keyCode == 13) {
-			      event.preventDefault();
-			      return false;
-			    }
-			  });
-
 		$('#TradeFromUserId').autocomplete({
 			minLength: 3, 
 			source: '<?= $this->Html->url(array(
