@@ -237,7 +237,7 @@ class Trade extends AppModel {
 			if ($trade['Trade']['user_status'] < 1) {
 				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
 				//Get communication method preference for receiving user
-				
+
 				$method = $this->User->getCommunicationMethod($trade['User']['id']);
 
 				// If trade does not need confirmation, skip confirmation messages and set appropriate flags for completion.
