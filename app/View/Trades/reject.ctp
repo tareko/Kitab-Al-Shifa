@@ -1,1 +1,0 @@
-<p>You have rejected the trade. If you did not initiate this trade, and are upset somebody did, please contact the person responsible for shift trading, and we'll find out who initiated the trade.</p>
