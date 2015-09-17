@@ -353,4 +353,102 @@ class Trade extends AppModel {
 		}
 		return ($failure == false ? true : false);
 	}
+
+	/**
+	 * Change status of trade if correctly accepted or rejected
+	 * 
+	 * @param array $request
+	 * @param integer $status
+	 */
+	
+	public function changeStatus($request = array(), $status = null) {
+		$token = $request->query['token'];
+		$id = $request->query['id'];
+
+		$trade = $this->find('first', array(
+				'fields' => array(
+						'Trade.id',
+						'Trade.token',
+						'Trade.user_id',
+						'Trade.shift_id',
+						'Trade.status',
+						'Trade.user_status'),
+				'conditions' => array(
+						'Trade.id' => $id),
+				'contain' => array(
+						'Shift' => array(
+								'fields' => array(
+										'id',
+										'date'),
+								'ShiftsType' => array(
+										'fields' => array(
+												'times'),
+										'Location' => array(
+												'location'
+										)
+								)
+						),
+						'User' => array(
+								'fields' => array(
+										'id',
+										'name',
+										'email'
+								)
+						)
+				)
+		));
+		//Error exits
+
+		// Error if $trade is empty
+		if (empty($trade)) {
+			return 'Trade not found';
+		}
+		
+		// Error if trade status != 0 
+
+		if ($trade['Trade']['status'] != 0) {
+			if ($trade['Trade']['status'] == 1) {
+				return 'You have already accepted this trade';
+			}
+			elseif ($trade['Trade']['status'] == 2) {
+				return 'This trade is already complete';
+			}
+			else {
+				return 'An error occurred with this trade[1]';
+			}
+		}
+
+		// Error if user_status != 1 as expected
+		
+		if ($trade['Trade']['user_status'] != 1) {
+			if ($trade['Trade']['user_status'] == 2) {
+				return 'You have already accepted this trade';
+			}
+			elseif ($trade['Trade']['user_status'] == 3) {
+				return 'You have already rejectted this trade';
+			}
+			else {
+				return 'An error occurred with this trade[2]';
+			}
+		}
+		
+		// Error if token is wrong
+		if ($token != $trade['Trade']['token']) {
+			return 'Sorry, but your token is wrong. You are not authorized to act on this trade.';
+		}
+
+		// If no errors, update status of trade
+		$this->read(null, $id);
+		$this->set('user_status', $status);
+		$this->validator()->remove('shift_id', 'checkDuplicate');
+		
+		if ($this->save()) {
+			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed user_status to '. $status);
+			return true;
+		}
+		else {
+			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Error changing user_status');
+			return 'An error has occured during your request.';
+		}
+	}	
 }
