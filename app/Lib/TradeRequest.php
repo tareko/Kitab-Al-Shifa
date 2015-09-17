@@ -18,7 +18,7 @@ class TradeRequest {
 	public function send($toUser = array(), $trade = array(), $tradesDetail = array(), $method = 'email', $template = false, $subject = false) {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
-		
+				
 		//Generate token
 		$token = bin2hex(openssl_random_pseudo_bytes(16));
 				
