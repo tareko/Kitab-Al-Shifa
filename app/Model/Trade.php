@@ -425,7 +425,7 @@ class Trade extends AppModel {
 				return 'You have already accepted this trade';
 			}
 			elseif ($trade['Trade']['user_status'] == 3) {
-				return 'You have already rejectted this trade';
+				return 'You have already rejected this trade';
 			}
 			else {
 				return 'An error occurred with this trade[2]';
