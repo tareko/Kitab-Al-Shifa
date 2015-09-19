@@ -26,11 +26,11 @@
 <?php
 //		echo $this->Html->meta('icon');
 		echo $this->Html->script("jquery");
-		
+
 		echo $this->Html->css('cake.generic');
 		echo $this->Html->css('bootstrap.min');
 		echo $this->Html->css('bootstrap-custom');
-		
+
 		echo $scripts_for_layout;
 	?>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -62,20 +62,22 @@
 		  } ?>
           </li>
           </ul>
-          
         </div><!--/.nav-collapse -->
-          
-           <div class="navbar-collapse collapse">
-          
-          	<?php
+      </div>
+    </div>
+
+
+<div id="container-fluid">
+	<?php
 		$isLive = '';
 		$currentPage = 	$_SERVER['REQUEST_URI'];
 	?>
-		<ul class="nav navbar-nav" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/compare') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
+		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
+		<ul>
 			<li><?php
 				$isLive = '';
 					if ($currentPage == Router::url('/trades/index') || $currentPage == Router::url('/trades')) {
-					$isLive = array('class' => 'active');
+					$isLive = array('class' => 'menu-current');
 				}
 				echo $this->Html->link('Make a trade', array('controller' => 'trades', 'action' => 'index'), $isLive) ?>
 			</li>
@@ -86,15 +88,7 @@
 				}
 				echo $this->Html->link('Trading history', array('controller' => 'trades', 'action' => 'history'), $isLive) ?>
 			</li>
-		</ul>
-          
-          
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
-
-
-	<div id="container-fluid">
+			</ul>
 		<div class="clear"></div>
 		</nav>
     	<div id="content">
