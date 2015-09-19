@@ -9,7 +9,13 @@
 			<th class="actions"><?php echo __('Actions');?></th>
 	</tr>
 	<?php
+	$alreadyDisplayed = array();
 	foreach ($trades as $trade):
+	// If trade has already been displayed, continue
+	// Otherwise, add id to array
+	if (in_array ($trade['Trade']['id'], $alreadyDisplayed)) { continue; }
+	else { $alreadyDisplayed[] = $trade['Trade']['id']; }
+
 	?>
 	<tr>
 		<td><?php
@@ -32,7 +38,7 @@
 					echo h($tradesDetail['User']['name']) . "<br/>";
 					echo "</span>";
 					if ($admin) {
-						if ($trade['Trade']['status'] == 1 && $trade['Trade']['user_status'] == 2 && $trade['TradesDetail'][0]['status'] == 1) {
+						if ($trade['Trade']['status'] == 1 && $tradesDetail['status'] == 1) {
 							echo " [" .$this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token'])));
 							echo "] [".$this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token']))) . "]";
 						}
