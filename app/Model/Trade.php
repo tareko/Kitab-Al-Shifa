@@ -18,6 +18,10 @@ App::uses('AppModel', 'Model');
  *  2 - Accepted
  *  3 - Rejected
  *
+ * Consideration legend:
+ * 0 => 'Cash',
+ * 1 => 'Trade',
+ * 2 => 'Future consideration'
  */
 class Trade extends AppModel {
 
