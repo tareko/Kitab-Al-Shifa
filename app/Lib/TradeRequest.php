@@ -1,18 +1,24 @@
 <?php
 
 class TradeRequest {
+
+
+
 	/**
 	 * Send method to send email requesting trade
-	 * 
-	 * @param string $tradesDetailId
-	 * @param array $fromUser
-	 * @param array $toUser
-	 * @param string $shift
+	 * @param array $toUser  		User who will receive the email
+	 * @param array $trade  		Array with trade information
+	 * @param array $tradesDetail  	Array with details of trade (recipient)
+	 * @param string $method  		Method of communication
+	 * @param string $template 		Template used to send email
+	 * @param string $subject 		Subject line
+	 * @return multitype:boolean string
 	 */
-	public function send($tradesDetailId, $fromUser, $toUser, $shift, $method) {
+	
+	public function send($toUser = array(), $trade = array(), $tradesDetail = array(), $method = 'email', $template = false, $subject = false) {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
-		
+				
 		//Generate token
 		$token = bin2hex(openssl_random_pseudo_bytes(16));
 				
@@ -20,57 +26,25 @@ class TradeRequest {
 		
 		if ($method == 'email') {
 			$email = new CakeEmail('default');
-			$email->template('tradeRequest')
+			$success = $email->template($template)
 				->emailFormat('text')
 				->to($toUser['email'])
-				->subject('[Kitab] Shift trade request by ' .$fromUser['name'])
+				->subject('[Kitab] '. $subject)
 				->viewVars(array(
-						'fromUser' => $fromUser, 
-						'toUser' => $toUser, 
-						'shift' => $shift,
-						'tradesDetailId' => $tradesDetailId,
+						'user' => $trade['User'],
+						'shift' => $trade['Shift'],
+						'trade' => $trade['Trade'],
+						'tradesDetail' => (empty($tradesDetail) ? $trade['TradesDetail'] : $tradesDetail),
+						'submittedUser' => $trade['SubmittedUser'],
 						'token' => $token))
 				->send();
 		}
-		$returnArray = array(
-						'return' => true,
+		
+		return array(
+						'return' => ($success ? true : false),
 						'token' => $token
 		);
-		
-		return $returnArray;
 	}
-
-
-	public function sendOriginator($tradeId, $user, $shift, $method) {
-		App::uses('CakeEmail', 'Network/Email');
-		App::uses('TimeHelper', 'View/Helper');
-	
-		//Generate token
-		$token = bin2hex(openssl_random_pseudo_bytes(16));
-		
-		//Send out communication to receiving user
-	
-		if ($method == 'email') {
-			$email = new CakeEmail('default');
-			$email->template('tradeRequestOriginator')
-			->emailFormat('text')
-			->to($user['email'])
-			->subject('[Kitab] Shift trade request by you')
-			->viewVars(array(
-					'user' => $user,
-					'shift' => $shift,
-					'tradeId' => $tradeId,
-					'token' => $token))
-					->send();
-		}
-		$returnArray = array(
-				'return' => true,
-				'token' => $token
-				);
-		
-		return $returnArray;
-	}
-
 	
 	/**
 	 * sendOriginatorStatusChange method
@@ -151,7 +125,7 @@ class TradeRequest {
 			$email->template('tradeRequestRecipientStatusChangeToOriginator')
 				->emailFormat('text')
 				->to($tradesDetail['Trade']['User']['email'])
-				->subject('[Kitab] '.$tradesDetail['User']['name'].' accepted your trade')
+				->subject('[Kitab] '.$tradesDetail['User']['name'].' '.$statusWord .' your trade')
 				->viewVars(array(
 							'userOriginator' => $tradesDetail['Trade']['User'],
 							'userRecipient' => $tradesDetail['User'],

@@ -115,6 +115,47 @@ class UserTestCase extends CakeTestCase {
 		$expected = array('1' => 'Bynum');
 		$this->assertEquals($expected, $result);
 	}
+	
+	/*
+	 * This test is to ensure that the correct date and time is returned when trying to ascertain
+	 * limits for testing whether user is working
+	 */ 
+	
+	public function testExcludeTimesEarlyStart() {
+		$userList = array(
+				0 => array('User'=> array('id' => 1)),
+				1 => array('User'=> array('id' => 2)),
+				2 => array('User'=> array('id' => 3)),
+				3 => array('User'=> array('id' => 4)),
+				4 => array('User'=> array('id' => 5)));
+		$result = $this->User->excludeWorkingUsers ($userList, '523', "08:00:00");
+		if (!isset($result[4]['User'])) { $result = false; }
+		$this->assertFalse($result);
+	}
+
+	public function testExcludeTimesMiddleStart() {
+		$userList = array(
+				0 => array('User'=> array('id' => 1)),
+				1 => array('User'=> array('id' => 2)),
+				2 => array('User'=> array('id' => 3)),
+				3 => array('User'=> array('id' => 4)),
+				4 => array('User'=> array('id' => 5)));
+		$result = $this->User->excludeWorkingUsers ($userList, '196', "08:00:00");
+		if ($result[1]['User'] != 2) { $result = false; }
+		$this->assertFalse($result);
+	}
+	
+	public function testExcludeTimesLateStart() {
+		$userList = array(
+				0 => array('User'=> array('id' => 1)),
+				1 => array('User'=> array('id' => 2)),
+				2 => array('User'=> array('id' => 3)),
+				3 => array('User'=> array('id' => 4)),
+				4 => array('User'=> array('id' => 5)));
+		$result = $this->User->excludeWorkingUsers ($userList, '524', "08:00:00");
+			if (!isset($result[4]['User'])) { $result = false; }
+		$this->assertFalse($result);
+	}
 
 	// Test lookupUserId function
 	public function testLookupUserId() {
@@ -129,7 +170,7 @@ class UserTestCase extends CakeTestCase {
 		$expected = false;
 		$this->assertEquals($expected, $result);
 	}
-	
+
 /**
  * testGetCommunicationMethod method
  *
@@ -139,5 +180,13 @@ class UserTestCase extends CakeTestCase {
 		$result = $this->User->getCommunicationMethod('1');
 		$expected = 'email';
 		$this->assertEquals($expected, $result);
+	}
+
+/**
+ * testexcludeWorkingUsers method with no defined excludeShift
+ */
+	public function testExcludingWorkingUsersNoExclude() {
+		$this->setExpectedException('BadRequestException');
+		$result = $this->User->excludeWorkingUsers(array(), false);
 	}
 }

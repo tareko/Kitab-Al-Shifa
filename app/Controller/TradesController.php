@@ -1,5 +1,5 @@
 <?php
-App::uses('AppController', 'Controller', 'Sanitize', 'Utility');
+App::uses('AppController', 'Controller', 'Sanitize', 'Utility', 'Router');
 
 /**
  * Trades Controller
@@ -14,7 +14,7 @@ class TradesController extends AppController {
  * @var array
  */
 	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time', 'TradeStatus', 'Text');
-	public $components = array('RequestHandler', 'Search.Prg');
+	public $components = array('RequestHandler', 'Search.Prg', 'Flash');
 	public $scaffold = 'admin';
 	var $paginate = array(
 			'recursive' => '2',
@@ -107,53 +107,24 @@ class TradesController extends AppController {
  * @return void
  */
 	public function index() {
-		$recipientNotPresent = false;
-		$originatorNotPresent = false;
-		$checkDuplicate = false;
-		if ($this->request->isPost() && $this->request->data) {
-			if (isset($this->request->data['Trade']['shift_id']) && isset($this->request->data['Trade']['user_id'])) {
-				$checkDuplicate = $this->checkDuplicate($this->request->data['Trade']['shift_id'], $this->request->data['Trade']['user_id']);
-			}
-			if (!isset($this->request->data['TradesDetail'])) {
-				$recipientNotPresent = true;
-			}
-			if (isset($this->request->data['TradesDetail']) && !$checkDuplicate && $this->Trade->saveAssociated($this->request->data, array(
-				'validate' => 'first'))) {
-					$this->Session->setFlash(__('The trade has been saved'));
-				return $this->redirect(array('action' => 'index'));
+		if ($this->request->isPost() && !empty($this->request->data)) {
+			(!empty($this->request->data['TradesDetail']) ? $this->Trade->TradesDetail->set($this->request->data['TradesDetail']['0']): false);
+			if ($this->Trade->TradesDetail->validates()) {
+				$this->request->data['Trade']['submitted_by'] = $this->_usersId();
+				if ($this->Trade->saveAll($this->request->data)) {
+						$this->Flash->success(__('The trade has been saved'));
+				} else {
+					$this->Flash->alert(__('The trade could not be saved. Please fix the errors below and try again.'));
+				}
 			} else {
-				$this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
+				$this->Trade->set($this->request->data);
+				$this->Trade->validates();
+				$this->Flash->alert(__('The trade could not be saved. Please fix the errors below and try again.'));
 			}
 		}
-		if (isset($this->request->query['id'])) {
-			$this->set('usersId', $this->request->query['id']);
-		}
-		else {
-			$this->set('usersId', $this->_usersId());
-		}
-		$this->set('recipientNotPresent', $recipientNotPresent);
-		$this->set('originatorNotPresent', $originatorNotPresent);
-		$this->set('checkDuplicate', $checkDuplicate);
-		$this->render();
-	}
 
-	function compare() {
-		$params = array();
-		$this->loadModel('Calendar');
-		if ($this->request->is('post')) {
-			if (isset($this->request->data['User']) && isset($this->request->data['Calendar'])) {
-				$i = 0;
-				$masterSet['calendar'] = $this->Calendar->findById($this->request->data['Calendar']['id']);
-					foreach ($this->request->data['User'] as $users) {
-						$params = $params + array('id[' .$i. ']' => $users['id']);
-						$i++;
-					}
-					$params = $params + array('calendar' => $this->request->data['Calendar']['id']);
-					$redirect = array('controller' => 'shifts', 'action' => 'calendarView') + $params;
-				return $this->redirect($redirect);
-			}
-		}
-		$this->set('calendars', $this->Calendar->find('list'));
+		$this->set('usersId', (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId()));
+		$this->set('groupList', $this->User->getGroupsForUser($this->_usersId(), array(), true, true));
 		$this->render();
 	}
 
@@ -164,69 +135,13 @@ class TradesController extends AppController {
 	 *
 	 */
 	public function startUnprocessed() {
-		App::import('Lib', 'TradeRequest');
-		$this->_TradeRequest = new TradeRequest();
-
-		$unprocessedTrades = $this->Trade->getUnprocessedTrades();
-
-		//Find unprocessed trade details within the trade
-		foreach ($unprocessedTrades as $trade) {
-			//Has the trade been approved by the originator?
-			if ($trade['Trade']['user_status'] < 1) {
-				//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
-				//Get communication method preference for receiving user
-				$method = $this->User->getCommunicationMethod($trade['User']['id']);
-
-				$sendOriginator = $this->_TradeRequest->sendOriginator($trade['Trade']['id'], $trade['User'], $trade['Shift'], $method);
-				if ($sendOriginator['return'] == true) {
-					// Assuming success, update Status of TradesDetail to 1
-					$this->Trade->read(null, $trade['Trade']['id']);
-					$this->Trade->set('user_status', 1);
-					$this->Trade->set('token', $sendOriginator['token']);
-					$this->Trade->save();
-
-					// Write log indicating trade detail was done
-					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
-				}
-				else {
-					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email FAILED to '. $trade['User']['name'] . ', who is owner of the trade');
-				}
-			}
-			if ($trade['Trade']['user_status'] == 2) {
-				foreach ($trade['TradesDetail'] as $tradesDetail) {
-					//TODO: Stubbed as 'email' for now. Eventually will allow user choice through getCommunicatinoMethod
-					//Get communication method preference for receiving user
-					$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
-					$sendDetails = $this->_TradeRequest->send($tradesDetail['id'], $trade['User'], $tradesDetail['User'], $trade['Shift'], $method);
-					if ($sendDetails['return'] == true) {
-						// Assuming success, update Status of TradesDetail to 1
-						$this->Trade->TradesDetail->read(null, $tradesDetail['id']);
-						$this->Trade->TradesDetail->set('status', 1);
-						$this->Trade->TradesDetail->set('token', $sendDetails['token']);
-						$this->Trade->TradesDetail->save();
-
-						// Write log indicating trade detail was done
-						CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
-					}
-					else {
-						return $this->Session->setFlash(__('The trade could not be saved. Please, try again.'));
-					}
-
-				}
-
-				// Assuming success, update Status of Trade to 1
-				$this->Trade->read(null, $trade['Trade']['id']);
-				$this->Trade->set('status', 1);
-				if ($this->Trade->save()) {
-					// Write log indicating trade was done
-					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
-				} else {
-					CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Failed to process trade');
-				}
-			}
+		$success = $this->Trade->processTrades();
+		if ($success == true) {
+			$this->Flash->success(__('Pending trades successfully processed'));
 		}
-		$this->set('success', 1);
-		$this->render('/Trades/start_unprocessed');
+		else {
+			$this->Flash->alert(__('Pending trades not successfully processed.'));
+		}
 	}
 
 	/**
@@ -285,120 +200,44 @@ class TradesController extends AppController {
 		$this->render();
 	}
 
+	/**
+	 * Function to accept trade request
+	 * 
+	 * @throws NotFoundException
+	 */
 	public function accept() {
-		$return = $this->changeStatus($this->request, 2);
-		if ($return == true) {
-			return $this->Session->setFlash(__('You have successfully accepted the trade.'));
+		if (!isset($this->request) || 
+			!isset($this->request->query['id']) || 
+			!isset($this->request->query['token'])) {
+			throw new NotFoundException(__('Invalid request'));
+		}
+		$return = $this->Trade->changeStatus($this->request, 2);
+		if ($return === TRUE) {
+			$this->Flash->success(__('You have successfully accepted the trade.'));
+			$this->set('success', true);
 		}
 		else {
-			return $return;
+			$this->Flash->alert(__('Trade has failed with the following message: ' . $return));
+			$this->set('success', false);
 		}
 		$this->render();
 	}
 
 	public function reject() {
-		$return = $this->changeStatus($this->request, 3);
-		if ($return == true) {
-			return $this->Session->setFlash(__('You have rejected this trade.'));
+		if (!isset($this->request) ||
+				!isset($this->request->query['id']) ||
+				!isset($this->request->query['token'])) {
+			throw new NotFoundException(__('Invalid request'));
+		}
+		$return = $this->Trade->changeStatus($this->request, 3);
+		if ($return === TRUE) {
+			$this->Flash->success(__('You have rejected this trade.'));
+			$this->set('success', true);
 		}
 		else {
-			return $return;
+			$this->Flash->alert(__('Trade has failed with the following message: ' . $return));
+			$this->set('success', false);
 		}
 		$this->render();
-	}
-
-
-	public function changeStatus($request, $status) {
-		if (!isset($this->request) || !isset($this->request->query['id']) || !isset($this->request->query['token'])) {
-			throw new NotFoundException(__('Invalid trade or trade parameters missing'));
-		}
-
-		App::import('Lib', 'TradeRequest');
-		$this->_TradeRequest = new TradeRequest();
-
-		$token = $request->query['token'];
-		$id = $request->query['id'];
-
-		$trade = $this->Trade->find('first', array(
-					'fields' => array(
-						'Trade.id',
-						'Trade.token',
-						'Trade.user_id',
-						'Trade.shift_id'),
-					'conditions' => array(
-						'Trade.id' => $id,
-						'Trade.status' => 0,
-						'Trade.user_status' => 1),
-					'contain' => array(
-						'Shift' => array(
-							'fields' => array(
-								'id',
-								'date'),
-							'ShiftsType' => array(
-								'fields' => array(
-									'times'),
-								'Location' => array(
-									'location'
-								)
-							)
-						),
-						'User' => array(
-							'fields' => array(
-								'id',
-								'name',
-								'email'
-							)
-						)
-					)
-		));
-
-		if (empty($trade)) {
-			throw new NotFoundException(__('Trade not found or already acted upon'));
-		}
-
-
-		if ($token == $trade['Trade']['token']) {
-			$this->Trade->read(null, $id);
-			$this->Trade->set('user_status', $status);
-			if ($this->Trade->save()) {
-				//$this->_TradeRequest->sendOriginatorStatusChange($status, $trade);
-				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed user_status to '. $status);
-				return true;
-			}
-			else {
-				CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Error changing user_status');
-				return $this->Session->setFlash(__('An error has occured during your request.'));
-			}
-		}
-		else {
-			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Wrong token');
-			return $this->Session->setFlash(__('Sorry, but your token is wrong. You are not authorized to accept or reject this trade.'));
-		}
-	}
-
-	/*
-	 * Check duplicate trade and return true if duplicate found
-	 *
-	 */
-	public function checkDuplicate($shiftId, $userId) {
-		$trade = $this->Trade->find('first', array(
-					'fields' => array(
-						'Trade.user_id',
-						'Trade.shift_id',
-						'Trade.user_status',
-								'Trade.status'),
-							'conditions' => array(
-								'Trade.user_status <' => 2,
-								'Trade.status !=' => 2,
-								'Trade.user_id' => $userId,
-								'Trade.shift_id' => $shiftId),
-		));
-
-		if ($trade) {
-			return true;
-		}
-		else {
-			return false;
-		}
 	}
 }

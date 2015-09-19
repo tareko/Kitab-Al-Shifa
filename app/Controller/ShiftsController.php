@@ -99,6 +99,53 @@ class ShiftsController extends AppController {
 		}
 	}
 
+	/** Function to update all PDFs that need updating
+	 *
+	 */
+	function pdfUpdate() {
+		$updated = NULL;
+		$notUpdated = NULL;
+		$this->loadModel('Calendar');
+		$calendars = $this->Calendar->find('list',array(
+				'id',
+				'start_date'));
+		foreach ($calendars as $id => $start_date) {
+			if (!$this->Calendar->needsUpdate($id)) {
+				$notUpdated[] = $id;
+			}
+			else {
+				$updated[] = $id;
+				$this->set('calendars', $this->Calendar->find('list'));
+				$this->set('masterSet', $this->Shift->getMasterSet($id));
+				$this->view = 'pdfCreate';
+			}
+		}
+		$this->set('updated', $updated);
+		$this->set('notUpdated', $notUpdated);
+		$this->render();
+	}
+
+	function pdfCreate($id = NULL) {
+		if (isset($this->request->params['named']['calendar'])) {
+			$id = $this->request->params['named']['calendar'];
+		}
+		if (!isset($id)) {
+			return $this->setAction('calendarList', 'pdfCreate');
+		}
+
+		//Check if in need of an update
+		$this->loadModel('Calendar');
+		if (!$this->Calendar->needsUpdate($id)) {
+			$this->set('id', $id);
+			$this->set('updateNotNeeded', 1);
+			return $this->render();
+		}
+		//Otherwise, go ahead and create a new PDF
+		$this->set('calendars', $this->Calendar->find('list'));
+		$this->set('masterSet', $this->Shift->getMasterSet($id));
+
+	}
+
 	/**
 	 * Function for web-based editing of calendar.
 	 *
@@ -357,7 +404,7 @@ class ShiftsController extends AppController {
 		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
 		$this->set('_serialize', array('shiftList'));
 	}
-	
+
 	/*
 	 * List calendars
 	 */
@@ -371,7 +418,7 @@ class ShiftsController extends AppController {
 
 		$this->set('calendars', $this->Calendar->find('all', array(
 				'fields' => array(
-						'id', 
+						'id',
 						'name',),
 				'conditions' => $conditions)));
 		$this->set('_serialize', array('calendars'));

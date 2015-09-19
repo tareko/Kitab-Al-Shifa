@@ -40,7 +40,7 @@ $(function(){
 
 
 <div class="ui-widget">
-	<ul id="tags">
+	<ul id="tags" style="width: 100%; max-width: 1200px;">
 	</ul>
 </div>
 

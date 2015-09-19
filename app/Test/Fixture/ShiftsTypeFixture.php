@@ -131,5 +131,16 @@ class ShiftsTypeFixture extends CakeTestFixture {
 			'start_date' => '2011-01-01',
 			'expiry_date' => '2031-12-31'
 		),
+		array(
+				'id' => '13',
+				'location_id' => '1',
+				'shift_start' => '22:00:00',
+				'shift_end' => '04:00:00',
+				'comment' => '',
+				'display_order' => '1',
+				'start_date' => '2011-01-01',
+				'expiry_date' => '2031-12-31'
+		),
+		
 	);
 }

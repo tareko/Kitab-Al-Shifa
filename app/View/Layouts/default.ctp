@@ -26,9 +26,10 @@
 <?php
 //		echo $this->Html->meta('icon');
 		echo $this->Html->script("jquery");
-		
+
 		echo $this->Html->css('cake.generic');
 		echo $this->Html->css('bootstrap.min');
+		echo $this->Html->css('bootstrap-custom');
 
 		echo $scripts_for_layout;
 	?>
@@ -71,7 +72,7 @@
 		$isLive = '';
 		$currentPage = 	$_SERVER['REQUEST_URI'];
 	?>
-		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/compare') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
+		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
 		<ul>
 			<li><?php
 				$isLive = '';
@@ -79,13 +80,6 @@
 					$isLive = array('class' => 'menu-current');
 				}
 				echo $this->Html->link('Make a trade', array('controller' => 'trades', 'action' => 'index'), $isLive) ?>
-			</li>
-			<li><?php 
-				$isLive = '';
-				if ($currentPage == Router::url('/trades/compare')) {
-					$isLive = array('class' => 'menu-current');
-				}
-				echo $this->Html->link('Compare schedules', array('controller' => 'trades', 'action' => 'compare'), $isLive) ?>
 			</li>
 			<li><?php
 				$isLive = '';

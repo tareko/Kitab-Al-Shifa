@@ -37,7 +37,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.calendar', 'app.trade', 'app.user_usergroup_map_j17', 'app.usergroup_j17', 'app.trades_detail');
+	public $fixtures = array('app.shift', 'app.user', 'app.profile', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.shifts_type', 'app.location', 'app.calendar', 'app.trade', 'app.user_usergroup_map_jem5', 'app.usergroup_jem5', 'app.trades_detail');
 
 /**
  * setUp method
@@ -80,34 +80,22 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 	public function testIndex() {
 		$result = $this->testAction('/shifts/index');
 		$this->assertContains('<td>2011-12-02&nbsp;</td>
-		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/3">1000-1600 U45</a>&nbsp;</td>
-		<td><a href="/kitab/users/view/2">Harold Morrissey</a>&nbsp;</td>
+		<td><a href="/locations/view/1">Bermuda</a>&nbsp;</td>
+		<td><a href="/shifts_types/view/3">1000-1600 U45</a>&nbsp;</td>
+		<td><a href="/users/view/2">Harold Morrissey</a>&nbsp;</td>
 		<td>2011-10-19 08:23:49&nbsp;</td>', $result);
 	}
 
 	public function testIndexId() {
 		$result = $this->testAction('/shifts/index/id:1');
-		$this->assertContains('<td>2013-12-28&nbsp;</td>
-		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/12">0400-1000 </a>&nbsp;</td>
-		<td><a href="/kitab/users/view/1">James Bynum</a>&nbsp;</td>
-		<td>2011-10-19 16:57:23&nbsp;</td>', $result);
+		$this->assertContains('<td><a href="/shifts_types/view/8">1000-1800 </a>&nbsp;</td>', $result);
 	}
 
 	//TODO: This is probably wrong. Calendar #1 doesn't include the dates shown.
 	public function testIndexCalendar() {
 		$result = $this->testAction('/shifts/index/calendar:1');
-		$this->assertContains('<td>2011-12-11&nbsp;</td>
-		<td><a href="/kitab/locations/view/3">Come on pretty mama</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/10">0800-1500 </a>&nbsp;</td>
-		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
-		<td>2011-10-19 10:36:51&nbsp;</td>', $result);
-		$this->assertTextNotContains('<td>2013-12-30&nbsp;</td>
-		<td><a href="/kitab/locations/view/1">Bermuda</a>&nbsp;</td>
-		<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>
-		<td><a href="/kitab/users/view/3">Madeline Cremin</a>&nbsp;</td>
-		<td>2011-10-19 16:55:23&nbsp;</td>', $result);
+		$this->assertContains('<td><a href="/shifts_types/view/6">0800-1600 </a>&nbsp;</td>', $result);
+		$this->assertTextNotContains('<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>', $result);
 	}
 
 
@@ -122,28 +110,6 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  */
 	public function testAdd() {
 		$result = $this->testAction('/shifts/add');
-		debug($result);
-	}
-
-/**
- * testPdfCreate method
- *
- * @return void
- */
-	public function testPdfCreateNoCalGiven() {
-		$result = $this->testAction('/shifts/pdfCreate',
-				array('return' => 'vars'));
-		debug($result);
-	}
-
-	/**
-	 * Test to make sure that the correct 'lastupdated' variable is returned for that calendar.
-	 */
-	//#TODO Broken, since the wrong model loads up due to $this->Shift = new Shift(); in Calendar model.
-	public function testPdfCreateLastUpdated() {
-		$result = $this->testAction('/shifts/pdfCreate/calendar:1',
-				array('return' => 'vars'));
-		$this->assertEquals('2011-10-19 10:36:51', $result['masterSet']['calendar']['lastupdated']['Shift']['updated']);
 	}
 
 /**
@@ -152,6 +118,24 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testCalendarEditNoCalGiven() {
+
+
+		$Shifts = $this->generate('Shifts', array(
+				'methods' => array(
+						'setAction'
+				),
+				'components' => array(
+						'Auth')));
+
+		$Shifts->expects($this->once())
+		->method('setAction')
+		->will($this->returnValue(true));
+
+		$Shifts->Auth
+		->expects($this->once())
+		->method('user')
+		->will($this->returnValue(1));
+
 		$result = $this->testAction('/shifts/calendarEdit');
 		debug($result);
 	}

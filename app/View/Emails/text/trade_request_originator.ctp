@@ -1,8 +1,13 @@
+<?php $consideration = array(
+		'0' => 'Cash',
+		'1' => 'Trade',
+		'2' => 'Future consideration')?>
 Dear <?=$user['name']?>,
 
-There has been a request to trade your shift:
+<?=$submittedUser['name'] ?> has submitted a request to trade your shift:
 
 <?= $shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times']; ?>
+
 
 Please review this trade carefully. Once you accept, the people you would like to trade with will be contacted.
 
@@ -13,7 +18,7 @@ To *ACCEPT*, click here:
 		'controller' => 'trades',
 		'action' => 'accept',
 		), true
-	) . '?id=' .$tradeId .'&token=' .$token
+	) . '?id=' .$trade['id'] .'&token=' .$token
 ?>
 
 To *REJECT*, click here:
@@ -21,24 +26,31 @@ To *REJECT*, click here:
 		'controller' => 'trades',
 		'action' => 'reject',
 		), true
-	) . '?id=' .$tradeId .'&token=' .$token
+	) . '?id=' .$trade['id'] .'&token=' .$token
 ?>
 
-<?php //TODO: PEOPLE TO TRADE WITH
-//This shift is in consideration for: CASH/TRADE/ETC
 
-//Once you accept this trade, it will be sent to the following people:
-//<ul><li></li></ul>
+This shift is being offered for: <?=$consideration[$trade['consideration']]?>
+
+
+Once you accept this trade, it will be sent to the following people:
+
+<?php foreach ($tradesDetail as $detail) {
+	echo "* " . $detail['User']['name']."\n";
+}
 
 
 //TODO: Two-way trades
 //$fromUser['name'] takes 
 //YOUR SHIFT'
-
-//This request has been initiated by:
-
 ?>
 
+
+They will receive the following message:
+****Start Message****
+<?=$trade['message'] ?>
+
+****End Message****
 
 Thank you for your consideration,
 
