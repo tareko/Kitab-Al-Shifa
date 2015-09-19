@@ -14,7 +14,13 @@ class User extends AppModel
 	);
 	public $hasMany = array(
 			'Shift',
-			'Trade',
+			'Trade' => array(
+					'className' => 'Trade',
+					'foreignKey' => 'user_id'
+					),
+			'TradeSubmitted' => array(
+					'className' => 'Trade',
+					'foreignKey' => 'submitted_by'),
 			'TradesDetail'
 			);
 	public $hasAndBelongsToMany = array(
