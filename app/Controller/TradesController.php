@@ -47,6 +47,7 @@ class TradesController extends AppController {
 				'recursive' => -1,
 				'order' => 'Trade.status ASC',
 				'limit' => 10,
+				'group' => 'Trade.id',
 				'fields' => array(
 						'status',
 						'user_id',

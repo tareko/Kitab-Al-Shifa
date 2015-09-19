@@ -9,12 +9,9 @@
 			<th class="actions"><?php echo __('Actions');?></th>
 	</tr>
 	<?php
-	$alreadyDisplayed = array();
 	foreach ($trades as $trade):
 	// If trade has already been displayed, continue
 	// Otherwise, add id to array
-	if (in_array ($trade['Trade']['id'], $alreadyDisplayed)) { continue; }
-	else { $alreadyDisplayed[] = $trade['Trade']['id']; }
 
 	?>
 	<tr>
