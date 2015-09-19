@@ -97,7 +97,6 @@ class TradesController extends AppController {
 				'OR' => array(
 					'Trade.user_id' => $usersId,
 					'TradesDetail.user_id' => $usersId))));
-		
 		$this->render();
 	}
 
@@ -202,12 +201,12 @@ class TradesController extends AppController {
 
 	/**
 	 * Function to accept trade request
-	 * 
+	 *
 	 * @throws NotFoundException
 	 */
 	public function accept() {
-		if (!isset($this->request) || 
-			!isset($this->request->query['id']) || 
+		if (!isset($this->request) ||
+			!isset($this->request->query['id']) ||
 			!isset($this->request->query['token'])) {
 			throw new NotFoundException(__('Invalid request'));
 		}
