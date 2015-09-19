@@ -20,7 +20,8 @@ class User extends AppModel
 					),
 			'TradeSubmitted' => array(
 					'className' => 'Trade',
-					'foreignKey' => 'submitted_by'),
+					'foreignKey' => 'submitted_by',
+			),
 			'TradesDetail'
 			);
 	public $hasAndBelongsToMany = array(
