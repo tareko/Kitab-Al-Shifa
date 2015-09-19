@@ -47,7 +47,12 @@ echo $this->Html->css('ui-lightness/jquery-ui');
 </div>
 	<div class="btn-group" data-toggle="buttons">
 	
-<?php echo $this->Form->radio('Output Format', array ('webcal' => 'Web calendar', 'list' => 'List of shifts', 'print' => 'Print copy', 'ics' => 'ICS'),
+<?php echo $this->Form->radio('Output Format', array (
+		'webcal' => 'Web calendar',
+		'list' => 'List of shifts',
+		'print' => 'Print copy',
+		'ics' => 'iCal',
+		'csv' => 'Spreadsheet'),
 		array (
 				'name' => 'data[Shift][output]',
 				'class' => 'btn btn-primary',

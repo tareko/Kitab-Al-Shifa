@@ -157,6 +157,20 @@ class UserTestCase extends CakeTestCase {
 		$this->assertFalse($result);
 	}
 
+	// Test lookupUserId function
+	public function testLookupUserId() {
+		$result = $this->User->lookupUserId('Bynum', 'lastname');
+		$expected = '1';
+		$this->assertEquals($expected, $result);
+	}
+	
+	// Test lookupUserId function with not found lastname
+	public function testLookupUserIdNoMatch() {
+		$result = $this->User->lookupUserId('Bynum22', 'lastname');
+		$expected = false;
+		$this->assertEquals($expected, $result);
+	}
+
 /**
  * testGetCommunicationMethod method
  *
