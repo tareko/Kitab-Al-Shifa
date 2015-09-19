@@ -55,7 +55,7 @@ class TradesControllerTestCase extends ControllerTestCase {
  *
  * @return void
  */
-	public function testIndex() {
+	public function testHistory() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed',
@@ -70,10 +70,9 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-//		$result = $this->testAction('/trades/index');
-		echo $this->testAction('/trades/index');
-		die;
+		$result = $this->testAction('/trades/history', array('return' => 'vars'));
 		debug($result);
+		die;
 	}
 /**
  * testView method
@@ -250,69 +249,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 	public function testEdit() {
 
 	}
-
-/**
- * testCompare method
- * Ensure that the appropriate form is put out
- *
- * @return void
- */
-	public function testCompare() {
-
-		$Trades = $this->generate('Trades', array(
-				'methods' => array(
-						'_requestAllowed'
-				),
-		));
-
-		$Trades->expects($this->any())
-		->method('_requestAllowed')
-		->will($this->returnValue(true));
-		$result = $this->testAction('/trades/compare');
-		$this->assertContains('itemName: \'data[User]', $result);
-		$this->assertContains('<div class="input select"><select name="data[Calendar][id]" required="required" id="CalendarId">', $result);
-	}
-
-/**
- * testCompareSubmitted method
- * Ensure that the form redirects properly when appropriate info is entered
- *
- * @return void
- */
-	public function testCompareSubmitted() {
-
-		$Trades = $this->generate('Trades', array(
-				'methods' => array(
-						'_requestAllowed'
-				),
-		));
-
-		$Trades->expects($this->any())
-			->method('_requestAllowed')
-			->will($this->returnValue(true));
-
-		$data = array(
-				'User' => array(
-						'0' => array(
-								'id' => 1
-								),
-						'1' => array(
-								'id' => 2
-								)
-				),
-				'Calendar' => array(
-						'id' => 1
-				)
-		);
-
-		$this->testAction(
-				'/trades/compare',
-				array('data' => $data, 'method' => 'post')
-		);
-		$this->assertContains('shifts/calendarView/id[0]:1/id[1]:2/calendar:1', $this->headers['Location']);
-	}
-
-
 
 	public function testStartUnprocessed() {
 		//TODO: Fix broken test
