@@ -9,7 +9,7 @@ class TradesDetailsController extends AppController {
 
 
 	public $helpers = array('Js', 'Cache', 'PhysicianPicker', 'DatePicker', 'Time');
-	public $components = array('RequestHandler', 'Search.Prg');
+	public $components = array('RequestHandler', 'Search.Prg', 'Flash');
 	public $scaffold = 'admin';
 	var $paginate = array(
 				'recursive' => '2',
