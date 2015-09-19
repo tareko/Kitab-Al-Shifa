@@ -71,8 +71,14 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 		$result = $this->testAction('/trades/history', array('return' => 'vars'));
-		debug($result);
-		die;
+		$expected = array(
+						'status' => '0',
+						'user_id' => '1',
+						'user_status' => '0',
+						'token' => '',
+						'shift_id' => '16',
+						'id' => '1');
+		$this->assertEqual($result['trades'][4]['Trade'], $expected);
 	}
 /**
  * testView method
