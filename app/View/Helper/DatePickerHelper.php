@@ -22,9 +22,11 @@ class DatePickerHelper extends AppHelper {
 		<?= $this->Html->script('jquery-ui'); // Include jQuery UI library ?>
 
 	 	<?= "<div class='input text'><input type='date' id='datepicker" . $calendarId . "' class='form-control'></div>"; ?>
-		
+
 		<script type="text/javascript">
 		$(document).ready(function() {
+            $("#datepicker<?=$calendarId?>").attr("disabled", "disabled");
+            $("#datepicker<?=$calendarId?>").val("loading...");
 
 			$.getJSON(
 				'<?= $this->Html->url(array('controller' => 'shifts', 'action' => 'listShifts.json')); ?>',
@@ -38,6 +40,8 @@ class DatePickerHelper extends AppHelper {
 					});
 				}
 			);
+            $("#datepicker<?=$calendarId?>").removeAttr("disabled");
+            $("#datepicker<?=$calendarId?>").val("select date");
 		});
 
 		function shiftsWorking(date) {
