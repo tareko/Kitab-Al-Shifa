@@ -1,3 +1,7 @@
+<?php $consideration = array(
+		'0' => 'Cash',
+		'1' => 'Trade',
+		'2' => 'Future consideration')?>
 Dear <?=$tradesDetail['User']['name']?>,
 
 You have received a trade request from <?=$user['name']?>.
@@ -12,8 +16,10 @@ The proposed trade is as follows:
 
 You take: <?=$shift['date'] .' '. $shift['ShiftsType']['Location']['location'] .' '. $shift['ShiftsType']['times'];?>
 
+For: <?= $consideration[$trade['consideration']]?>
+
 <?php //TODO: Two-way trades
-//$fromUser['name'] takes 
+//$fromUser['name'] takes
 //YOUR SHIFT\n\n'?>
 
 Please review this trade carefully.
