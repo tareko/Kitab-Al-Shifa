@@ -400,7 +400,7 @@ class ShiftsController extends AppController {
 		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
 		$this->set('_serialize', array('shiftList'));
 	}
-	
+
 	/*
 	 * List calendars
 	 */
@@ -414,10 +414,10 @@ class ShiftsController extends AppController {
 
 		$this->set('calendars', $this->Calendar->find('all', array(
 				'fields' => array(
-						'id', 
+						'id',
 						'name',),
 				'conditions' => $conditions)));
 		$this->set('_serialize', array('calendars'));
-	}	
+	}
 }
 ?>
