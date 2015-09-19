@@ -22,3 +22,7 @@ To install:
 8. Install wkhtmltopdf from the site (otherwise, you may not have proper PDFs):
 	a. http://wkhtmltopdf.org/downloads.html
 	b. Configure the location in bootstrap.php
+	
+9. Create a cron that hits the following:
+	a. /trades/startUnprocessed
+	b. /trades/completeAccepted
