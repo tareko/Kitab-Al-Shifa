@@ -38,10 +38,11 @@ class DatePickerHelper extends AppHelper {
 						dateFormat: 'yy-mm-dd',
 						onSelect: calendarSelect
 					});
+					$("#datepicker<?=$calendarId?>").removeAttr("disabled");
+		            $("#datepicker<?=$calendarId?>").val("select date");
 				}
 			);
-            $("#datepicker<?=$calendarId?>").removeAttr("disabled");
-            $("#datepicker<?=$calendarId?>").val("select date");
+
 		});
 
 		function shiftsWorking(date) {
