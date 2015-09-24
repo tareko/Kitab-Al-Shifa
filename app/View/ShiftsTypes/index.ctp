@@ -54,6 +54,6 @@
 		<li><?php echo $this->Html->link(__('New Location'), array('controller' => 'locations', 'action' => 'add')); ?> </li>
 		<li><?php echo $this->Html->link(__('List Shifts'), array('controller' => 'shifts', 'action' => 'index')); ?> </li>
 		<li><?php echo $this->Html->link(__('New Shift'), array('controller' => 'shifts', 'action' => 'add')); ?> </li>
-		<li><?php echo $this->Html->link(__('Hide expired shift types'), array('hideExpired' => '1')); ?> </li>
+		<li><?php echo $this->Html->link(__('Hide expired shift types'), array('?' => array('hideExpired' => '1'))); ?> </li>
 	</ul>
 </div>
