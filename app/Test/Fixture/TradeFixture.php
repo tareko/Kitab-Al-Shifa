@@ -38,7 +38,7 @@ class TradeFixture extends CakeTestFixture {
 			'user_status' => '0',
 			'submitted_by' => 1,
 			'confirmed' => 1,
-			'token' => '',
+			'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 			'updated' => '2012-05-23 11:59:31'
 		),
 	array(

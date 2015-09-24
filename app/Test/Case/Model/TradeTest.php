@@ -1023,6 +1023,7 @@ class TradeTestCase extends CakeTestCase {
 								'submitted_by' => '2',
 								'message' => '0',
 								'confirmed' => '0',
+								'consideration' => 1,
 								'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 								'updated' => '2012-05-23 11:59:42'
 						),
@@ -1096,7 +1097,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade->request->query['id'] = '9';
 		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, true);
 	}
 
@@ -1123,7 +1124,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade->request->query['id'] = '999';
 		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'Trade not found');
 	}
 
@@ -1149,8 +1150,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '10';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = '15b6a69f207d8f6cd29c66b4cb729d39';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'You have already accepted this trade');
 	}
 
@@ -1176,8 +1177,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '13';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'This trade is already complete');
 	}
 
@@ -1203,8 +1204,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '14';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'This trade has already been cancelled');
 	}
 
@@ -1229,8 +1230,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '15';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'An error occurred with this trade[1]');
 	}
 
@@ -1256,8 +1257,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '1';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'An error occurred with this trade[2]');
 	}
 
@@ -1283,8 +1284,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '7';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = '696a521644768fe95e28505b5c8e602b';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'You have already accepted this trade');
 	}
 
@@ -1310,8 +1311,8 @@ class TradeTestCase extends CakeTestCase {
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
 		$this->Trade->request->query['id'] = '6';
-		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->Trade->request->query['token'] = 'e8aa4be97281849d511568b450ee2b7f';
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'You have already rejected this trade');
 	}
 
@@ -1339,7 +1340,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade->request->query['id'] = '12';
 		$this->Trade->request->query['token'] = 'ad096b2b5654477ab9f4708f1ca6e2c7';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'Sorry, but your token is wrong. You are not authorized to act on this trade.');
 	}
 
@@ -1368,11 +1369,60 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade->request->query['id'] = '12';
 		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
-		$result = $this->Trade->changeStatus($this->Trade->request);
+		$result = $this->Trade->changeStatus($this->Trade->request, 2);
 		$this->assertEqual($result, 'An error has occured during your request[3]');
 	}
 
+	// No status given
+	public function testchangeStatus12() {
 
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'save'));
+
+		// Mock save function
+		$this->Trade->expects($this->any())
+		->method('save')
+		->will($this->returnValue(false));
+
+		// Mock data request function
+		$this->Trade->request = $this->getMock('CakeRequest', array('query'));
+		$this->Trade->request->expects($this->any())
+		->method('query')
+		->will($this->returnValue(array(
+				'id' => '20',
+				'token' => '1f110efce2852a90db905418edbe8932')));
+
+		$this->Trade->request->query['id'] = '12';
+		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
+		$result = $this->Trade->changeStatus($this->Trade->request);
+		$this->assertEqual($result, 'Improper status was given to this function');
+	}
+
+
+	// Non-numeric status given
+	public function testchangeStatus13() {
+
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'save'));
+
+		// Mock save function
+		$this->Trade->expects($this->any())
+		->method('save')
+		->will($this->returnValue(false));
+
+		// Mock data request function
+		$this->Trade->request = $this->getMock('CakeRequest', array('query'));
+		$this->Trade->request->expects($this->any())
+		->method('query')
+		->will($this->returnValue(array(
+				'id' => '20',
+				'token' => '1f110efce2852a90db905418edbe8932')));
+
+		$this->Trade->request->query['id'] = '12';
+		$this->Trade->request->query['token'] = 'a50e7ad2e87fe32ef46d9bb84db20012';
+		$result = $this->Trade->changeStatus($this->Trade->request, 'bad');
+		$this->assertEqual($result, 'Improper status was given to this function');
+	}
 
 /**
  * tearDown method
