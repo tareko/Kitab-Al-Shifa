@@ -370,7 +370,7 @@ class Trade extends AppModel {
 	 * @param integer $status
 	 */
 
-	public function changeStatus($request = array(), $status = null) {
+	public function changeStatus($request = array(), $status = false) {
 		$token = $request->query['token'];
 		$id = $request->query['id'];
 
@@ -413,6 +413,17 @@ class Trade extends AppModel {
 			return 'Trade not found';
 		}
 
+		// Error if no status is given
+
+		elseif (!is_numeric($status)) {
+			return 'Improper status was given to this function';
+		}
+
+		// Error if token is wrong
+		if ($token != $trade['Trade']['token']) {
+			return 'Sorry, but your token is wrong. You are not authorized to act on this trade.';
+		}
+
 		// Error if trade status != 0
 
 		if ($trade['Trade']['status'] != 0) {
@@ -442,11 +453,6 @@ class Trade extends AppModel {
 			else {
 				return 'An error occurred with this trade[2]';
 			}
-		}
-
-		// Error if token is wrong
-		if ($token != $trade['Trade']['token']) {
-			return 'Sorry, but your token is wrong. You are not authorized to act on this trade.';
 		}
 
 		// If no errors, update status of trade
