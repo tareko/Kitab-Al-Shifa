@@ -14,16 +14,16 @@ class TradeRequest {
 	 * @param string $subject 		Subject line
 	 * @return multitype:boolean string
 	 */
-	
+
 	public function send($toUser = array(), $trade = array(), $tradesDetail = array(), $method = 'email', $template = false, $subject = false) {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
-				
+
 		//Generate token
 		$token = bin2hex(openssl_random_pseudo_bytes(16));
-				
+
 		//Send out communication to receiving user
-		
+
 		if ($method == 'email') {
 			$email = new CakeEmail('default');
 			$success = $email->template($template)
@@ -39,18 +39,18 @@ class TradeRequest {
 						'token' => $token))
 				->send();
 		}
-		
+
 		return array(
 						'return' => ($success ? true : false),
 						'token' => $token
 		);
 	}
-	
+
 	/**
 	 * sendOriginatorStatusChange method
 	 * This method will send the originator of a trade a communication advising of a change in
 	 * status of the trade, usually accepted or rejected.
-	 * 
+	 *
 	 * @param integer $status
 	 * @param array $trade
 	 * @param string $method
@@ -58,7 +58,7 @@ class TradeRequest {
 	public function sendOriginatorStatusChange ($status, $trade, $method = 'email') {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
-	
+
 		//Send out communication to originating user
 		$statusWord = 'ERROR';
 		if ($status == 2) {
@@ -67,7 +67,7 @@ class TradeRequest {
 		if ($status == 3) {
 			$statusWord = 'REJECTED';
 		}
-		
+
 		if ($method == 'email') {
 			$email = new CakeEmail('default');
 			$email->template('tradeRequestOriginatorStatusChange')
@@ -95,7 +95,7 @@ class TradeRequest {
 	public function sendRecipientStatusChange ($status, $tradesDetail, $method = 'email') {
 		App::uses('CakeEmail', 'Network/Email');
 		App::uses('TimeHelper', 'View/Helper');
-	
+
 		//Send out communication to originating user
 		$statusWord = 'ERROR';
 		if ($status == 2) {
@@ -104,22 +104,10 @@ class TradeRequest {
 		if ($status == 3) {
 			$statusWord = 'REJECTED';
 		}
-	
+
 		if ($method == 'email') {
 			$email = new CakeEmail('default');
-			
-			//Send a message to the recipient about the decision
-			/*$email->template('tradeRequestRecipientStatusChange')
-				->emailFormat('text')
-				->to($tradesDetail['User']['email'])
-				->subject('[Kitab] Shift trade status update')
-				->viewVars(array(
-							'userOriginator' => $tradesDetail['Trade']['User'],
-							'userRecipient' => $tradesDetail['User'],
-							'statusWord' => $statusWord,
-							'shift' => $tradesDetail['Trade']['Shift']))
-				->send();
-			*/
+
 			//Send a message to the originator about the decision
 			$email = new CakeEmail('default');
 			$email->template('tradeRequestRecipientStatusChangeToOriginator')
