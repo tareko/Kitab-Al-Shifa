@@ -75,7 +75,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'status' => '0',
 						'user_id' => '1',
 						'user_status' => '0',
-						'token' => '',
+						'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 						'shift_id' => '16',
 						'id' => '1');
 		$this->assertEqual($result['trades'][4]['Trade'], $expected);
@@ -110,7 +110,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_usersId')
 		->will($this->returnValue(1));
 
-		$result = $this->testAction('/trades/add');
+		$result = $this->testAction('/trades/index');
 		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="me" id="TradeFromUserId"/>', $result);
 		$this->assertContains('<div id="datepicker1"></div>', $result);
 		$this->assertContains('<select name="data[Trade][shift_id]" id="TradeShiftId">', $result);

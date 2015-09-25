@@ -34,9 +34,11 @@ class TradeTestCase extends CakeTestCase {
 				'status' => '0',
 				'user_status' => '0',
 				'submitted_by' => '2',
-				'confirmed' => 0,
+				'confirmed' => '0',
 				'token' => '',
-				'updated' => '2012-05-23 11:59:32'
+				'updated' => '2012-05-23 11:59:32',
+				'message' => null,
+				'consideration' => '1'
 			),
 			'User' => array(
 				'id' => '1',
@@ -62,31 +64,44 @@ class TradeTestCase extends CakeTestCase {
 				)
 			),
 			'TradesDetail' => array(
-				(int) 0 => array(
-					'id' => '4',
+				0 => array(
+					'id' => '3',
 					'trade_id' => '2',
-					'user_id' => '4',
-					'token' => '',
-					'status' => '0',
+					'user_id' => '3',
+					'token' => '71cad469c97b8fbab04332e9aabee3a8',
+					'status' => '2',
 					'timestamp' => '2012-05-23 11:29:36',
 					'User' => array(
-						'id' => '4',
-						'name' => 'Jacqueline Beaudoin',
-						'email' => 'false4@false.com'
+						'id' => '3',
+						'name' => 'Madeline Cremin',
+						'email' => 'false3@false.com'
 					)
 				),
-				(int) 1 => array(
-					'id' => '5',
-					'trade_id' => '2',
-					'user_id' => '5',
-					'token' => '',
-					'status' => '0',
-					'timestamp' => '2012-05-24 01:03:30',
-					'User' => array(
+				1 => array(
+						'id' => '4',
+						'trade_id' => '2',
+						'user_id' => '4',
+						'token' => '71cad469c97b8fbab04332e9aabee3a8',
+						'status' => '3',
+						'timestamp' => '2012-05-23 11:29:36',
+						'User' => array(
+								'id' => '4',
+								'name' => 'Jacqueline Beaudoin',
+								'email' => 'false4@false.com'
+						)
+				),
+				2 => array(
 						'id' => '5',
-						'name' => 'Sabine Chatigny',
-						'email' => 'false5@false.com'
-					)
+						'trade_id' => '2',
+						'user_id' => '5',
+						'token' => '71cad469c97b8fbab04332e9aabee3a8',
+						'status' => '4',
+						'timestamp' => '2012-05-24 01:03:30',
+						'User' => array(
+								'id' => '5',
+								'name' => 'Sabine Chatigny',
+								'email' => 'false5@false.com'
+						)
 				)
 			)
 		);
@@ -180,11 +195,10 @@ class TradeTestCase extends CakeTestCase {
 
 
 
-
 	// processTrades => user_status < 1
 		//  ['Trade']['Confirmed'] == 1
 			// $this->_TradeRequest->send == true
-				// $this->save() == true
+				// $this->updateAll() == true
 	public function testprocessTrades1() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -234,7 +248,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -245,19 +259,21 @@ class TradeTestCase extends CakeTestCase {
 		->method('send')
 		->will($this->returnValue(array('return' => true)));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
 		$this->assertEqual($result, true);
 	}
+
+
 	// Simulate bad DB write
 	// processTrades => user_status < 1
 	//  ['Trade']['Confirmed'] == 1
 	// $this->_TradeRequest->send == true
-	// $this->save() == false
+	// $this->updateAll() == false
 	public function testprocessTrades2() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -307,7 +323,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -318,9 +334,9 @@ class TradeTestCase extends CakeTestCase {
 		->method('send')
 		->will($this->returnValue(array('return' => true)));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		$result = $this->Trade->processTrades();
@@ -331,7 +347,7 @@ class TradeTestCase extends CakeTestCase {
 	// processTrades => user_status < 1
 	//  ['Trade']['Confirmed'] == 1
 	// $this->_TradeRequest->send == true
-	// $this->save() == false
+	// $this->updateAll() == false
 	public function testprocessTrades3() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -381,7 +397,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -391,9 +407,9 @@ class TradeTestCase extends CakeTestCase {
 		$this->Trade->_TradeRequest->expects($this->any())
 		->method('send')
 		->will($this->returnValue(array('return' => false)));
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -404,7 +420,7 @@ class TradeTestCase extends CakeTestCase {
 	//  ['Trade']['Confirmed'] == 0
 		// $trade['Trade']['submitted_by'] == $trade['Trade']['user_id']
 	// $this->_TradeRequest->send == true
-	// $this->save() == false
+	// $this->updateAll() == false
 	public function testprocessTrades4() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -454,7 +470,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -465,9 +481,9 @@ class TradeTestCase extends CakeTestCase {
 		->method('send')
 		->will($this->returnValue(array('return' => true)));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -479,7 +495,7 @@ class TradeTestCase extends CakeTestCase {
 	//  ['Trade']['Confirmed'] == 0
 		// $trade['Trade']['submitted_by'] == $trade['Trade']['user_id']
 	// $this->_TradeRequest->send == true
-	// $this->save() == false
+	// $this->updateAll() == false
 	public function testprocessTrades5() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -529,7 +545,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -540,9 +556,9 @@ class TradeTestCase extends CakeTestCase {
 		->method('send')
 		->will($this->returnValue(array('return' => true)));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		$result = $this->Trade->processTrades();
@@ -553,7 +569,7 @@ class TradeTestCase extends CakeTestCase {
 	//  ['Trade']['Confirmed'] == 0
 		// $trade['Trade']['submitted_by'] != $trade['Trade']['user_id']
 	// $this->_TradeRequest->send == true
-	// $this->save() == true
+	// $this->updateAll() == true
 	public function testprocessTrades6() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -603,7 +619,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -616,9 +632,9 @@ class TradeTestCase extends CakeTestCase {
 				'return' => true,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012')));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -630,7 +646,7 @@ class TradeTestCase extends CakeTestCase {
 	//  ['Trade']['Confirmed'] == 0
 		// $trade['Trade']['submitted_by'] != $trade['Trade']['user_id']
 	// $this->_TradeRequest->send == true
-	// $this->save() == true
+	// $this->updateAll() == true
 	public function testprocessTrades7() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -680,7 +696,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -693,9 +709,9 @@ class TradeTestCase extends CakeTestCase {
 				'return' => true,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012')));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		$result = $this->Trade->processTrades();
@@ -707,7 +723,7 @@ class TradeTestCase extends CakeTestCase {
 	//  ['Trade']['Confirmed'] == 0
 	// $trade['Trade']['submitted_by'] != $trade['Trade']['user_id']
 	// $this->_TradeRequest->send == true
-	// $this->save() == true
+	// $this->updateAll() == true
 	public function testprocessTrades8() {
 		// Set array mock for processTrades
 		$processTradesMock = array(
@@ -757,7 +773,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -770,9 +786,9 @@ class TradeTestCase extends CakeTestCase {
 				'return' => false,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012')));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -833,7 +849,11 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
+
+		$this->Trade->TradesDetail = $this->getMockForModel('TradesDetail', array(
+				'updateAll'));
+
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -846,9 +866,13 @@ class TradeTestCase extends CakeTestCase {
 				'return' => true,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012')));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
+		->will($this->returnValue(true));
+
+		$this->Trade->TradesDetail->expects($this->any())
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -910,7 +934,11 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
+
+				$this->Trade->TradesDetail = $this->getMockForModel('TradesDetail', array(
+				'updateAll'));
+
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -923,9 +951,13 @@ class TradeTestCase extends CakeTestCase {
 				'return' => true,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012')));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
+		->will($this->returnValue(false));
+
+		$this->Trade->TradesDetail->expects($this->any())
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		$result = $this->Trade->processTrades();
@@ -987,7 +1019,7 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
@@ -1000,9 +1032,9 @@ class TradeTestCase extends CakeTestCase {
 				'return' => false,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012')));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -1061,14 +1093,22 @@ class TradeTestCase extends CakeTestCase {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
 				'getUnprocessedTrades',
-				'save'));
+				'updateAll'));
+
+		$this->Trade->TradesDetail = $this->getMockForModel('TradesDetail', array(
+				'updateAll'));
+
 		$this->Trade->expects($this->any())
 		->method('getUnprocessedTrades')
 		->will($this->returnValue($processTradesMock));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
+		->will($this->returnValue(true));
+
+		$this->Trade->TradesDetail->expects($this->any())
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		$result = $this->Trade->processTrades();
@@ -1080,11 +1120,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1107,11 +1147,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus2() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1134,11 +1174,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus3() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1161,11 +1201,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus4() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1188,11 +1228,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus5() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1214,11 +1254,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus6() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1241,11 +1281,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus7() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1268,11 +1308,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus8() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1295,11 +1335,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus9() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1323,11 +1363,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus10() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(true));
 
 		// Mock data request function
@@ -1352,11 +1392,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus11() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		// Mock data request function
@@ -1377,11 +1417,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus12() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		// Mock data request function
@@ -1403,11 +1443,11 @@ class TradeTestCase extends CakeTestCase {
 	public function testchangeStatus13() {
 
 		$this->Trade = $this->getMockForModel('Trade', array(
-				'save'));
+				'updateAll'));
 
-		// Mock save function
+		// Mock updateAll function
 		$this->Trade->expects($this->any())
-		->method('save')
+		->method('updateAll')
 		->will($this->returnValue(false));
 
 		// Mock data request function

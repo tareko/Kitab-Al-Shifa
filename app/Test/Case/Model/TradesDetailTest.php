@@ -170,7 +170,7 @@ class TradesDetailTest extends CakeTestCase {
 		$this->TradesDetail->request->query['id'] = '2';
 		$this->TradesDetail->request->query['token'] = '71cad469c97b8fbab04332e9aabee3a8';
 		$result = $this->TradesDetail->changeStatus($this->TradesDetail->request, 2);
-		$this->assertEqual($result, 'This trade has not been processed yet');
+		$this->assertEqual($result, 'This trade has not been processed yet[1]');
 	}
 
 	// Status == 2
@@ -191,7 +191,7 @@ class TradesDetailTest extends CakeTestCase {
 				'id' => '20',
 				'token' => '1f110efce2852a90db905418edbe8932')));
 
-		$this->TradesDetail->request->query['id'] = '3';
+		$this->TradesDetail->request->query['id'] = '20';
 		$this->TradesDetail->request->query['token'] = '71cad469c97b8fbab04332e9aabee3a8';
 		$result = $this->TradesDetail->changeStatus($this->TradesDetail->request, 2);
 		$this->assertEqual($result, 'You have already accepted this trade');
@@ -250,17 +250,18 @@ class TradesDetailTest extends CakeTestCase {
 	public function testChangeStatus9() {
 		$this->TradesDetail = $this->getMockForModel('TradesDetail', array(
 				'save',
-				'alreadyTaken'));
+				//'alreadyTaken'
+				));
 
 		// Mock save function
 		$this->TradesDetail->expects($this->any())
 		->method('save')
 		->will($this->returnValue(true));
 
-		$this->TradesDetail->expects($this->any())
+/* 		$this->TradesDetail->expects($this->any())
 		->method('alreadyTaken')
-		->will($this->returnValue(true));
-
+		->will($this->returnValue(array('return' => true)));
+ */
 		// Mock data request function
 		$this->TradesDetail->request = $this->getMock('CakeRequest', array('query'));
 		$this->TradesDetail->request->expects($this->any())
@@ -272,7 +273,7 @@ class TradesDetailTest extends CakeTestCase {
 		$this->TradesDetail->request->query['id'] = '6';
 		$this->TradesDetail->request->query['token'] = '71cad469c97b8fbab04332e9aabee3a8';
 		$result = $this->TradesDetail->changeStatus($this->TradesDetail->request, 2);
-		$this->assertEqual($result, 'This shift has already been taken');
+		$this->assertEqual($result, 'This shift has already been taken by Harold Morrissey');
 	}
 
 	// Status == 1

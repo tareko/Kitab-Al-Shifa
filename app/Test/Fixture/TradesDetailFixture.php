@@ -37,7 +37,7 @@ class TradesDetailFixture extends CakeTestFixture {
 		),
 		array(
 			'id' => '3',
-			'trade_id' => '1',
+			'trade_id' => '2',
 			'user_id' => '3',
 			'status' => '2',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
@@ -45,7 +45,7 @@ class TradesDetailFixture extends CakeTestFixture {
 		),
 		array(
 			'id' => '4',
-			'trade_id' => '2',
+			'trade_id' => '11',
 			'user_id' => '4',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
 			'status' => '3',
@@ -53,7 +53,7 @@ class TradesDetailFixture extends CakeTestFixture {
 		),
 		array(
 			'id' => '5',
-			'trade_id' => '2',
+			'trade_id' => '11',
 			'user_id' => '5',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
 			'status' => '4',
@@ -61,7 +61,7 @@ class TradesDetailFixture extends CakeTestFixture {
 		),
 		array(
 			'id' => '6',
-			'trade_id' => '3',
+			'trade_id' => '11',
 			'user_id' => '1',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
 			'status' => '1',
@@ -69,7 +69,7 @@ class TradesDetailFixture extends CakeTestFixture {
 		),
 		array(
 			'id' => '7',
-			'trade_id' => '3',
+			'trade_id' => '11',
 			'user_id' => '2',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
 			'status' => '2',
@@ -176,12 +176,12 @@ class TradesDetailFixture extends CakeTestFixture {
 			'trade_id' => '10',
 			'user_id' => '4',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
-			'status' => '0',
+			'status' => '2',
 			'timestamp' => '2012-05-24 01:03:30'
 		),
 		array(
 			'id' => '21',
-			'trade_id' => '10',
+			'trade_id' => '12',
 			'user_id' => '3',
 			'token' => '71cad469c97b8fbab04332e9aabee3a8',
 			'status' => '0',
