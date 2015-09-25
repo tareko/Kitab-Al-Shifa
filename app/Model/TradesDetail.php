@@ -162,15 +162,18 @@ class TradesDetail extends AppModel {
 
 		// Error if trade status != 1
 
-		if ($tradesDetail['Trade']['status'] !=  1
-				|| $tradesDetail['Trade']['user_status'] !=  2) {
+		if ($tradesDetail['Trade']['status'] ==  0) {
 			return 'This trade has not been processed yet[1]';
 		}
+
+		if ($tradesDetail['Trade']['user_status'] !=  2) {
+				return 'This trade has not been processed yet[2]';
+			}
 
 		// Error if tradesDetail status != 1
 		elseif ($tradesDetail['TradesDetail']['status'] != 1) {
 			if ($tradesDetail['TradesDetail']['status'] == 0) {
-				return 'This trade has not been processed yet[2]';
+				return 'This trade has not been processed yet[3]';
 			}
 			elseif ($tradesDetail['TradesDetail']['status'] == 2) {
 				return 'You have already accepted this trade';
