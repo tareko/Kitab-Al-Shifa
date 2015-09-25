@@ -258,7 +258,7 @@ class Trade extends AppModel {
 						// Assuming success, update Status of Trade to 1
 						$this->read(null, $trade['Trade']['id']);
 						$this->set('user_status', 2);
-						$this->set('status', 2);
+						$this->set('status', 1);
 						$this->validator()->remove('shift_id', 'checkDuplicate');
 
 						if ($this->save()) {
