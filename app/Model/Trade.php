@@ -251,8 +251,8 @@ class Trade extends AppModel {
 
 				if ($trade['Trade']['confirmed'] == 1) {
 					// Send email confirming that trade has been made
-					$sendOriginatorConfirmed = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedOriginator', '[pre-Confirmed] Shift trade has been made: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
-					$sendRecipientConfirmed = $this->_TradeRequest->send($trade['TradesDetail'][0]['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedRecipient', '[pre-Confirmed] Shift trade has been made: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+					$sendOriginatorConfirmed = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedOriginator', 'Pre-confirmed trade: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+					$sendRecipientConfirmed = $this->_TradeRequest->send($trade['TradesDetail'][0]['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedRecipient', 'Pre-confirmed trade: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 					if ($sendOriginatorConfirmed['return'] === true && $sendRecipientConfirmed['return'] === true) {
 						// Assuming success, update Status of Trade to 1
 						$data = array(
@@ -335,7 +335,7 @@ class Trade extends AppModel {
 					// If user has already received email (TradesDetail['status'] == 1), then do not send email.
 					if ($tradesDetail['status'] == 0) {
 						$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
-						$sendDetails = $this->_TradeRequest->send($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestRecipient', 'Trade request from ' .$trade['User']['name'] . ': '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+						$sendDetails = $this->_TradeRequest->send($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestRecipient', 'Trade request: ' . $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 
 						if ($sendDetails['return'] == true) {
 							// Assuming success, update Status of TradesDetail to 1
