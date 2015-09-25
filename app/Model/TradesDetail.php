@@ -164,13 +164,13 @@ class TradesDetail extends AppModel {
 
 		if ($tradesDetail['Trade']['status'] !=  1
 				|| $tradesDetail['Trade']['user_status'] !=  2) {
-			return 'This trade has not been processed yet';
+			return 'This trade has not been processed yet[1]';
 		}
 
 		// Error if tradesDetail status != 1
 		elseif ($tradesDetail['TradesDetail']['status'] != 1) {
 			if ($tradesDetail['TradesDetail']['status'] == 0) {
-				return 'This trade has not been processed yet';
+				return 'This trade has not been processed yet[2]';
 			}
 			elseif ($tradesDetail['TradesDetail']['status'] == 2) {
 				return 'You have already accepted this trade';
@@ -186,9 +186,8 @@ class TradesDetail extends AppModel {
 		// Check to see if the trade has already been taken by somebody else. If so,
 		// then render that page and exit.
 		$alreadyTaken = $this->alreadyTaken($tradesDetail);
-		if ($alreadyTaken['return'] === true) {
-			debug($alreadyTaken);
-			return 'This shift has already been taken by ';
+		if ($alreadyTaken['return']) {
+			return 'This shift has already been taken by '.$alreadyTaken['user']['name'];
 		}
 
 		$this->read(null, $id);
@@ -205,15 +204,16 @@ class TradesDetail extends AppModel {
 		}
 	}
 
-	// Tests if the trade is already complete or another user has taken it
+	/**
+	 * Tests if the trade is already complete or another user has taken it
+	 **/
 
 	public function alreadyTaken($tradesDetail) {
-
 		foreach ($tradesDetail['Trade']['TradesDetail'] as $detail) {
 			if ($detail['status'] == 2) {
 				return array(
 						'return' => true,
-						'user' => $detail);
+						'user' => $detail['User']);
 			}
 		}
 		return array('return' => false);
