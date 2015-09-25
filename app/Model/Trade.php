@@ -250,23 +250,33 @@ class Trade extends AppModel {
 				// Send email to originating and receiving users telling them deal is done.
 
 				if ($trade['Trade']['confirmed'] == 1) {
-
 					// Send email confirming that trade has been made
 					$sendOriginatorConfirmed = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedOriginator', '[pre-Confirmed] Shift trade has been made: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 					$sendRecipientConfirmed = $this->_TradeRequest->send($trade['TradesDetail'][0]['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedRecipient', '[pre-Confirmed] Shift trade has been made: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 					if ($sendOriginatorConfirmed['return'] === true && $sendRecipientConfirmed['return'] === true) {
 						// Assuming success, update Status of Trade to 1
-						$this->read(null, $trade['Trade']['id']);
-						$this->set('user_status', 2);
-						$this->set('status', 1);
-						$this->validator()->remove('shift_id', 'checkDuplicate');
+						$data = array(
+								'user_status' => 2,
+								'status' => 1
+						);
+						$data2 = array(
+								'status' => 2
+						);
 
-						if ($this->save()) {
-							// Write log indicating trade detail was done
+						$success1 = $this->updateAll($data, array('Trade.id' => $trade['Trade']['id']));
+						$success2 = $this->TradesDetail->updateAll($data2, array('TradesDetail.trade_id' => $trade['Trade']['id']));
+
+						if ( $success1 && $success2) {
+						// Write log indicating trade detail was done
 							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email confirmation was sent to '. $trade['User']['name'] .' and ' . $trade['TradesDetail'][0]['User']['name'] . ' confirming the trade');
 						} else {
 							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED, but an email confirmation was sent to '. $trade['User']['name'] .' and ' . $trade['TradesDetail'][0]['User']['name'] . ' confirming the trade. DB ERROR: ');
+							debug($data);
+							debug($data2);
+							debug($success1);
+							debug($success2);
 							debug($this->validationErrors);
+							debug($this->TradesDetail->validationErrors);
 							$failure = true;
 						}
 					}
@@ -282,11 +292,9 @@ class Trade extends AppModel {
 					// Go onto DB writes
 					if ($trade['Trade']['submitted_by'] == $trade['Trade']['user_id']) {
 						// Update Status of Trade to 1
-						$this->read(null, $trade['Trade']['id']);
-						$this->set('user_status', 2);
-						$this->validator()->remove('shift_id', 'checkDuplicate');
+						$data = array('user_status' => 2);
 
-						if ($this->save()) {
+						if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 							// Write log indicating trade detail was done
 							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Changed status to 1. No confirmation sent');
 						} else {
@@ -299,12 +307,12 @@ class Trade extends AppModel {
 						$sendOriginator = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeRequestOriginator', 'Request to trade your shift: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 						if ($sendOriginator['return'] === true) {
 							// Assuming success, update Status of Trade to 1
-							$this->read(null, $trade['Trade']['id']);
-							$this->set('user_status', 1);
-							$this->set('token', $sendOriginator['token']);
-							$this->validator()->remove('shift_id', 'checkDuplicate');
 
-							if ($this->save()) {
+							$data = array(
+									'Trade.user_status' => "'1'",
+									'Trade.token' => "'".$sendOriginator['token']."'");
+
+							if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 								// Write log indicating trade detail was done
 								CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email was sent to '. $trade['User']['name'] . ', who is owner of the trade');
 							} else {
@@ -332,12 +340,20 @@ class Trade extends AppModel {
 						if ($sendDetails['return'] == true) {
 							// Assuming success, update Status of TradesDetail to 1
 							$this->TradesDetail->read(null, $tradesDetail['id']);
-							$this->TradesDetail->set('status', 1);
-							$this->TradesDetail->set('token', $sendDetails['token']);
-							$this->TradesDetail->save();
 
-							// Write log indicating trade detail was done
-							CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
+							$data = array(
+									'TradesDetail.status' => "'1'",
+									'TradesDetail.token' => "'".$sendDetails['token']."'");
+
+							if ($this->TradesDetail->updateAll($data, array('TradesDetail.id' => $tradesDetail['id']))) {
+								// Write log indicating trade detail was done
+								CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email was sent to '. $tradesDetail['User']['name']);
+							}
+							else {
+								// Write log indicating email succeeded but DB write failed
+								CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; DB write failed but an email was sent to '. $tradesDetail['User']['name']);
+								$failure = true;
+							}
 						}
 						else {
 							CakeLog::write('TradeRequest', 'tradesDetail[id]: '.$tradesDetail['id'] . '; An email FAILED to send to '. $tradesDetail['User']['name']);
@@ -348,9 +364,8 @@ class Trade extends AppModel {
 
 				// Assuming success, update Status of Trade to 1
 				if (!$failure) {
-					$this->read(null, $trade['Trade']['id']);
-					$this->set('status', 1);
-					if ($this->save()) {
+					$data = array('status' => 1);
+					if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 						// Write log indicating trade was done
 						CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
 					} else {
@@ -456,17 +471,62 @@ class Trade extends AppModel {
 		}
 
 		// If no errors, update status of trade
-		$this->read(null, $id);
-		$this->set('user_status', $status);
-		$this->validator()->remove('shift_id', 'checkDuplicate');
+		$data = array('user_status' => $status);
 
-		if ($this->save()) {
+		if ($this->updateAll($data, array('Trade.id' => $id))) {
 			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed user_status to '. $status);
 			return true;
 		}
 		else {
 			CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Error changing user_status');
 			return 'An error has occured during your request[3]';
+		}
+	}
+
+	/**
+	 * Complete Accepted trades
+	 */
+	public function completeAccepted() {
+		$trades = $this->find('all', array(
+				'fields' => array(
+						'Trade.id',
+						'Trade.user_id',
+						'Trade.shift_id'),
+				'conditions' => array(
+						'Trade.status' => 1,
+						'Trade.user_status' => 2),
+				'contain' => array(
+						'Shift' => array(
+								'fields' => array(
+										'id'
+								)
+						),
+						'TradesDetail' => array(
+								'fields' => array(
+										'trade_id',
+										'user_id',
+										'status'
+								),
+								'conditions' => array(
+										'status' => 2
+								)
+						)
+				)
+		));
+
+		//TODO: Save updated shift
+		foreach($trades as $trade) {
+			if (isset($trade['TradesDetail'][0]['status'])) {
+				$this->Shift->read(null, $trade['Trade']['shift_id']);
+				$this->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
+				$this->Shift->set('updated', date("Y-m-d H:i:s",time()));
+				$this->Shift->save();
+
+				$this->updateAll(array('status' => "'2'"), $trade['Trade']['id'] );
+
+				//Log successfully completed trade.
+				CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['user_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
+			}
 		}
 	}
 }
