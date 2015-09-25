@@ -129,11 +129,19 @@ class TradesDetail extends AppModel {
 												'fields' => array(
 														'times'),
 												'Location' => array(
-														'location'
+														'location',
+														'abbreviated_name'
 												)
 										)
 								),
 								'User' => array(
+										'fields' => array(
+												'id',
+												'name',
+												'email'
+										)
+								),
+								'SubmittedUser' => array(
 										'fields' => array(
 												'id',
 												'name',

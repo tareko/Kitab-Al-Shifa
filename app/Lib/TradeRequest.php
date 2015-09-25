@@ -25,7 +25,13 @@ class TradeRequest {
 		//Send out communication to receiving user
 
 		if ($method == 'email') {
+			//Set the 'From' user
 			$email = new CakeEmail('default');
+
+			if ($trade['SubmittedUser']['email'] != $toUser['email']) {
+				$email->from(array($trade['SubmittedUser']['email'] => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+			}
+
 			$success = $email->template($template)
 				->emailFormat('text')
 				->to($toUser['email'])
@@ -44,43 +50,6 @@ class TradeRequest {
 						'return' => ($success ? true : false),
 						'token' => $token
 		);
-	}
-
-	/**
-	 * sendOriginatorStatusChange method
-	 * This method will send the originator of a trade a communication advising of a change in
-	 * status of the trade, usually accepted or rejected.
-	 *
-	 * @param integer $status
-	 * @param array $trade
-	 * @param string $method
-	 */
-	public function sendOriginatorStatusChange ($status, $trade, $method = 'email') {
-		App::uses('CakeEmail', 'Network/Email');
-		App::uses('TimeHelper', 'View/Helper');
-
-		//Send out communication to originating user
-		$statusWord = 'ERROR';
-		if ($status == 2) {
-			$statusWord = 'ACCEPTED';
-		}
-		if ($status == 3) {
-			$statusWord = 'REJECTED';
-		}
-
-		if ($method == 'email') {
-			$email = new CakeEmail('default');
-			$email->template('tradeRequestOriginatorStatusChange')
-			->emailFormat('text')
-			->to($trade['User']['email'])
-			->subject('[Kitab] Shift trade status update')
-			->viewVars(array(
-						'user' => $trade['User'],
-						'statusWord' => $statusWord,
-						'shift' => $trade['Shift']))
-			->send();
-		}
-		return true;
 	}
 
 	/**
@@ -110,10 +79,12 @@ class TradeRequest {
 
 			//Send a message to the originator about the decision
 			$email = new CakeEmail('default');
+
 			$email->template('tradeRequestRecipientStatusChangeToOriginator')
 				->emailFormat('text')
+				->from(array($tradesDetail['User']['email'] => $tradesDetail['User']['name'] . ' (via Kitab)'))
 				->to($tradesDetail['Trade']['User']['email'])
-				->subject('[Kitab] '.$tradesDetail['User']['name'].' '.$statusWord .' your trade')
+				->subject('[Kitab] Trade '.$statusWord .': '.$tradesDetail['Trade']['Shift']['date'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['times'])
 				->viewVars(array(
 							'userOriginator' => $tradesDetail['Trade']['User'],
 							'userRecipient' => $tradesDetail['User'],
