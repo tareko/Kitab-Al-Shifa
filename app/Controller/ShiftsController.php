@@ -167,12 +167,6 @@ class ShiftsController extends AppController {
 		$this->render();
 	}
 
-	function pdfView() {
-			$this->loadModel('Calendar');
-			$this->set('calendars', $this->Calendar->getList());
-	}
-
-
 	function icsView() {
 		$masterSet = array();
 		$this->Prg->commonProcess();
