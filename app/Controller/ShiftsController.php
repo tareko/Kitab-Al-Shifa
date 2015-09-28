@@ -99,53 +99,6 @@ class ShiftsController extends AppController {
 		}
 	}
 
-	/** Function to update all PDFs that need updating
-	 *
-	 */
-	function pdfUpdate() {
-		$updated = NULL;
-		$notUpdated = NULL;
-		$this->loadModel('Calendar');
-		$calendars = $this->Calendar->find('list',array(
-				'id',
-				'start_date'));
-		foreach ($calendars as $id => $start_date) {
-			if (!$this->Calendar->needsUpdate($id)) {
-				$notUpdated[] = $id;
-			}
-			else {
-				$updated[] = $id;
-				$this->set('calendars', $this->Calendar->find('list'));
-				$this->set('masterSet', $this->Shift->getMasterSet($id));
-				$this->view = 'pdfCreate';
-			}
-		}
-		$this->set('updated', $updated);
-		$this->set('notUpdated', $notUpdated);
-		$this->render();
-	}
-
-	function pdfCreate($id = NULL) {
-		if (isset($this->request->params['named']['calendar'])) {
-			$id = $this->request->params['named']['calendar'];
-		}
-		if (!isset($id)) {
-			return $this->setAction('calendarList', 'pdfCreate');
-		}
-
-		//Check if in need of an update
-		$this->loadModel('Calendar');
-		if (!$this->Calendar->needsUpdate($id)) {
-			$this->set('id', $id);
-			$this->set('updateNotNeeded', 1);
-			return $this->render();
-		}
-		//Otherwise, go ahead and create a new PDF
-		$this->set('calendars', $this->Calendar->find('list'));
-		$this->set('masterSet', $this->Shift->getMasterSet($id));
-
-	}
-
 	/**
 	 * Function for web-based editing of calendar.
 	 *
@@ -422,23 +375,23 @@ class ShiftsController extends AppController {
 						'name',),
 				'conditions' => $conditions)));
 		$this->set('_serialize', array('calendars'));
-	}	
-	
-	/* 
+	}
+
+	/*
 	 * Import shifts from CSV
 	 */
-	
+
 	public function import() {
 		$status = array();
 		if ($this->request->isPost()) {
 			$failure = false;
-			
+
 			// If asked to delete previous data from date, go ahead and delete
 			if ($this->data['Shift']['delete'] == 1) {
 				// Retrieve calendar dates
 				$this->loadModel('Calendar');
 				$calendar = $this->Calendar->getStartEndDates($this->data['Shift']['calendar']);
-				
+
 				// Delete shifts
 				$this->Shift->deleteAll(array(
 						'date >=' => $calendar['start_date'],
