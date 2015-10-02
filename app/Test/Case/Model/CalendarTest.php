@@ -1,6 +1,7 @@
 <?php
 /* Calendar Test cases generated on: 2011-11-16 05:54:46 : 1321440886*/
 App::uses('Calendar', 'Model');
+App::uses('Shift', 'Model');
 
 /**
  * Calendar Test Case
@@ -23,6 +24,8 @@ class CalendarTestCase extends CakeTestCase {
 		parent::setUp();
 
 		$this->Calendar = ClassRegistry::init('Calendar');
+		$this->Shift = ClassRegistry::init('Shift');
+
 	}
 
 	/*
@@ -30,16 +33,10 @@ class CalendarTestCase extends CakeTestCase {
 	 */
 	public function testLastUpdated () {
 		$result = $this->Calendar->lastUpdated('1');
-		debug($result);
-		$expected = array(
-				'start_date' => '2011-12-01',
-				'end_date' => '2011-12-22'
-		);
-		
-		//TODO: EXPECTED FAIL DUE TO nested model call.
+		$expected = '2011-10-19 10:36:51';
 		$this->assertEquals($expected, $result);
 	}
-	
+
 	/*
 	 * Test start and end dates call
 	 */
@@ -51,7 +48,7 @@ class CalendarTestCase extends CakeTestCase {
 		);
 		$this->assertEquals($expected, $result);
 	}
-	
+
 	/*
 	 * Test get list
 	 */

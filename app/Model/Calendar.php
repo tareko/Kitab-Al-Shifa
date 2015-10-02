@@ -115,13 +115,17 @@ class Calendar extends AppModel {
 	 * Last update of a shift in the calendar
 	 * @calendar int
 	 */
-	function lastUpdated($id) {
-		App::uses('Shift', 'Model');
-		$this->Shift = new Shift();
+	public function lastUpdated($id) {
+
+		//Set up new Shift model only if not already set (fixes problems with testing)
+		if(!$this->Shift) {
+			App::uses('Shift', 'Model');
+			$this->Shift = ClassRegistry::init('Shift');
+		}
 		$calendar = $this->findById($id, array(
 				'start_date', 'end_date'));
 		$lastUpdated = $this->Shift->find('first', array(
-				'fields' => array('Shift.updated'),
+				'fields' => array('Shift.updated', 'Shift.date'),
 				'conditions' => array(
 						'Shift.date >=' => $calendar['Calendar']['start_date'],
 						'Shift.date <=' => $calendar['Calendar']['end_date'],
@@ -132,11 +136,11 @@ class Calendar extends AppModel {
 		));
 		return $lastUpdated['Shift']['updated'];
 	}
-	
-	/* 
+
+	/*
 	 * Get start and end dates for calendar
 	 */
-	
+
 	public function getStartEndDates ($id) {
 		$data = $this->find('first', array(
 				'recursive' => 0,
