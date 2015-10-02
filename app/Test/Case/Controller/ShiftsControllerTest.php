@@ -103,13 +103,113 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/shifts/index/calendar:1/id:1');
 		$this->assertContains('Page 1 of 1, showing 2 records out of 2 total, starting on record 1, ending on 2	</p>', $result);
 	}
-/**
- * testAdd method
- *
- * @return void
- */
-	public function testAdd() {
+
+	/**
+	 * testAdd method
+	 * Display empty add page
+	 * @return void
+	 */
+	public function testAdd1() {
 		$result = $this->testAction('/shifts/add');
+		$this->assertContains('<select name="data[Shift][0][date][year]" id="Shift0DateYear"', $result);
+	}
+
+	/**
+	 * testAdd method
+	 * $this->data with save == true
+	 * @return void
+	 */
+	public function testAdd2() {
+
+		$data = array(
+			'Shift' => array(
+				0 => array(
+					'user_id' => '2',
+					'date' => array(
+						'month' => '01',
+						'day' => '01',
+						'year' => '2034'
+					),
+					'shifts_type_id' => '2'
+				)
+			)
+		);
+
+
+		$Shifts = $this->generate('Shifts', array(
+				'methods' => array(
+						'_requestAllowed'),
+				'components' => array(
+						'Flash' => array('success')),
+				)
+		);
+
+		$Shifts->Flash
+		->expects($this->once())
+		->method('success');
+
+		$Shifts->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$this->Shift = $this->getMockForModel('Shift', array(
+				'saveAll'));
+
+		// Mock saveAll function
+		$this->Shift->expects($this->any())
+		->method('saveAll')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/shifts/add', array('data' => $data, 'method' => 'post'));
+	}
+
+	/**
+	 * testAdd method
+	 * $this->data with save == true
+	 * @return void
+	 */
+	public function testAdd3() {
+
+		$data = array(
+				'Shift' => array(
+						0 => array(
+								'user_id' => '2',
+								'date' => array(
+										'month' => '01',
+										'day' => '01',
+										'year' => '2034'
+								),
+								'shifts_type_id' => '2'
+						)
+				)
+		);
+
+
+		$Shifts = $this->generate('Shifts', array(
+				'methods' => array(
+						'_requestAllowed'),
+				'components' => array(
+						'Flash' => array('alert')),
+		)
+		);
+
+		$Shifts->Flash
+		->expects($this->once())
+		->method('alert');
+
+		$Shifts->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$this->Shift = $this->getMockForModel('Shift', array(
+				'saveAll'));
+
+		// Mock saveAll function
+		$this->Shift->expects($this->any())
+		->method('saveAll')
+		->will($this->returnValue(false));
+
+		$result = $this->testAction('/shifts/add', array('data' => $data, 'method' => 'post'));
 	}
 
 /**
@@ -117,32 +217,28 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  *
  * @return void
  */
+
+	// CalendarEdit with no calendar given
 	public function testCalendarEditNoCalGiven() {
-
-
 		$Shifts = $this->generate('Shifts', array(
 				'methods' => array(
-						'setAction'
-				),
+						'_requestAllowed'),
 				'components' => array(
-						'Auth')));
+						'Flash' => array('alert')),
+		)
+		);
 
-		$Shifts->expects($this->once())
-		->method('setAction')
+		$Shifts->expects($this->any())
+		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
-		$Shifts->Auth
-		->expects($this->once())
-		->method('user')
-		->will($this->returnValue(1));
-
-		$result = $this->testAction('/shifts/calendarEdit');
-		debug($result);
+		$this->testAction('/shifts/calendarEdit');
+		$this->assertContains('/shifts/calendarList?calendar_action=calendarEdit', $this->headers['Location']);
 	}
 
 	public function testCalendarEditCalGiven() {
-		$result = $this->testAction('/shifts/calendarEdit/calendar:1');
-		debug($result);
+		$this->testAction('/shifts/calendarEdit/calendar:1');
+		$this->assertContains('<form action="/shifts/add/Action:calendarEdit/calendar:1"', $this->view);
 	}
 
 /**
@@ -151,33 +247,24 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testCalendarViewNoCalGiven() {
-		$result = $this->testAction('/shifts/calendarView');
-		debug($result);
+		$this->testAction('/shifts/calendarView');
+		$this->assertContains('/shifts/calendarList?calendar_action=calendarView', $this->headers['Location']);
 	}
 
 	public function testCalendarViewCalGiven() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1');
-		debug($result);
+		$this->assertContains('<td>Thu, Dec 1</td> <td>&nbsp;</td> <td>&nbsp;</td> <td><a href="/shifts/edit/16">Bynum</a></td>', $this->contents);
 	}
 
 	public function testCalendarViewIdGiven() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1/id:2');
-		debug($result);
+		$this->assertContains('<td>Fri, Dec 2</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td><a href="/shifts/edit/52">Morrissey</a></td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>', $this->contents);
 	}
 	public function testCalendarViewIdNoCalGiven() {
 		$result = $this->testAction('/shifts/calendarView/id:2');
-		debug($result);
+		$this->assertEqual($result, null);
 	}
 
-/**
- * testPdfView method
- *
- * @return void
- */
-	public function testPdfView() {
-		$result = $this->testAction('/shifts/pdfView');
-		debug($result);
-	}
 
 /**
  * testIcsView method
@@ -186,20 +273,27 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  */
 	public function testIcsViewNoId() {
 		$result = $this->testAction('/shifts/icsView');
-		debug($result);
+		$this->assertContains('<form action="/shifts/icsView" id="ShiftPhysic', $result);
 	}
+
 	public function testIcsViewId() {
-		$result = $this->testAction('/shifts/icsView/id:1');
-		debug($result);
-	}
+		$this->markTestIncomplete('testIcsViewId broken due to inability to mock $this->iCal->render');
+/*
+		$Shifts = $this->generate('Shifts', array(
+		    'helpers' => array(
+		    		'iCal'
+		    		)
+		));
 
-/**
- * testIcsList method
- *
- * @return void
+		$this->iCal = new iCalHelper(new View());
+		$this->iCal = $this->getMock('iCal', array('render'));
+
+ 		$this->iCal->expects($this->once())
+			->method('render')
+			->will($this->returnValue(true));
+//		$result = $this->testAction('/shifts/icsView/id:1');
+		debug($this->iCal->render);
  */
-	public function testIcsList() {
-
 	}
 
 /**
@@ -208,7 +302,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testCalendarList() {
-
+		$this->markTestIncomplete('testCalendarList not implemented.');
 	}
 
 /**
@@ -221,17 +315,15 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->setExpectedException('NotFoundException');
 		$result = $this->testAction('/shifts/delete');
 	}
+
 	public function testDeleteNotPost() {
 		$this->setExpectedException('NotFoundException');
-		$Shift = $this->getMockForModel('request', array('is'));
-		$Shift->expects($this->once())
-		->method('is')
-		->will($this->returnValue(false));
-		$result = $this->testAction('/shifts/delete');
+		$this->testAction('/shifts/delete', array('data' => null, 'method' => 'get'));
 	}
+
 	public function testDeleteId() {
-		$result = $this->testAction('/shifts/delete/52');
-		debug($result);
+		$this->testAction('/shifts/delete/52');
+		$this->assertContains('/shifts', $this->headers['Location']);
 	}
 
 /**
@@ -245,8 +337,8 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  		$result = $this->testAction('/shifts/edit');
 	}
 	public function testEditId() {
-		$result = $this->testAction('/shifts/edit/16');
-		debug($result);
+		$this->testAction('/shifts/edit/16');
+		$this->assertContains('form action="/shifts/edit/16" id="ShiftEditForm"', $this->contents);
 	}
 
 
@@ -257,7 +349,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 	public function testCalendarViewProperFormURL() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1');
-		$this->assertContains('form action="/kitab/shifts/calendarView/calendar:1', $result);
+		$this->assertContains('form action="/shifts/calendarView/calendar:1', $result);
 	}
 
 /**
@@ -267,7 +359,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 	public function testCalendarEditProperFormURL() {
 		$result = $this->testAction('/shifts/calendarEdit/calendar:1/id:1');
-		$this->assertContains('form action="/kitab/shifts/calendarEdit/calendar:1/id:1', $result);
+		$this->assertContains('form action="/shifts/calendarEdit/calendar:1/id:1', $result);
 	}
 
 /**
@@ -277,7 +369,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 	public function testIndexViewProperFormURL() {
 		$result = $this->testAction('/shifts/index/calendar:1');
-		$this->assertContains('form action="/kitab/shifts/index/calendar:1', $result);
+		$this->assertContains('form action="/shifts/index/calendar:1', $result);
 	}
 
 /**
@@ -299,13 +391,8 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$Shifts->expects($this->any())
 			->method('_usersId')
 			->will($this->returnValue(1));
-
-
 		$result = $this->testAction('/shifts/home');
-		$this->assertContains('<tr>
-		<td>2013-11-22</td>
-		<td>Bermuda</td>
-		<td>0400-1000 </td>', $result);
+		$this->assertContains('<h2>My upcoming shifts:</h2>', $result);
 	}
 /**
 * testWizard method
@@ -313,7 +400,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 	public function testWizard() {
 		$result = $this->testAction('/shifts/wizard');
-		$this->assertContains('<legend>Shifts To Show</legend>', $result);
+		$this->assertContains('<h2>Which calendar do you want to see?</h2>', $result);
 	}
 
 }

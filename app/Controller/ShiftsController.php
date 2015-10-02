@@ -70,33 +70,33 @@ class ShiftsController extends AppController {
 	function add() {
 		$this->loadModel('Profile');
 		# Check if there is form data to be processed
-		$saved = null;
-
-		# If no data, present an add form
-		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
-		$this->set('shifts', $this->paginate());
-		$this->set('users', $this->Shift->User->getList(NULL, NULL, true));
-
-		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
-				'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
-				'recursive' => '0')));
+		$saved = false;
 
 		if (!empty($this->data)){
 			foreach ($this->data['Shift'] as $dataRaw) {
 				if ($dataRaw['user_id'] != '') {
 					$data['Shift'][] = $dataRaw;
-					$saved = 1;
+					$saved = true;
 				}
 			}
-			if ($saved == 1) {
+			if ($saved == true) {
 				if ($this->Shift->saveAll($data['Shift'])) {
 					$this->Flash->success(__('Shift saved'));
-					return;
 				}
-				$this->Flash->alert(__('Shift was not saved'));
-				return;
- 			}
+				else {
+					$this->Flash->alert(__('Shift was not saved'));
+				}
+			}
 		}
+
+		# If no data, present an add form
+		$this->set('scaffoldFields', array_keys($this->Shift->schema()));
+		$this->set('users', $this->Shift->User->getList(NULL, NULL, true));
+
+		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list', array(
+				'fields' => array('ShiftsType.id', 'ShiftsType.times', 'Location.location'),
+				'recursive' => '0')));
+		$this->render();
 	}
 
 	/**
@@ -112,7 +112,10 @@ class ShiftsController extends AppController {
 			$masterSet['calendar'] = $this->Calendar->findById($this->request->params['named']['calendar']);
 		}
 		else {
-			return $this->setAction('calendarList', 'calendarEdit');
+			return $this->redirect(array(
+					'action' => 'calendarList',
+					'?' => array(
+							'calendar_action' => 'calendarEdit')));
 		}
 		$this->set('calendars', $this->Calendar->find('list'));
 
@@ -149,7 +152,10 @@ class ShiftsController extends AppController {
  		$this->loadModel('Calendar');
 
 		if (!isset($this->request->params['named']['calendar'])) {
-			return $this->setAction('calendarList', 'calendarView');
+					return $this->redirect(array(
+					'action' => 'calendarList',
+					'?' => array(
+							'calendar_action' => 'calendarView')));
 		}
 
 		$calendar = $this->request->params['named']['calendar'];
@@ -169,11 +175,14 @@ class ShiftsController extends AppController {
 
 	function icsView() {
 		$masterSet = array();
-		$this->Prg->commonProcess();
 
 		if (strlen(strstr($this->request->referer(), 'wizard'))>0) {
 			$this->set('id', $this->request->params['named']['id']);
 			$this->render('ics_link');
+		}
+
+		if (isset($this->request->data['Shift'][0]['id'])) {
+			$this->request->params['named']['id'] = $this->request->data['Shift'][0]['id'];
 		}
 		if (!isset($this->request->params['named']['id'])) {
 			return $this->setAction('physicianList', 'icsView');
@@ -215,6 +224,7 @@ class ShiftsController extends AppController {
 		}
 
 		$this->set('masterSet', $masterSet);
+		$this->render();
 	}
 
 	/**
@@ -238,9 +248,14 @@ class ShiftsController extends AppController {
 	/**
 	 * List of calendars
 	 */
-	public function calendarList($calendarAction) {
+	public function calendarList($calendarAction = false) {
 		$this->loadModel('Calendar');
-		$this->set('calendarAction', $calendarAction);
+		if (empty($this->request->query['calendar_action']) && !$calendarAction) {
+			$this->set('failure', true);
+			return $this->Flash->alert(__('No action has been chosen'));
+		}
+		$this->set('calendarAction', (!$calendarAction ? $this->request->query['calendar_action'] : $calendarAction));
+
 		if (isset($this->request->params['named']['id'])) {
 			$this->set('passed_id', $this->request->params['named']['id']);
 		}
@@ -250,7 +265,7 @@ class ShiftsController extends AppController {
 
 	public function delete($id = null) {
 		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
+			throw new NotFoundException();
 		}
 		$this->Shift->id = $id;
 		if (!$this->Shift->exists()) {
@@ -258,7 +273,7 @@ class ShiftsController extends AppController {
 		}
 		if ($this->Shift->delete()) {
 			$this->Flash->warning(__('Shift deleted'));
-			$this->redirect(array('action'=>'index'));
+			return $this->redirect(array('action'=>'index'));
 		}
 		$this->Flash->alert(__('Shift was not deleted'));
 		$this->redirect(array('action' => 'index'));
@@ -272,14 +287,13 @@ class ShiftsController extends AppController {
 		if ($this->request->isPost() || $this->request->isPut()) {
 			if ($this->Shift->save($this->request->data)) {
 				$this->Flash->success(__('The shift has been saved'));
-				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->Flash->alert(__('The shift could not be saved. Please, try again.'));
 			}
-		} else {
-			$this->set('physicians', $this->Shift->User->getList(NULL, NULL, true));
-			$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
-			$this->request->data = $this->Shift->read(null, $id);
+		$this->set('physicians', $this->Shift->User->getList(NULL, NULL, true));
+		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
+		$this->request->data = $this->Shift->read(null, $id);
+		$this->render();
 		}
 	}
 
