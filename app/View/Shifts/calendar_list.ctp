@@ -1,5 +1,9 @@
+<?php
+if (isset($failure)) {
+	return;
+}?>
 <ul>
-<?php 
+<?php
 	$extras = FALSE;
 	foreach ($calendars as $id => $calendar) {
 		foreach ($calendar as $start_date => $name) {
