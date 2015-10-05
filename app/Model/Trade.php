@@ -374,6 +374,18 @@ class Trade extends AppModel {
 					}
 				}
 			}
+
+			//Cancel trade if originating user has declined it
+			elseif($trade['Trade']['user_status'] == 3) {
+				$data = array('status' => 3);
+				if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
+					// Write log indicating trade was cancelled
+					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Changed status to 3. No confirmation sent');
+				} else {
+					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED. Did not successfully change status to 3');
+					$failure = true;
+				}
+			}
 		}
 		return ($failure == false ? true : false);
 	}
