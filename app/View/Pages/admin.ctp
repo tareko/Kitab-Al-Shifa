@@ -6,7 +6,7 @@
 			<li><?php echo $this->Html->link('list', array('controller' => 'shifts')); ?> - for looking at and editing single entries</li>
 			<li><?php echo $this->Html->link('Web calendar (edit mode)', array('controller' => 'shifts', 'action' => 'calendarEdit')); ?> - for looking at and editing many entries</li>
 			<li><?php echo $this->Html->link('Shift importer', array('controller' => 'shifts', 'action' => 'import')); ?> - for importing entries from csv</li>
-			<li><?php echo $this->Html->link('PDF', array('controller' => 'shifts', 'action' => 'pdfView')); ?> - exported PDFs with options to create/update and view</li>
+			<li><?php echo $this->Html->link('Cash trades', array('controller' => 'trades', 'action' => 'cashList')); ?> - List of cash trades (<?php echo $this->Html->link('spreadsheet', array('controller' => 'trades', 'action' => 'cashList', 'ext' => 'csv')); ?>)</li>
 		</ul>
 		<br/><br/>
 		<h2>!!PROCEED WITH CAUTION: DRAGONS AHEAD!!</h2>

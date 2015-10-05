@@ -131,6 +131,88 @@ class TradesController extends AppController {
 	}
 
 	/**
+	 * List of all cash shifts
+	 */
+
+	public function cashList() {
+		//Set paginate conditions from passed arguments
+		$this->paginate['conditions'] = $this->Trade->parseCriteria($this->passedArgs);
+		$this->paginate['limit'] = 10;
+
+		//Set usersId to either the query or the current user's ID if not available
+		$usersId = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
+
+		$date = date_sub(date_create(), date_interval_create_from_date_string('3 months'));
+		$date = date_format($date, 'Y-m-d');
+		$archives = (isset($this->request->query['archives']) && $this->request->query['archives'] == 1 ?
+				array() :
+				array('Shift.date >=' => $date));
+
+
+		$this->set('usersId', $usersId);
+
+		$this->paginate = array(
+				'paramType' => 'querystring',
+				'recursive' => -1,
+				'order' => 'Trade.status ASC',
+				'limit' => 10,
+				'group' => 'Trade.id',
+				'fields' => array(
+						'status',
+						'user_id',
+						'user_status',
+						'token',
+						'shift_id'),
+				'joins' => array(array(
+						'table' => 'trades_details',
+						'alias' => 'TradesDetail',
+						'type' => 'RIGHT',
+						'conditions' => array(
+								'Trade.id = TradesDetail.trade_id',
+						)
+				)),
+				'contain' => array(
+						'User' => array(
+								'fields' => array(
+										'name',
+										'id')),
+						'TradesDetail' => array(
+								'fields' => array(
+										'id',
+										'token',
+										'user_id',
+										'status'),
+								'User' => array(
+										'fields' => array(
+												'id',
+												'name'))
+						),
+						'Shift' => array(
+								'fields' => array(
+										'date',
+										'shifts_type_id'),
+								'ShiftsType' => array(
+										'fields' => array(
+												'location_id',
+												'times'),
+										'Location' => array(
+												'fields' => array(
+														'location')
+										)
+								)
+						)
+				)
+		);
+		$this->set('trades', $this->paginate(array_merge($archives, array(
+				'Trade.consideration' => 0,
+				'Trade.status' => 2,
+				'OR' => array(
+						'Trade.user_id' => $usersId,
+						'TradesDetail.user_id' => $usersId)))));
+		$this->render();
+	}
+
+	/**
 	 *
 	 * Deal with unprocessed shift trade requests.
 	 * Meant for a cron job.
