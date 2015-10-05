@@ -26,86 +26,8 @@ class TradeTestCase extends CakeTestCase {
 
 	public function testGetUnprocessedTrades() {
 		$result = $this->Trade->getUnprocessedTrades();
-		$expected = array(
-			'Trade' => array(
-				'id' => '2',
-				'user_id' => '1',
-				'shift_id' => '167',
-				'status' => '0',
-				'user_status' => '0',
-				'submitted_by' => '2',
-				'confirmed' => '0',
-				'token' => '',
-				'updated' => '2012-05-23 11:59:32',
-				'message' => null,
-				'consideration' => '1'
-			),
-			'User' => array(
-				'id' => '1',
-				'name' => 'James Bynum',
-				'email' => 'false1@false.com'
-			),
-			'SubmittedUser' => array(
-				'id' => '2',
-				'name' => 'Harold Morrissey',
-				'email' => 'false2@false.com'
-			),
-			'Shift' => array(
-				'id' => '167',
-				'date' => '2011-12-09',
-				'shifts_type_id' => '8',
-				'ShiftsType' => array(
-					'location_id' => '2',
-					'times' => '1000-1800 ',
-					'Location' => array(
-						'location' => 'Bahamas',
-						'abbreviated_name' => 'Bah'
-					)
-				)
-			),
-			'TradesDetail' => array(
-				0 => array(
-					'id' => '3',
-					'trade_id' => '2',
-					'user_id' => '3',
-					'token' => '71cad469c97b8fbab04332e9aabee3a8',
-					'status' => '2',
-					'timestamp' => '2012-05-23 11:29:36',
-					'User' => array(
-						'id' => '3',
-						'name' => 'Madeline Cremin',
-						'email' => 'false3@false.com'
-					)
-				),
-				1 => array(
-						'id' => '4',
-						'trade_id' => '2',
-						'user_id' => '4',
-						'token' => '71cad469c97b8fbab04332e9aabee3a8',
-						'status' => '3',
-						'timestamp' => '2012-05-23 11:29:36',
-						'User' => array(
-								'id' => '4',
-								'name' => 'Jacqueline Beaudoin',
-								'email' => 'false4@false.com'
-						)
-				),
-				2 => array(
-						'id' => '5',
-						'trade_id' => '2',
-						'user_id' => '5',
-						'token' => '71cad469c97b8fbab04332e9aabee3a8',
-						'status' => '4',
-						'timestamp' => '2012-05-24 01:03:30',
-						'User' => array(
-								'id' => '5',
-								'name' => 'Sabine Chatigny',
-								'email' => 'false5@false.com'
-						)
-				)
-			)
-		);
-		$this->assertEquals($expected, $result[9]);
+		$expected = 1;
+		$this->assertEquals($expected, $result[9]['Trade']['id']);
 	}
 
 	public function testcheckConfirmAndMultipleNoConfirm() {

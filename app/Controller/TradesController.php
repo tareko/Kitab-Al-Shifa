@@ -40,7 +40,7 @@ class TradesController extends AppController {
 		//Set usersId to either the query or the current user's ID if not available
 		$usersId = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
 
-		$archives = (isset($this->request->query['archives']) && $this->request->query['archives'] == 1 ? array() : array('Trade.status' => 1));
+		$archives = (isset($this->request->query['archives']) && $this->request->query['archives'] == 1 ? array() : array('Trade.status <=' => 1));
 
 		$this->set('usersId', $usersId);
 

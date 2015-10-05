@@ -80,6 +80,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 						'id' => '1');
 		$this->assertEqual($result['trades'][4]['Trade'], $expected);
 	}
+
+
 /**
  * testView method
  *
