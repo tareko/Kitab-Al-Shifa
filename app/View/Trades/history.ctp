@@ -1,4 +1,12 @@
 	<h2><?php echo __('My Trades');?></h2>
+
+	<p>
+	<?php if(isset($this->request->query['archives']) && $this->request->query['archives'] == 1) {?>
+			<a href="?archives=0">Show current trades only</a>
+	<?php } else {?>
+			<a href="?archives=1">Show archived trades</a>
+	<?php }?>
+	</p>
 	<table cellpadding="0" cellspacing="0">
 	<tr>
 			<th><?php echo $this->Paginator->sort('Trade.User.name', 'Offered by');?></th>

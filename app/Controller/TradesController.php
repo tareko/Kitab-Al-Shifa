@@ -40,6 +40,8 @@ class TradesController extends AppController {
 		//Set usersId to either the query or the current user's ID if not available
 		$usersId = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
 
+		$archives = (isset($this->request->query['archives']) && $this->request->query['archives'] == 1 ? array() : array('Trade.status' => 1));
+
 		$this->set('usersId', $usersId);
 
 		$this->paginate = array(
@@ -94,10 +96,10 @@ class TradesController extends AppController {
 						)
 				)
 		);
-		$this->set('trades', $this->paginate(array(
+		$this->set('trades', $this->paginate(array_merge($archives, array(
 				'OR' => array(
 					'Trade.user_id' => $usersId,
-					'TradesDetail.user_id' => $usersId))));
+					'TradesDetail.user_id' => $usersId)))));
 		$this->render();
 	}
 
