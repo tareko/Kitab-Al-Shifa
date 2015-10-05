@@ -1103,6 +1103,150 @@ class TradeTestCase extends CakeTestCase {
 		$this->assertEqual($result, true);
 	}
 
+	// processTrades => user_status == 2
+	// There are no "pending" or successful trades (TradesDetail.status < 2)
+	// Trade.status should also be set to 3
+	public function testprocessTrades14() {
+		// Set array mock for processTrades
+		$processTradesMock = array(
+				0 => array(
+						'Trade' => array(
+								'id' => '12',
+								'user_id' => '4',
+								'shift_id' => '483',
+								'status' => '1',
+								'user_status' => '2',
+								'submitted_by' => '2',
+								'confirmed' => '0',
+								'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
+								'updated' => '2012-05-23 11:59:42'
+						),
+						'User' => array(
+								'id' => '4',
+								'name' => 'Jacqueline Beaudoin',
+								'email' => 'false4@false.com'
+						),
+						'SubmittedUser' => array(
+								'id' => '2',
+								'name' => 'Harold Morrissey',
+								'email' => 'false2@false.com'
+						),
+						'Shift' => array(
+								'id' => '483',
+								'date' => '2011-12-26',
+								'shifts_type_id' => '11',
+								'ShiftsType' => array(
+										'location_id' => '3',
+										'times' => '1000-1700 ',
+										'Location' => array(
+												'location' => 'Come on pretty mama',
+												'abbreviated_name' => 'COPM'
+		)
+								)
+						),
+						'TradesDetail' => array( 0 => array(
+								'status' => '3',
+								'User' => array(
+										'id' => '2',
+										'name' => 'Harold Morrissey',
+										'email' => 'false2@false.com'
+		)))
+				),
+		);
+
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'getUnprocessedTrades',
+				'updateAll'));
+		$this->Trade->expects($this->any())
+		->method('getUnprocessedTrades')
+		->will($this->returnValue($processTradesMock));
+
+		// Mock updateAll function
+		$this->Trade->expects($this->once())
+		->method('updateAll')
+		->with(array('status' => 3))
+		->will($this->returnValue(true));
+
+		$result = $this->Trade->processTrades();
+		$this->assertEqual($result, true);
+	}
+
+	// processTrades => user_status == 2
+	// There are "pending" or successful trades (TradesDetail.status < 2)
+	// Trade.status should also be set to 2
+	public function testprocessTrades15() {
+		// Set array mock for processTrades
+		$processTradesMock = array(
+				0 => array(
+						'Trade' => array(
+								'id' => '12',
+								'user_id' => '4',
+								'shift_id' => '483',
+								'status' => '1',
+								'user_status' => '2',
+								'submitted_by' => '2',
+								'confirmed' => '0',
+								'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
+								'updated' => '2012-05-23 11:59:42'
+						),
+						'User' => array(
+								'id' => '4',
+								'name' => 'Jacqueline Beaudoin',
+								'email' => 'false4@false.com'
+						),
+						'SubmittedUser' => array(
+								'id' => '2',
+								'name' => 'Harold Morrissey',
+								'email' => 'false2@false.com'
+						),
+						'Shift' => array(
+								'id' => '483',
+								'date' => '2011-12-26',
+								'shifts_type_id' => '11',
+								'ShiftsType' => array(
+										'location_id' => '3',
+										'times' => '1000-1700 ',
+										'Location' => array(
+												'location' => 'Come on pretty mama',
+												'abbreviated_name' => 'COPM'
+		)
+								)
+						),
+						'TradesDetail' => array(
+							0 => array(
+								'status' => '1',
+								'User' => array(
+										'id' => '2',
+										'name' => 'Harold Morrissey',
+										'email' => 'false2@false.com'
+								)),
+							1 => array(
+								'status' => '3',
+								'User' => array(
+										'id' => '3',
+										'name' => 'Harold Morrissey',
+										'email' => 'false2@false.com'
+								)),
+						)),
+		);
+
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'getUnprocessedTrades',
+				'updateAll'));
+		$this->Trade->expects($this->any())
+		->method('getUnprocessedTrades')
+		->will($this->returnValue($processTradesMock));
+
+		// Mock updateAll function
+		$this->Trade->expects($this->once())
+		->method('updateAll')
+		->with(array('status' => 1))
+		->will($this->returnValue(true));
+
+		$result = $this->Trade->processTrades();
+		$this->assertEqual($result, true);
+	}
+
 	// Test change Status function
 
 	public function testchangeStatus() {

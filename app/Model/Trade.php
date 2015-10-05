@@ -330,7 +330,13 @@ class Trade extends AppModel {
 
 			// If user has confirmed the desire to trade, send email to all receiving users.
 			elseif ($trade['Trade']['user_status'] == 2) {
+				$pending = false;
 				foreach ($trade['TradesDetail'] as $tradesDetail) {
+
+					// Mark a pending trade if any exists so that trade is not marked as closed
+					if ($tradesDetail['status'] <= 2) {
+						$pending = true;
+					}
 
 					// If user has already received email (TradesDetail['status'] == 1), then do not send email.
 					if ($tradesDetail['status'] == 0) {
@@ -364,7 +370,7 @@ class Trade extends AppModel {
 
 				// Assuming success, update Status of Trade to 1
 				if (!$failure) {
-					$data = array('status' => 1);
+					$data = ($pending ? array('status' => 1) : array('status' => 3));
 					if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 						// Write log indicating trade was done
 						CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
