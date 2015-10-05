@@ -370,7 +370,7 @@ class Trade extends AppModel {
 
 				// Assuming success, update Status of Trade to 1
 				if (!$failure) {
-					$data = ($pending ? array('status' => 1) : array('status' => 3));
+					$data = ($pending == true ? array('status' => 1) : array('status' => 3));
 					if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 						// Write log indicating trade was done
 						CakeLog::write('TradeRequest', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Changed status to 1');
