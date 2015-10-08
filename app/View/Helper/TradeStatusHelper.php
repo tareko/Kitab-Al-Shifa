@@ -30,7 +30,7 @@ class TradeStatusHelper extends AppHelper {
 			return $trade['User']['name'] . ' has declined this trade';
 		}
 
-		if ($trade['TradesDetail'][0]['User']['id'] == $usersId && $trade['Trade']['status'] == 1 && $trade['TradesDetail'][0]['status'] == 3) {
+		if ($trade['Trade']['status'] == 1 && $trade['TradesDetail'][0]['status'] == 3) {
 			return $trade['TradesDetail'][0]['User']['name'] . ' has declined this trade';
 		}
 		return $trade_status[$trade['Trade']['status']];
