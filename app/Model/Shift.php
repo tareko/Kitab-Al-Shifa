@@ -225,45 +225,6 @@ class Shift extends AppModel {
 	}
 
 	/**
-	 * The hours worked by a physician (or several physicians) by OHIP Number
-	 *
-	 * @param unknown_type $healthcare_provider
-	 * @param unknown_type $start_date
-	 * @param unknown_type $end_date
-	 * @param array $conditions
-	 * @return array $output
-	 */
-
-	function secondsWorkedbyOhipNumber ($healthcare_provider = NULL, $start_date = NULL, $end_date = NULL, $conditions = array()) {
-		$secondsWorked = array();
-		$profiles = $this->shiftsWorkedbyOhipNumber($healthcare_provider, $start_date, $end_date, $conditions);
-		foreach ($profiles as $profile) {
-			foreach($profile['Shift'] as $shift) {
-				// More usable variables for end and start times
-				$start = $shift['ShiftsType']['shift_start'];
-				$end = $shift['ShiftsType']['shift_end'];
-
-				// Calculate time worked in seconds per location
-				$secondsWorked[$shift['ShiftsType']['Location']['location']] = (isset($secondsWorked[$shift['ShiftsType']['Location']['location']]) ? $secondsWorked[$shift['ShiftsType']['Location']['location']] : 0) + ($end < $start ? strtotime($end . " + 24 hours") : strtotime($end)) - strtotime($start);
-			}
-		}
-		return $secondsWorked;
-
-	}
-
-	function secondsToHours ($seconds = null) {
-		if (is_array($seconds)) {
-			foreach ($seconds as $id => $second) {
-				$hours[$id] = $second / 3600;
-			}
-		}
-		else {
-			$hours = $seconds / 3600;
-		}
-		return $hours;
-	}
-
-	/**
 	 * Check multiple fields to see if they are unique
 	 *
 	 * @param array $data
@@ -277,12 +238,12 @@ class Shift extends AppModel {
 		}
 		return $this->isUnique($fields, false);
 	}
-	
+
 	/**
 	 * Import function to import shifts into database
 	 */
 	function import ($filename, $calendar, $discard = 3) {
-		
+
 		// Get start dates for file
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
@@ -295,13 +256,13 @@ class Shift extends AppModel {
 		if (($handle = fopen($filename, "r")) === FALSE) {
 			throw new NotFoundException("Failed opening file: error was ".$php_errormsg);
 		}
-	
+
 		// Start parsing for shifts
 		$data = array();
 		$output = array();
-		
+
 		$row = 1;
-		
+
 		$shiftsType = $this->ShiftsType->find('all', array(
 				'fields' => array('id', 'display_order'),
 				'recursive' => 0,
@@ -311,7 +272,7 @@ class Shift extends AppModel {
 				),
 				'order' => array('display_order ASC', 'shift_start ASC'),
 		));
-		
+
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 			// Discard first N lines. If none present, select 3
 			if ($row <= $discard) { $row++ ; continue; }
@@ -326,7 +287,7 @@ class Shift extends AppModel {
 
 				// Look up user ID if entry not blank
 				$userId = $this->User->lookupUserId($data[$c], 'cb_displayname');
-				
+
 				// If entry is not found, skip to next entry and leave blank.
 				if ($userId == false) { continue ; }
 
@@ -335,7 +296,7 @@ class Shift extends AppModel {
 						'date' => $date,
 						'shifts_type_id' => $shiftsType[$c-1]['ShiftsType']['id']
 						);
-			
+
 				// Save information into overall save array (shifts_type and user_id)
 			}
 			$row++;
