@@ -7,23 +7,32 @@ App::uses('AppModel', 'Model');
 class Accounting extends AppModel {
 
 /**
- * Display field
- *
- * @var string
- */
-	public $displayField = 'hour_of_week_start';
-	var $virtualFields = array(
-			'seconds_of_week_start' => '(hour_of_week_start * 3600)',
-			'seconds_of_week_end' => '(hour_of_week_end * 3600)',
-	);
-
-/**
  * Validation rules
  *
  * @var array
  */
 	public $validate = array(
-		'hour_of_week_start' => array(
+		'start_time' => array(
+			'time' => array(
+				'rule' => array('time'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'end_time' => array(
+			'time' => array(
+				'rule' => array('time'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'value' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -32,16 +41,8 @@ class Accounting extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-			'notBlank' => array(
-				'rule' => array('notBlank'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
 		),
-		'hour_of_week_end' => array(
+		'multiplier' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -71,9 +72,19 @@ class Accounting extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'value' => array(
-			'decimal' => array(
-				'rule' => array('decimal'),
+		'days_of_week' => array(
+			'notBlank' => array(
+				'rule' => array('notBlank'),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'locations' => array(
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -84,80 +95,102 @@ class Accounting extends AppModel {
 	);
 
 	/**
-	 * Calculate the value of X for a given series of shifts
-	 *
-	 * @param array $shifts
-	 * @return array
+	 * Calculate the X value for a given shift
 	 */
-	function calculateX($shifts = array()) {
-		$output = array();
-		foreach ($shifts as $shift) {
-			$output['ohip'] = $shift['Profile']['cb_ohip'];
-			$output['id'] = $shift['Profile']['id'];
-			foreach ($shift['Shift'] as $shift) {
 
-				//Calculate day of week from date
-				$day = date('N', strtotime($shift['date'])) - 1;
+	function calculateXValueForShift ($shiftId = null) {
 
-				//Calculate start hour for shift on week scale
-				$start_time = strtotime($shift['ShiftsType']['shift_start'] . " +" . $day * 24 ." hours") - strtotime("00:00:00");
+		// Get data for shift ID
+		App::uses('Shift', 'Model');
+		$this->Shift = ClassRegistry::init('Shift');
+		$shift = $this->Shift->findById($shiftId);
 
-				//Calculate proper end hour - add 24h if necessary
-				$end_time = strtotime($shift['ShiftsType']['shift_end'] . ($shift['ShiftsType']['shift_end'] > $shift['ShiftsType']['shift_start'] ?"": "+24 hours") . " +" . $day * 24 ." hours") - strtotime("00:00:00");
+		/* Consider two possibilities:
+		 * 1. 0800 - 1600 = duration is simple subtraction
+		 * 2. 1800 - 0200 = duration requires +24h to latter number
+		 *
+		 * In first case, take entire block for search
+		 * In second case, divide block at the midnight mark and calculate as two blocks.
+		 *
+		 */
 
-				//Add X value to previously stored value for location
-				$output[$shift['ShiftsType']['Location']['location']] = (isset($output[$shift['ShiftsType']['Location']['location']]) ? $output[$shift['ShiftsType']['Location']['location']] : '') + $this->calculateXValueForShift($shift['date'], $start_time, $end_time, $shift['ShiftsType']['Location']['location']);
-			}
+		// Map shifts onto actual date-times
+		if ($shift['ShiftsType']['shift_start'] >= $shift['ShiftsType']['shift_end']) {
+			$date = strtotime($shift['Shift']['date'] . " +1 day");
+
+			$shift['start_date'] = new DateTime($shift['Shift']['date'] . $shift['ShiftsType']['shift_start']);
+			$shift['end_date'] = new DateTime(date('Y-m-d', $date) . $shift['ShiftsType']['shift_end']);
+
+			$shift_end = explode(":", $shift['ShiftsType']['shift_end']);
+			$shift_end = $shift_end[0] . $shift_end[1] + 2400;
+
+			$shift_start = explode(":", $shift['ShiftsType']['shift_start']);
+			$shift_start = $shift_start[0] . $shift_start[1];
+
+			$divided = true;
 		}
-		return $output;
-	}
-
-	function getBlockForShiftStart($date, $start_time) {
-		App::uses('AccountingsException', 'Model');
-		$this->AccountingsException = new AccountingsException();
-
-		$accountingBlock = array();
-
-		// TODO: Daylight savings?
-
-		// TODO: Check if there are any exceptions first
-		if (1 == 2) {
-
-		}
-
 		else {
-			// If no exceptions, get the block
-			$accountingBlock = $this->find('first', array(
-					'conditions' => array(
-							'start_date <=' => $date,
-							'end_date >=' => $date,
-							'seconds_of_week_start <=' => $start_time,
-							'seconds_of_week_end >' => $start_time,
-					),
+			$shift['start_date'] = new DateTime($shift['Shift']['date'] . $shift['ShiftsType']['shift_start']);
+			$shift['end_date'] = new DateTime($shift['Shift']['date'] . $shift['ShiftsType']['shift_end']);
+
+			$shift_end = explode(":", $shift['ShiftsType']['shift_end']);
+			$shift_end = $shift_end[0] . $shift_end[1];
+
+			$shift_start = explode(":", $shift['ShiftsType']['shift_start']);
+			$shift_start = $shift_start[0] . $shift_start[1];
+
+			$divided = false;
+		}
+
+
+		// Get all relevant rows from accounting db
+		$rules = $this->find('all', array(
+				'conditions' => array(
+						'start_time <=' => $shift_end,
+						'end_time >=' => $shift_start,
+						'start_date <=' => $shift['Shift']['date'],
+						'end_date >=' => date('Y-m-d', $shift_end),
 				)
-			);
-		}
-		return $accountingBlock;
-	}
+		));
 
-	function calculateXValueForShift ($date = null, $start_time = null, $end_time = null, $location = null) {
-		$XValue = null;
-		$startBlock = array();
-		//Get back starting X block
-		$startBlock = $this->getBlockForShiftStart($date, $start_time);
-		$startBlock = $startBlock['Accounting'];
+		// Calculate hours worked
+		foreach ($rules as $rule) {
+			// Is it the correct day?
+			$days_of_week = json_decode($rule['Accounting']['days_of_week']);
+			$target_days = ($divided ?
+					array(
+							$shift['start_date']->format('w'),
+							$shift['start_date']->format('w') + 1 )
+					:
+					$shift['start_date']->format('w'));
+			if(!array_intersect($target_days, $days_of_week)) { continue; }
 
-		// If the end time is not included in the shift, divide the block and grab the next block
-		if (isset($startBlock['seconds_of_week_end']) && $startBlock['seconds_of_week_end'] < $end_time) {
-			//Divide the block
-			$XValue = (isset($XValue) ? $XValue : '') + $this->calculateXValueForShift($date, $start_time, $startBlock['seconds_of_week_end'], $location);
-			$XValue = $XValue + $this->calculateXValueForShift($date, $startBlock['seconds_of_week_end'], $end_time, $location);
+			// Is it the correct location?
+			$locations = json_decode($rule['Accounting']['locations']);
+			if(!in_array($shift['ShiftsType']['location_id'], $days_of_week)) { continue; }
+
+			debug($rule);
+			// Map rule onto shift
+
+			debug($rule['Accounting']['start_time'] . " " . $rule['Accounting']['end_time']);
+
+			// Calculate value for each hour that is included
+			if($rule['Accounting']['start_time'] <= $shift_start) {
+
+			}
+
 		}
-		else {
-			$XValue = ($end_time - $start_time) * $startBlock['value'];
-		}
+
+		// Does shift qualify for exception?
+
+		// Multiply hours worked by rate with following formula:
+		// sum(value) * sum(multiplier) (no more than maximum) + exception
+
+
+		$XValue = false;
 
 		return $XValue;
 
 	}
+
 }

@@ -3,7 +3,6 @@ App::uses('Accounting', 'Model');
 
 /**
  * Accounting Test Case
- *
  */
 class AccountingTest extends CakeTestCase {
 
@@ -13,7 +12,14 @@ class AccountingTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'app.accounting'
+		'app.accounting',
+		'app.calendar',
+		'app.group',
+		'app.usergroup',
+		'app.user',
+		'app.shiftsType',
+		'app.trade',
+		'app.shift'
 	);
 
 /**
@@ -26,6 +32,16 @@ class AccountingTest extends CakeTestCase {
 		$this->Accounting = ClassRegistry::init('Accounting');
 	}
 
+
+	/** Calculate X value
+	 *
+	 */
+
+	public function testCalculateXValue() {
+		$this->Shift = ClassRegistry::init('Shift');
+		$result = $this->Accounting->calculateXValueForShift(524);
+		debug($result);
+	}
 /**
  * tearDown method
  *

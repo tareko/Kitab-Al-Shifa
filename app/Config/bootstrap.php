@@ -107,3 +107,9 @@ Cache::config('default', array('engine' => 'File'));
   * as it compromises patient safety if in the public.
  */
  Configure::write('save_ohip', false);
+ 
+ /* Maximum value of multiplier in accoutnings
+  * 
+  */
+ Configure::write('accounting_maximum_multiplier', 1.75);
+ 
