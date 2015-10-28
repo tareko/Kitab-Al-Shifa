@@ -341,6 +341,13 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->assertContains('form action="/shifts/edit/16" id="ShiftEditForm"', $this->contents);
 	}
 
+	// Tests to make sure that delete and so on is possible. Tests issue #113
+	public function testEditId2() {
+		$result = $this->testAction('/shifts/edit/16', array('return' => 'vars'));
+		$this->assertContains('Bynum', $result['physicians']['1']);
+		$this->assertContains('1 - 2200 - 0400', $result['shiftsTypes']['13']);
+	}
+
 
 /**
  * testCalendarViewProperFormURL method
