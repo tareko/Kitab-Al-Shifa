@@ -290,11 +290,11 @@ class ShiftsController extends AppController {
 			} else {
 				$this->Flash->alert(__('The shift could not be saved. Please, try again.'));
 			}
+		}
 		$this->set('physicians', $this->Shift->User->getList(NULL, NULL, true));
 		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
 		$this->request->data = $this->Shift->read(null, $id);
 		$this->render();
-		}
 	}
 
 	function wizard() {
