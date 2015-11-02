@@ -44,10 +44,10 @@
 					echo "</span>";
 					if ($admin) {
 						if ($trade['Trade']['status'] == 1 && $tradesDetail['status'] == 1) {
-							echo " [" .$this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token'])));
-							echo "] [".$this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $trade['TradesDetail'][0]['id'], 'token' => $trade['TradesDetail'][0]['token']))) . "]";
+							echo " [" .$this->Html->link(__('Accept'), array('controller' => 'tradesDetails', 'action' => 'accept', '?' => array('id' => $tradesDetail['id'], 'token' => $tradesDetail['token'])));
+							echo "] [".$this->Html->link(__('Reject'), array('controller' => 'tradesDetails', 'action' => 'reject', '?' => array('id' => $tradesDetail['id'], 'token' => $tradesDetail['token']))) . "]";
 						}
-						echo " [" .$this->Html->link(__('Edit'), array('controller' => 'admin', 'action' => 'tradesDetails', 'edit', $trade['TradesDetail'][0]['id'])) . "]<br/>";
+						echo " [" .$this->Html->link(__('Edit'), array('controller' => 'admin', 'action' => 'tradesDetails', 'edit', $tradesDetail['id'])) . "]<br/>";
 					}
 				}
 			}
