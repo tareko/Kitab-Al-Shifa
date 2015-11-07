@@ -23,14 +23,19 @@ $this->Paginator->options(array(
 	$i = 0;
 	foreach ($shifts as $shift): ?>
 	<tr>
-		<td><?php echo h($shift['Shift']['date']); ?>&nbsp;</td>
-		<td><?php echo $this->Html->link($shift['ShiftsType']['Location']['location'], array('controller' => 'locations', 'action' => 'view', $shift['ShiftsType']['location_id'])); ?>&nbsp;</td>
-		<td><?php echo $this->Html->link($shift['ShiftsType']['times'], array('controller' => 'shifts_types', 'action' => 'view', $shift['ShiftsType']['id'])); ?>&nbsp;</td>
-		<td><?php echo $this->Html->link($shift['User']['name'], array('controller' => 'users', 'action' => 'view', $shift['User']['id'])); ?>&nbsp;</td>
+		<td><?= h($shift['Shift']['date']); ?>&nbsp;</td>
+		<td><?= $shift['ShiftsType']['Location']['location'] ?>&nbsp;</td>
+		<td><?= $shift['ShiftsType']['times'] ?>&nbsp;</td>
+		<td><?= $shift['User']['name'] ?>&nbsp;</td>
 		<td><?php echo h($shift['Shift']['updated']); ?>&nbsp;</td>
 		<td style="text-align: center">
 			<div class="checkbox checkbox-primary">
-				<a href="/shifts/marketplace/<?= $shift['Shift']['id']?>/<?= $shift['Shift']['marketplace'] == 0 ? "1" : "0"?>">
+				<a href="<?=$this->Html->url(array(
+				    "controller" => "shifts",
+				    "action" => "marketplace",
+				    $shift['Shift']['id'],
+					$shift['Shift']['marketplace'] == 0 ? "1" : "0"))?>
+				">
 					<input class="styled" type="checkbox" <?= $shift['Shift']['marketplace'] == 1 ? "checked" : ""?>>
 					<label></label>
 				</a>
