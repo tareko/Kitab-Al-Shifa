@@ -1,29 +1,15 @@
 <?php
 echo $this->Html->script('jquery');
+echo $this->Html->css('awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css');
+echo $this->Html->css('awesome-bootstrap-checkbox/bower_components/Font-Awesome/css/font-awesome.css');
 
 $this->Paginator->options(array(
     'update' => '#content',
     'evalScripts' => true
 ));
-
-
-echo $this->Form->create('Shift', array(
-    'url' => array('action' => 'index') + $this->request->params['named']
-));
-echo $this->Form->month('month', array('default' => date('m'), 'empty' => false));
-echo $this->Form->year('year', '2011', date('Y') + 1, array('default' => date('Y'), 'empty' => false));
-echo $this->Form->input('location', array(
-	'div' => false,
-	'multiple' => 'checkbox',
-	'label' => false, 
-	'options' => $locations));
-echo $this->Form->submit(__('Search', true), array('div' => false));
-echo $this->Form->end();
-
 ?>
-<div style="clear:both"></div>
-<div class="shifts index">
 	<h2><?php echo __('Shifts');?></h2>
+<div class="shifts <?= ($admin ? "index" : "")?>">
 	<table cellpadding="0" cellspacing="0">
 	<tr>
 			<th><?php echo $this->Paginator->sort('date');?></th>
@@ -31,7 +17,7 @@ echo $this->Form->end();
 			<th><?php echo $this->Paginator->sort('shifts_type_id');?></th>
 			<th><?php echo $this->Paginator->sort('user_id');?></th>
 			<th><?php echo $this->Paginator->sort('updated');?></th>
-			<th class="actions"><?php echo __('Actions');?></th>
+			<th><span data-toggle="tooltip" data-placement="bottom" title="Check here to submit your shift to the shift marketplace. Uncheck to remove"><?php echo __('Marketplace');?></span></th>
 	</tr>
 	<?php
 	$i = 0;
@@ -42,9 +28,13 @@ echo $this->Form->end();
 		<td><?php echo $this->Html->link($shift['ShiftsType']['times'], array('controller' => 'shifts_types', 'action' => 'view', $shift['ShiftsType']['id'])); ?>&nbsp;</td>
 		<td><?php echo $this->Html->link($shift['User']['name'], array('controller' => 'users', 'action' => 'view', $shift['User']['id'])); ?>&nbsp;</td>
 		<td><?php echo h($shift['Shift']['updated']); ?>&nbsp;</td>
-
-		<td class="actions">
-			<?php echo $this->Html->link(__('View'), array('action' => 'view', $shift['Shift']['id'])); ?>
+		<td style="text-align: center">
+			<div class="checkbox checkbox-primary">
+				<a href="/shifts/marketplace/<?= $shift['Shift']['id']?>/<?= $shift['Shift']['marketplace'] == 0 ? "1" : "0"?>">
+					<input class="styled" type="checkbox" <?= $shift['Shift']['marketplace'] == 1 ? "checked" : ""?>>
+					<label></label>
+				</a>
+			</div>
 		</td>
 	</tr>
 <?php endforeach; ?>
@@ -64,6 +54,7 @@ echo $this->Form->end();
 	?>
 	</div>
 </div>
+<?php if ($admin) {?>
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
@@ -74,5 +65,11 @@ echo $this->Form->end();
 		<li><?php echo $this->Html->link(__('New Shifts Type'), array('controller' => 'shifts_types', 'action' => 'add')); ?> </li>
 	</ul>
 </div>
+<?php }?>
 
 <?php echo $this->Js->writeBuffer();?>
+<script>
+$(function () {
+	$('[data-toggle="tooltip"]').tooltip()
+});
+</script>

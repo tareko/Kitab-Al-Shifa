@@ -83,6 +83,13 @@
 			</li>
 			<li><?php
 				$isLive = '';
+					if ($currentPage == Router::url('/trades/marketplace')) {
+					$isLive = array('class' => 'menu-current');
+				}
+				echo $this->Html->link('Marketplace', array('controller' => 'trades', 'action' => 'marketplace'), $isLive) ?>
+			</li>
+			<li><?php
+				$isLive = '';
 				if ($currentPage == Router::url('/trades/history')) {
 					$isLive = array('class' => 'menu-current');
 				}

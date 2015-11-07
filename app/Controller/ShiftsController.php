@@ -297,6 +297,25 @@ class ShiftsController extends AppController {
 		$this->render();
 	}
 
+	// Marketplace change status
+	public function marketplace($id = null, $status = null) {
+		$this->Shift->id = $id;
+		//TODO: User access restrictions
+
+		if (!$this->Shift->exists()) {
+			throw new NotFoundException(__('Invalid shift'));
+		}
+		if ($id && isset($status)) {
+			$this->Shift->set('marketplace', $status);
+			if ($this->Shift->save()) {
+//				$this->Flash->success(__('The shift has been saved'));
+			} else {
+				$this->Flash->alert(__('The shift could not be saved. Please, try again.'));
+			}
+		}
+		return $this->redirect( $this->referer() );
+	}
+
 	function wizard() {
 		$params = array();
 		$this->loadModel('Calendar');

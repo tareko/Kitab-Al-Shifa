@@ -28,7 +28,7 @@ class TradesController extends AppController {
  */
 
 /**
- * index method
+ * history method
  *
  * @return void
  */
@@ -100,6 +100,33 @@ class TradesController extends AppController {
 				'OR' => array(
 					'Trade.user_id' => $usersId,
 					'TradesDetail.user_id' => $usersId)))));
+		$this->render();
+	}
+
+	/**
+	 * marketplace method
+	 * Shift marketplace display
+	 *
+	 * @return void
+	 */
+	public function marketplace() {
+		$this->loadModel('Shift');
+
+		//Set paginate conditions from passed arguments
+		$this->paginate['defaultModel'] = 'Shift';
+		$this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
+		$this->paginate['limit'] = 15;
+
+		$this->paginate = array(
+				'order' => 'Shift.date ASC',
+				'limit' => 10,
+				);
+
+		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
+			'fields' => array('Location.location'),
+		)));
+
+		$this->set('shifts', $this->paginate('Shift', array('Shift.marketplace' => 1)));
 		$this->render();
 	}
 

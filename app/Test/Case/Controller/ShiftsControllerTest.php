@@ -348,37 +348,6 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->assertContains('1 - 2200 - 0400', $result['shiftsTypes']['13']);
 	}
 
-
-/**
- * testCalendarViewProperFormURL method
- *  Addresses Issue #61
- */
-
-	public function testCalendarViewProperFormURL() {
-		$result = $this->testAction('/shifts/calendarView/calendar:1');
-		$this->assertContains('form action="/shifts/calendarView/calendar:1', $result);
-	}
-
-/**
- * testCalendarEditProperFormURL method
- *  Addresses Issue #61
- */
-
-	public function testCalendarEditProperFormURL() {
-		$result = $this->testAction('/shifts/calendarEdit/calendar:1/id:1');
-		$this->assertContains('form action="/shifts/calendarEdit/calendar:1/id:1', $result);
-	}
-
-/**
- * testIndexProperFormURL method
- *  Addresses Issue #61
- */
-
-	public function testIndexViewProperFormURL() {
-		$result = $this->testAction('/shifts/index/calendar:1');
-		$this->assertContains('form action="/shifts/index/calendar:1', $result);
-	}
-
 /**
 * testHome method
 */
@@ -408,6 +377,29 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 	public function testWizard() {
 		$result = $this->testAction('/shifts/wizard');
 		$this->assertContains('<h2>Which calendar do you want to see?</h2>', $result);
+	}
+
+/**
+* testMarketplace method
+*/
+
+	// Only save if proper user
+	public function testMarketplaceUser() {
+		$Shifts = $this->generate('Shifts', array(
+						'methods' => array(
+								'_requestAllowed',
+								'_usersId'
+					),
+		));
+
+		$Shifts->expects($this->any())
+			->method('_requestAllowed')
+			->will($this->returnValue(true));
+		$Shifts->expects($this->any())
+			->method('_usersId')
+			->will($this->returnValue(1));
+		$result = $this->testAction('/shifts/marketplace/16/1', array('return' => 'vars'));
+		$this->markTestIncomplete('testMarketplaceUser not implemented.');
 	}
 
 }
