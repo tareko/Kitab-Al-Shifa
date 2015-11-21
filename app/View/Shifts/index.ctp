@@ -36,8 +36,7 @@ $this->Paginator->options(array(
 				    $shift['Shift']['id'],
 					$shift['Shift']['marketplace'] == 0 ? "1" : "0"))?>
 				">
-					<input class="styled" type="checkbox" <?= $shift['Shift']['marketplace'] == 1 ? "checked" : ""?>>
-					<label></label>
+					<?= $this->Html->image($shift['Shift']['marketplace'] == 0 ? "checkbox-unchecked.png" : "checkbox-checked.png", array('alt' => $shift['Shift']['marketplace'] == 0 ? "[ ]" : "[X]", 'width' => '20'))?>
 				</a>
 			</div>
 		</td>
