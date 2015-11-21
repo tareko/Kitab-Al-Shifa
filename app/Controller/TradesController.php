@@ -115,7 +115,7 @@ class TradesController extends AppController {
 		//Set paginate conditions from passed arguments
 		$this->paginate['defaultModel'] = 'Shift';
 		$this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
-		$this->paginate['limit'] = 15;
+		$this->paginate['limit'] = 25;
 
 		$this->paginate = array(
 				'order' => 'Shift.date ASC',
