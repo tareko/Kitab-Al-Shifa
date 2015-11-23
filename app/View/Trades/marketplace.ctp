@@ -1,10 +1,10 @@
 <?php
 echo $this->Html->script('jquery');
 
-$this->Paginator->options(array(
-    'update' => '#content',
-    'evalScripts' => true
-));
+//$this->Paginator->options(array(
+//    'update' => '#content',
+//    'evalScripts' => true
+//));
 ?>
 	<h2><?php echo __('Shift Marketplace');?></h2>
 <div class="shifts <?= ($admin ? "index" : "")?>">
