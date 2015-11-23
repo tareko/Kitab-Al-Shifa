@@ -116,7 +116,7 @@ class TradesController extends AppController {
 		$this->paginate['defaultModel'] = 'Shift';
 		$this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
 		if ($this->params['ext'] == 'csv') {
-			$this->paginate['limit'] = '';
+			unset($this->paginate['limit']);
 		}
 		else {
 			$this->paginate['limit'] = '25';
