@@ -115,11 +115,13 @@ class TradesController extends AppController {
 		//Set paginate conditions from passed arguments
 		$this->paginate['defaultModel'] = 'Shift';
 		$this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
-
-		$this->paginate = array(
-				'order' => 'Shift.date ASC',
-				'limit' => 25,
-				);
+		if ($this->params['ext'] == 'csv') {
+			$this->paginate['limit'] = '';
+		}
+		else {
+			$this->paginate['limit'] = '25';
+		}
+		$this->paginate['order'] = 'Shift.date ASC';
 
 		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
 			'fields' => array('Location.location'),
