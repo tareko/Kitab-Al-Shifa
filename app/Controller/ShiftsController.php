@@ -178,7 +178,7 @@ class ShiftsController extends AppController {
 
 		if (strlen(strstr($this->request->referer(), 'wizard'))>0) {
 			$this->set('id', $this->request->params['named']['id']);
-			$this->render('ics_link');
+			return $this->render('ics_link');
 		}
 
 		if (isset($this->request->data['Shift'][0]['id'])) {
