@@ -72,6 +72,37 @@ class UsersController extends AppController {
 		}
 	}
 
+	/**
+	 * Preferences method
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	public function preferences($id = null) {
+		// If user is an administrator, allow the editing of other users' preferences
+		if ($this->_isAdmin()) {
+			$this->User->id = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
+		}
+		else {
+			$this->User->id = $this->_usersId();
+		}
+		if (!$this->User->exists()) {
+			throw new NotFoundException(__('Invalid user'));
+		}
+		if ($this->request->is('post') || $this->request->is('put')) {
+			if ($this->User->Preference->saveSection($this->User->id, $this->request->data, 'Profile')) {
+				$this->Session->setFlash(__('Your prefernces have been saved'), 'success');
+			} else {
+				$this->Session->setFlash(__('Your preferences could not be saved. Please, try again. If you still have issues, please report them'), 'alert');
+			}
+		} else {
+			$this->request->data = $this->User->read(null, $id);
+		}
+		$this->User->recursive = 0;
+		$this->set('user', $this->User->read(null, $id));
+		$this->set('preference', $this->User->Preference->getSection($this->User->id, 'Profile'));
+	}
+	
 /**
  * delete method
  *

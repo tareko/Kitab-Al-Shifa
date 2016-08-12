@@ -190,4 +190,30 @@ class UsersControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/users/listUsers.json');
 		$this->assertEqual($result, '');
 	}
+	
+	// Test if non-admin user can give other people's preferences
+	public function testPrefUserNotAdminPermissionDenied() {
+		$Users = $this->generate('Users', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_isadmin',
+						'_usersId'
+				),
+		));
+	
+		$Users->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Users->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(false));
+		$Users->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		
+		$result = $this->testAction('/users/preferences?id=1');
+		debug($result);
+		$this->assertEqual($result, '');
+	}
+	
 }

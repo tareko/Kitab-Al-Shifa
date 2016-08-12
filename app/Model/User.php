@@ -13,6 +13,10 @@ class User extends AppModel
 				'order' => '')
 	);
 	public $hasMany = array(
+			'Preference' => array(
+					'className' => 'Preference',
+					'foreignKey' => 'user_id'
+					),
 			'Shift',
 			'Trade' => array(
 					'className' => 'Trade',
