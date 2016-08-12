@@ -10,3 +10,6 @@
 [submodule "app/webroot/css/awesome-bootstrap-checkbox"]
 	path = app/webroot/css/awesome-bootstrap-checkbox
 	url = https://github.com/flatlogic/awesome-bootstrap-checkbox.git
+[submodule "app/Plugin/utils"]
+	path = app/Plugin/utils
+	url = https://github.com/CakeDC/utils.git
