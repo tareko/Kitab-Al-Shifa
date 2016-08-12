@@ -91,7 +91,7 @@ class UsersController extends AppController {
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($this->User->Preference->saveSection($this->User->id, $this->request->data, 'Profile')) {
-				$this->Session->setFlash(__('Your prefernces have been saved'), 'success');
+				$this->Session->setFlash(__('Your preferences have been saved'), 'success');
 			} else {
 				$this->Session->setFlash(__('Your preferences could not be saved. Please, try again. If you still have issues, please report them'), 'alert');
 			}
