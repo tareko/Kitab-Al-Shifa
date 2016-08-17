@@ -235,4 +235,4 @@ foreach($this->validationErrors as $assoc) {
 				
 		    }
 		</script>
-	<?echo $this->Js->writeBuffer();?>
+	<?= $this->Js->writeBuffer();?>
