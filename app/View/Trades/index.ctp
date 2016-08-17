@@ -122,8 +122,9 @@ foreach($this->validationErrors as $assoc) {
 	</div>
 </div>
 	<div class="block">
-		<?php echo $this->Form->end(__('Submit'));?>
+		<?php echo $this->Form->end();?>
 	</div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 
 <?= $this->Js->get("#usergroupSelected input")->event('change', 'addGroupUsers(event)', array ('stop' => false)); ?>
 	
