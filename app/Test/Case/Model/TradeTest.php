@@ -133,6 +133,7 @@ class TradeTestCase extends CakeTestCase {
 								'user_status' => '0',
 								'submitted_by' => '2',
 								'confirmed' => '1',
+								'consideration' => 1,
 								'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 								'updated' => '2012-05-23 11:59:42'
 						),
@@ -208,6 +209,7 @@ class TradeTestCase extends CakeTestCase {
 								'user_status' => '0',
 								'submitted_by' => '2',
 								'confirmed' => '1',
+								'consideration' => 1,
 								'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 								'updated' => '2012-05-23 11:59:42'
 						),
@@ -282,6 +284,7 @@ class TradeTestCase extends CakeTestCase {
 								'user_status' => '0',
 								'submitted_by' => '2',
 								'confirmed' => '1',
+								'consideration' => 1,
 								'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 								'updated' => '2012-05-23 11:59:42'
 						),
@@ -1595,10 +1598,10 @@ class TradeTestCase extends CakeTestCase {
 		$result = $this->Trade->changeStatus($this->Trade->request, 'bad');
 		$this->assertEqual($result, 'Improper status was given to this function');
 	}
-	
+
 	// Test counting ability in market
 	public function testMarketTradesToday() {
-	
+
 		$result = $this->Trade->marketTradesToday(4);
 		$this->assertEqual($result, 2);
 	}

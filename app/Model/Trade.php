@@ -638,10 +638,9 @@ class Trade extends AppModel {
 		$resetHour = Configure::read('marketplace_take_limit_restart');
 
 		$startLimit = (date('H') >= $resetHour ? date('Y-m-d '.$resetHour.':00:00', strtotime('today')) : date('Y-m-d '.$resetHour.':00:00', strtotime('yesterday')));
-
 		return $this->find('count', array(
 				'conditions' => array(
-						'Trade.user_id' => $id,
+						'Trade.submitted_by' => $id,
 						'Trade.consideration' => 3,
 						'Trade.updated <=' => date('Y-m-d H:i:s', strtotime($startLimit . ' + 24 hours')),
 						'Trade.updated >=' => $startLimit,

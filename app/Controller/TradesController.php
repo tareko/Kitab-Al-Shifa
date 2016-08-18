@@ -156,7 +156,6 @@ class TradesController extends AppController {
 			// Has the taking user taken more than today's limit? This is set in
 			// bootstrap.php as 'marketplace_take_limit'
 
-
 			if ($this->Trade->marketTradesToday($this->_usersId()) >= Configure::read('marketplace_take_limit')) {
 				$this->Flash->alert(__('You have reached your marketplace limit ('.Configure::read('marketplace_take_limit').'for the day. Try again after '. Configure::read('marketplace_take_limit_restart') . '00h'));
 				return $this->redirect(array(
