@@ -83,6 +83,18 @@ Cache::config('default', array('engine' => 'File'));
  		'file' => 'error',
  ));
 
+ //Logs for trading accountability
+ CakeLog::config('TradeRequest', array(
+                'engine' => 'FileLog',
+                'file' => 'trade_request',
+ ));
+
+ CakeLog::config('TradeComplete', array(
+                'engine' => 'FileLog',
+                'file' => 'trade_complete',
+ ));
+
+
  //Load CakePdf
  CakePlugin::load('CakePdf', array(
  		'bootstrap' => true,
