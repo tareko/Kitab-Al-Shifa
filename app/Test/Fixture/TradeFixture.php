@@ -19,7 +19,7 @@ class TradeFixture extends CakeTestFixture {
 		'user_status' => array('type' => 'integer', 'null' => false, 'default' => NULL),
 		'consideration' => array('type' => 'integer', 'null' => false, 'default' => 1),
 		'submitted_by' => array('type' => 'integer', 'null' => false, 'default' => NULL),
-		'confirmed' => array('type' => 'integer', 'null' => false, 'default' => NULL),
+		'confirmed' => array('type' => 'integer', 'null' => false, 'default' => 0, 'length' => 4),
 		'token' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'updated' => array('type' => 'timestamp', 'null' => false, 'default' => 'CURRENT_TIMESTAMP'),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),

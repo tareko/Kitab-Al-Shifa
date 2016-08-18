@@ -16,6 +16,7 @@ class GroupFixture extends CakeTestFixture {
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => 4, 'key' => 'primary', 'collate' => NULL, 'comment' => ''),
 		'usergroups_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'collate' => NULL, 'comment' => ''),
 		'acl' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 256, 'collate' => 'utf8_general_ci', 'comment' => '', 'charset' => 'utf8'),
+		'tradeable' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'collate' => NULL, 'length' => 4, 'comment' => ''),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'MyISAM')
 	);

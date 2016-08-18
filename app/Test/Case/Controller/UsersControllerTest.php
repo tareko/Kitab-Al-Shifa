@@ -37,7 +37,15 @@ class UsersControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.user', 'app.profile', 'app.shift', 'app.usergroup', 'app.user_usergroup_map', 'app.group');
+	public $fixtures = array(
+			'app.user', 
+			'app.profile', 
+			'app.shift', 
+			'app.usergroup', 
+			'app.user_usergroup_map',
+			'app.group',
+			'app.preference'
+		);
 
 /**
  * setUp method
@@ -196,8 +204,8 @@ class UsersControllerTestCase extends ControllerTestCase {
 		$Users = $this->generate('Users', array(
 				'methods' => array(
 						'_requestAllowed',
-						'_isadmin',
-						'_usersId'
+						'_usersId',
+						'_isadmin'
 				),
 		));
 	
@@ -205,15 +213,40 @@ class UsersControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 		$Users->expects($this->any())
-		->method('_requestAllowed')
+		->method('_usersId')
+		->will($this->returnValue(1));
+		$Users->expects($this->any())
+		->method('_isadmin')
 		->will($this->returnValue(false));
+		
+		$result = $this->testAction('/users/preferences?id=2', array('return' => 'vars'));
+		$this->assertEqual($result['user']['User']['id'], 1);
+		$this->assertEqual($result['admin'], false);
+	}
+
+	// Make sure admin user can get/set other people's preferences
+	public function testPrefUserAdminPermissionAllowed() {
+		$Users = $this->generate('Users', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId',
+						'_isadmin'
+				),
+		));
+	
+		$Users->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
 		$Users->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
-		$result = $this->testAction('/users/preferences?id=1');
-		debug($result);
-		$this->assertEqual($result, '');
+		$Users->expects($this->any())
+		->method('_isadmin')
+		->will($this->returnValue(true));
+	
+		$result = $this->testAction('/users/preferences?id=2', array('return' => 'vars'));
+		$this->assertEqual($result['user']['User']['id'], 2);
+		$this->assertEqual($result['admin'], true);
 	}
 	
 }

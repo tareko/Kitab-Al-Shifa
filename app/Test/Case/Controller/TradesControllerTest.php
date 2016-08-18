@@ -72,12 +72,12 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 		$result = $this->testAction('/trades/history', array('return' => 'vars'));
 		$expected = array(
-						'status' => '0',
-						'user_id' => '1',
-						'user_status' => '0',
-						'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
-						'shift_id' => '16',
-						'id' => '1');
+						'status' => '1',
+						'user_id' => '5',
+						'user_status' => '2',
+						'token' => '15b6a69f207d8f6cd29c66b4cb729d40',
+						'shift_id' => '513',
+						'id' => '11');
 		$this->assertEqual($result['trades'][4]['Trade'], $expected);
 	}
 
@@ -113,12 +113,10 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(1));
 
 		$result = $this->testAction('/trades/index');
-		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="me" id="TradeFromUserId"/>', $result);
-		$this->assertContains('<div id="datepicker1"></div>', $result);
-		$this->assertContains('<select name="data[Trade][shift_id]" id="TradeShiftId">', $result);
-		$this->assertContains('<ul id="tags">
-	</ul>', $result);
-		$this->assertContains('<div class="submit"><input  type="submit" value="Submit"/></div>', $result);
+		$this->assertContains('<input name="data[Trade][from_user_id]" placeholder="me" class="form-control" type="text" id="TradeFromUserId"/>', $result);
+		$this->assertContains('input type=\'date\' id=\'datepicker1\' class=\'form-control\'></div>', $result);
+		$this->assertContains('<select name="data[Trade][shift_id]" class="form-control" id="TradeShiftId" required="required">', $result);
+		$this->assertContains('<button type="submit" class="btn btn-primary">Submit</button>', $result);
 	}
 
 /*	public function testAddQueryId() {
@@ -134,25 +132,31 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 		$data = array('id' => '2');
-		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'get'));
+		$result = $this->testAction('/trades/index', array('data' => $data, 'method' => 'get'));
 		$this->assertContains('<input name="data[Trade][from_user_id]" type="text" value="2" id="TradeFromUserId"/>', $result);
 	}
 */
 	public function testAddPost() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
-						'_requestAllowed'
+						'_requestAllowed',
+						'_usersId'
 				),
 		));
 
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-
+		
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		
 		$data = array(
 				'Trade' => array(
 						'user_id' => 2,
-						'shift_id' => 1,
+						'shift_id' => 16,
+						'confirmed' => 0,
 				),
 				'TradesDetail' => array(
 						0 => array(
@@ -163,13 +167,14 @@ class TradesControllerTestCase extends ControllerTestCase {
 						)
 				);
 
-		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-		$this->assertEqual($this->headers['Location'], 'http://127.0.0.1/kitab/trades');
+		$result = $this->testAction('/trades/index', array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+		$this->assertTrue($result['success']);
 	}
 	public function testAddPostFailedSaveBadDataNoRecipient() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
 						'_requestAllowed',
+						'_usersId',
 						'saveAssociated'
 				),
 		));
@@ -177,34 +182,43 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
 						'shift_id' => 16,
+						'confirmed' => 0,
 				),
 		);
 
-		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-		$this->assertContains('<div class="error-message">Please enter at least one recipient</div>', $result);
+		$result = $this->testAction('/trades/index', array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	public function testAddPostFailedSaveBadDataNoShift() {
 
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
-						'_requestAllowed'
+						'_requestAllowed',
+						'_usersId',
 				),
 		));
 
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
-			),
+						'confirmed' => 0,
+				),
 				'TradesDetail' => array(
 						0 => array(
 							'user_id' => 2
@@ -213,8 +227,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 							'user_id' => 3)
 						)
 			);
-		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-		$this->assertContains('<div class="error-message">Please select a proper shift (numeric)</div>', $result);
+		$result = $this->testAction('/trades/index', array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	/* This test ensures that when a shift is added that has a previously cancelled trade, it will go through.
@@ -223,18 +237,23 @@ class TradesControllerTestCase extends ControllerTestCase {
 	public function testAddDuplicateCancelled() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
-						'_requestAllowed'
+						'_requestAllowed',
+						'_usersId'
 				),
 		));
 
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(3));
+		
 		$data = array(
 				'Trade' => array(
 						'user_id' => 3,
 						'shift_id' => 86,
+						'confirmed' => 0,
 				),
 				'TradesDetail' => array(
 						0 => array(
@@ -245,8 +264,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 				)
 		);
 
-		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-		$this->assertEqual($this->headers['Location'], 'http://127.0.0.1/kitab/trades');
+		$result = $this->testAction('/trades/index', array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+		$this->assertTrue($result['success']);
 	}
 
 /**
@@ -259,42 +278,43 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testStartUnprocessed() {
-		//TODO: Fix broken test
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
-						'_TradeRequest'
+						'_TradeRequest',
+						'_requestAllowed'
 				),
 		));
 
 		$Trades->expects($this->any())
 		->method('_TradeRequest')
 		->will($this->returnValue(true));
-
-		$result = $this->testAction('/trades/startUnprocessed');
-		$this->assertContains('Success', $result);
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		
+		$result = $this->testAction('/trades/startUnprocessed', array('return' => 'vars'));
+		$this->assertTrue($result['success']);
 	}
 
-	public function testStartUnprocessedWithFailedTradeRequest() {
-		//TODO: Fix Broken test
+	public function testStartUnprocessedWithFailedProcessing() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'processTrades',
+						'_requestAllowed'
+				),
+		));
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
 
-		App::import('Lib', 'TradeRequest');
-
-		$Trades->_TradeRequest = new TradeRequest();
-
-		$Trades->_TradeRequest = $this->getMockBuilder('_TradeRequest')
-			->setMethods(array('send'))
-			->disableOriginalConstructor()
-			->getMock();
-
-		$Trades->_TradeRequest->expects($this->any())
-		->method('send')
- 		->will($this->returnValue(array(
-  			'return' => false,
-  			'token' => 'abcdefghijklmnopqrstuvwxyzabcdef'
-  		)));
-
-		$result = $this->testAction('/trades/startUnprocessed');
-		debug($result);
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'processTrades'));
+		$this->Trade->expects($this->any())
+		->method('processTrades')
+		->will($this->returnValue(false));		
+		
+		$result = $this->testAction('/trades/startUnprocessed', array('return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 /**
@@ -364,8 +384,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testAcceptIdNotFound() {
-		$this->setExpectedException('NotFoundException');
-
 		$Trades = $this->generate('Trades', array(
 								'methods' => array(
 										'_requestAllowed'
@@ -376,7 +394,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
-		$result = $this->testAction('/trades/accept?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef');
+		$result = $this->testAction('/trades/accept?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef', array('return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	public function testAcceptCorrectIdAndToken() {
@@ -393,8 +412,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testAcceptWrongStatus() {
-		$this->setExpectedException('NotFoundException');
-
 		$Trades = $this->generate('Trades', array(
 									'methods' => array(
 											'_requestAllowed'
@@ -405,7 +422,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
-		$result = $this->testAction('/trades/accept?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
+		$result = $this->testAction('/trades/accept?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012', array('return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	/**
@@ -475,8 +493,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testRejectIdNotFound() {
-		$this->setExpectedException('NotFoundException');
-
 		$Trades = $this->generate('Trades', array(
 									'methods' => array(
 											'_requestAllowed'
@@ -487,7 +503,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
-		$result = $this->testAction('/trades/reject?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef');
+		$result = $this->testAction('/trades/reject?id=12352&token=abcdefghijklmnopqrstuvwxyzabcdef', array('return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	public function testRejectCorrectIdAndToken() {
@@ -505,8 +522,6 @@ class TradesControllerTestCase extends ControllerTestCase {
 	}
 
 	public function testRejectWrongStatus() {
-		$this->setExpectedException('NotFoundException');
-
 		$Trades = $this->generate('Trades', array(
 										'methods' => array(
 												'_requestAllowed'
@@ -517,24 +532,30 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
 
-		$result = $this->testAction('/trades/reject?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012');
+		$result = $this->testAction('/trades/reject?id=8&token=a50e7ad2e87fe32ef46d9bb84db20012', array('return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	public function testRejectDuplicateTrade() {
 		$Trades = $this->generate('Trades', array(
 				'methods' => array(
-						'_requestAllowed'
+						'_requestAllowed',
+						'_usersId'
 				),
 		));
 
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
 						'shift_id' => 16,
+						'confirmed' => 0,
 				),
 				'TradesDetail' => array(
 						0 => array(
@@ -545,9 +566,11 @@ class TradesControllerTestCase extends ControllerTestCase {
 						)
 				);
 
-		$result = $this->testAction('/trades/add', array('data' => $data, 'method' => 'post'));
-		$this->assertContains('This shift is already in the process', $result);
+		$result = $this->testAction('/trades/index', array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+//		$this->assertContains('This shift is already in the process', $result);
+		$this->assertFalse($result['success']);
 	}
+	
 /**
  * tearDown method
  *
