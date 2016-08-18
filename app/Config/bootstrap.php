@@ -107,3 +107,16 @@ Cache::config('default', array('engine' => 'File'));
   * as it compromises patient safety if in the public.
  */
  Configure::write('save_ohip', false);
+
+ /* Option for total number of shifts a user is allowed to take per day in the
+  * marketplace. Set this suitably high if you want no limit
+  * Default: 3
+  */
+ Configure::write('marketplace_take_limit', 3);
+ 
+ /* Time at which the take limit restarts (24 hour clock. Give only hour)
+  * 
+  */
+ Configure::write('marketplace_take_limit_restart', 12);
+ 
+ 

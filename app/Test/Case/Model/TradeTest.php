@@ -1595,6 +1595,13 @@ class TradeTestCase extends CakeTestCase {
 		$result = $this->Trade->changeStatus($this->Trade->request, 'bad');
 		$this->assertEqual($result, 'Improper status was given to this function');
 	}
+	
+	// Test counting ability in market
+	public function testMarketTradesToday() {
+	
+		$result = $this->Trade->marketTradesToday(4);
+		$this->assertEqual($result, 2);
+	}
 
 /**
  * tearDown method

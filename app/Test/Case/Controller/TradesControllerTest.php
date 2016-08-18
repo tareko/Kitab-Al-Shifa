@@ -36,7 +36,20 @@ class TradesControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.trade', 'app.user', 'app.profile', 'app.shift', 'app.shifts_type', 'app.location', 'app.usergroup', 'app.group', 'app.user_usergroup_map', 'app.trades_detail', 'app.calendar');
+	public $fixtures = array(
+			'app.trade',
+			'app.user',
+			'app.profile',
+			'app.shift',
+			'app.shifts_type',
+			'app.location',
+			'app.usergroup',
+			'app.group',
+			'app.user_usergroup_map',
+			'app.trades_detail',
+			'app.calendar',
+			'app.preference'
+	);
 
 /**
  * setUp method
@@ -147,11 +160,11 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-		
+
 		$Trades->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
+
 		$data = array(
 				'Trade' => array(
 						'user_id' => 2,
@@ -185,7 +198,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
+
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
@@ -213,7 +226,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
+
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
@@ -248,7 +261,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(3));
-		
+
 		$data = array(
 				'Trade' => array(
 						'user_id' => 3,
@@ -291,7 +304,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-		
+
 		$result = $this->testAction('/trades/startUnprocessed', array('return' => 'vars'));
 		$this->assertTrue($result['success']);
 	}
@@ -311,8 +324,8 @@ class TradesControllerTestCase extends ControllerTestCase {
 				'processTrades'));
 		$this->Trade->expects($this->any())
 		->method('processTrades')
-		->will($this->returnValue(false));		
-		
+		->will($this->returnValue(false));
+
 		$result = $this->testAction('/trades/startUnprocessed', array('return' => 'vars'));
 		$this->assertFalse($result['success']);
 	}
@@ -550,7 +563,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$Trades->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
+
 		$data = array(
 				'Trade' => array(
 						'user_id' => 1,
@@ -570,7 +583,195 @@ class TradesControllerTestCase extends ControllerTestCase {
 //		$this->assertContains('This shift is already in the process', $result);
 		$this->assertFalse($result['success']);
 	}
-	
+
+
+	/**
+	 * Marketplace tests
+	 */
+
+	// Marketplace index
+	// TODO: Marketplace index tests
+
+	// Market_take tests
+
+	// Test redirection back to marketplace when no ID is given
+
+	public function testMarketTakeNoId() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/trades/market_take', array('return' => 'vars'));
+		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+	}
+
+
+	// Dump back to marketplace if bad shift ID
+	public function testMarketTakeBadId() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/trades/market_take?id=1', array('return' => 'vars'));
+		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+	}
+
+	// Dump back to marketplace if shift is not on marketplace
+	public function testMarketTakeShiftNotInMarket() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/trades/market_take?id=16', array('return' => 'vars'));
+		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+	}
+
+	// Dump back to marketplace if user has taken more than X shifts per 24 hour period
+	public function testMarketTakeTooManyTaken() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'marketTradesToday'));
+		$this->Trade->expects($this->any())
+		->method('marketTradesToday')
+		->will($this->returnValue(4));
+
+		$result = $this->testAction('/trades/market_take?id=52', array('return' => 'vars'));
+		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+	}
+
+	// Dump back to marketplace if user limit has been reached
+	public function testMarketTakeLimitReached() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'marketLimitReached',
+				'marketTradesToday'
+		));
+
+		$this->Trade->expects($this->any())
+		->method('marketTradesToday')
+		->will($this->returnValue(1));
+		$this->Trade->expects($this->any())
+		->method('marketLimitReached')
+		->will($this->returnValue(true));
+
+		$result = $this->testAction('/trades/market_take?id=52', array('return' => 'vars'));
+		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+	}
+
+	// Dump back to marketplace if not yet confirmed
+	public function testMarketTakeNotConfirmed() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+
+		$Trade = $this->getMockForModel('Trade', array(
+				'marketLimitReached',
+				'marketTradesToday'
+		));
+
+		$Trade->expects($this->any())
+		->method('marketTradesToday')
+		->will($this->returnValue(1));
+
+		$Trade->expects($this->any())
+		->method('marketLimitReached')
+		->will($this->returnValue(false));
+
+		$result = $this->testAction('/trades/market_take?id=52', array('return' => 'vars'));
+		$this->assertEquals($result['shift']['Shift']['id'], 52);
+	}
+
+	// Perform proper save when all criteria are met
+	public function testMarketTakeSave() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId',
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		$Trades->expects($this->any())
+		->method('redirect')
+		->will($this->returnValue(true));
+
+		$this->Trade = $this->getMockForModel('Trade', array(
+				'marketLimitReached',
+				'marketTradesToday'
+		));
+
+		$this->Trade->expects($this->any())
+		->method('marketTradesToday')
+		->will($this->returnValue(1));
+
+		$this->Trade->expects($this->any())
+		->method('marketLimitReached')
+		->will($this->returnValue(false));
+
+		$result = $this->testAction('/trades/market_take?id=52&confirm=1');
+		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+	}
+
+
 /**
  * tearDown method
  *

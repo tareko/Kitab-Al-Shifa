@@ -1,7 +1,9 @@
 <?php $consideration = array(
 		'0' => 'Cash',
 		'1' => 'Trade',
-		'2' => 'Future consideration')?>
+		'2' => 'Future consideration',
+		'3' => 'Marketplace')?>
+
 Dear <?=$tradesDetail[0]['User']['name']?>,
 
 A trade has been completed for the following shift between you and <?=$user['name']?>:

@@ -22,6 +22,7 @@ App::uses('AppModel', 'Model');
  * 0 => 'Cash',
  * 1 => 'Trade',
  * 2 => 'Future consideration'
+ * 3 => 'Marketplace'
  */
 class Trade extends AppModel {
 
@@ -249,7 +250,7 @@ class Trade extends AppModel {
 				// If trade does not need confirmation, skip confirmation messages and set appropriate flags for completion.
 				// Send email to originating and receiving users telling them deal is done.
 
-				if ($trade['Trade']['confirmed'] == 1) {
+				if ($trade['Trade']['confirmed'] == 1 && $trade['Trade']['consideration'] != 3) {
 					// Send email confirming that trade has been made
 					$sendOriginatorConfirmed = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedOriginator', 'Pre-confirmed trade: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
 					$sendRecipientConfirmed = $this->_TradeRequest->send($trade['TradesDetail'][0]['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteConfirmedRecipient', 'Pre-confirmed trade: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
@@ -282,6 +283,45 @@ class Trade extends AppModel {
 					}
 					else {
 						CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email confirmation FAILED to '. $trade['User']['name'] .' and ' . $trade['TradesDetail']['0']['User']['name'] . ' confirming the trade');
+						$failure = true;
+					}
+				}
+
+				// Send email confirmations and save for marketplace trades
+
+				elseif ($trade['Trade']['confirmed'] == 1 && $trade['Trade']['consideration'] == 3) {
+					// Send email confirming that trade has been made
+					$sendOriginatorMarketplace = $this->_TradeRequest->send($trade['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteMarketOriginator', 'Market trade: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+					$sendRecipientMarketplace = $this->_TradeRequest->send($trade['TradesDetail'][0]['User'], $trade, $trade['TradesDetail'], $method, 'tradeCompleteMarketRecipient', 'Market trade: '. $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+					if ($sendOriginatorMarketplace['return'] === true && $sendRecipientMarketplace['return'] === true) {
+						// Assuming success, update Status of Trade to 1
+						$data = array(
+								'user_status' => 2,
+								'status' => 1
+						);
+						$data2 = array(
+								'status' => 2
+						);
+
+						$success1 = $this->updateAll($data, array('Trade.id' => $trade['Trade']['id']));
+						$success2 = $this->TradesDetail->updateAll($data2, array('TradesDetail.trade_id' => $trade['Trade']['id']));
+
+						if ( $success1 && $success2) {
+							// Write log indicating trade detail was done
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; An email confirmation was sent to '. $trade['User']['name'] .' and ' . $trade['TradesDetail'][0]['User']['name'] . ' confirming the marketplace trade');
+						} else {
+							CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED, but an email confirmation was sent to '. $trade['User']['name'] .' and ' . $trade['TradesDetail'][0]['User']['name'] . ' confirming the marketplace trade. DB ERROR: ');
+							debug($data);
+							debug($data2);
+							debug($success1);
+							debug($success2);
+							debug($this->validationErrors);
+							debug($this->TradesDetail->validationErrors);
+							$failure = true;
+						}
+					}
+					else {
+						CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; A confirmation FAILED to '. $trade['User']['name'] .' and ' . $trade['TradesDetail']['0']['User']['name'] . ' confirming the marketplace trade');
 						$failure = true;
 					}
 				}
@@ -547,4 +587,155 @@ class Trade extends AppModel {
 			}
 		}
 	}
+
+	/**
+	 * Decide if user's market limit has been reached for month
+	 *
+	 * Eventually, this will become more specific, but for now, one number
+	 * from preferences dictates the overall market limit
+	 *
+	 * @param array $shift Shift information
+	 * @return integer Number of trades in the 24 hour period.
+	 *
+	 */
+
+	public function marketLimitReached($shift = null) {
+
+		// Get user limit from preferences
+		$userLimit = $this->User->Preference->getSection($shift['user_id'], 'Profile');
+
+		// Return false if not set at all or not a number
+		if (!is_numeric($userLimit['limit']) || empty($userLimit['limit'])) {
+			return false;
+		}
+
+		// Get total shifts worked for the month of the shift
+		$shiftCount = $this->Shift->find('count', array(
+				'conditions' => array(
+						'Shift.user_id' => $shift['user_id'],
+						'Shift.date <=' => date('Y-m-t', strtotime($shift['date'])),
+						'Shift.date >=' => date('Y-m-01', strtotime($shift['date'])),
+				)
+		));
+
+
+		// Compare to the shift limit and return value
+		return ($userLimit <= $shiftCount ? true : false);
+	}
+
+	/**
+	 * Get all trades made in a 24 hour period
+	 *
+	 * The 24 hour period starts at marketplace_take_limit_restart
+	 *
+	 * @param integer $id User ID of user for whom the count will be made.
+	 * @return bool Indicates true or false for whether the count has been reached
+	 *
+	 */
+
+	public function marketTradesToday($id = null) {
+		// Set date based on whether we have passed the reset hour or not
+		$resetHour = Configure::read('marketplace_take_limit_restart');
+
+		$startLimit = (date('H') >= $resetHour ? date('Y-m-d '.$resetHour.':00:00', strtotime('today')) : date('Y-m-d '.$resetHour.':00:00', strtotime('yesterday')));
+
+		return $this->find('count', array(
+				'conditions' => array(
+						'Trade.user_id' => $id,
+						'Trade.consideration' => 3,
+						'Trade.updated <=' => date('Y-m-d H:i:s', strtotime($startLimit . ' + 24 hours')),
+						'Trade.updated >=' => $startLimit,
+				)
+		));
+	}
+
+	/**
+	 * Clean marketplace
+	 *
+	 * This function will remove all marketplace entries for any person who's
+	 * over the limit. For now, this is based on a preference for each calendar month.
+	 *
+	 * @return bool Returns true unless errors
+	 *
+	 */
+
+	public function cleanMarketplace() {
+		// Get all users with marketplace shifts
+		$marketUsers = $this->Shift->find('all', array(
+				'conditions' => array(
+						'Shift.marketplace' => 1),
+				'fields' => array(
+						'user_id',
+				),
+				'recursive' => -1,
+				'group' => array(
+						'user_id'),
+		));
+
+		// Foreach user
+		foreach($marketUsers as $marketUser) {
+		// Get user's limit if set
+			$limit = $this->User->Preference->getSection($marketUser['Shift']['user_id'], 'Profile')['limit'];
+			if (is_numeric($limit)) {
+
+				// Get count of all shifts worked each month for user
+				$userMarketMonths = $this->Shift->find('all', array(
+						'conditions' => array(
+								'Shift.user_id' => $marketUser['Shift']['user_id'],
+								'Shift.date >=' => date('Y-m-d', strtotime('-6 months'))
+						),
+						'fields' => array(
+								'user_id',
+								'id',
+								'DATE_FORMAT(date, \'%Y-%m\') AS formatted',
+								'COUNT(1) as count'
+						),
+						'recursive' => -1,
+						'group' => array(
+								'DATE_FORMAT(date, \'%Y-%m\')'),
+				));
+
+
+				// Get list of months in which there are marketplace shifts
+				$marketMonths = $this->Shift->find('all', array(
+						'conditions' => array(
+								'Shift.user_id' => $marketUser['Shift']['user_id'],
+								'marketplace' => true
+								),
+								'fields' => array(
+										'user_id',
+										'id',
+										'DATE_FORMAT(date, \'%Y-%m\') AS formatted',
+								),
+								'recursive' => -1,
+								'group' => array(
+										'DATE_FORMAT(date, \'%Y-%m\')'),
+						));
+
+
+				// Make array useable
+				foreach ($userMarketMonths as $userMarketMonth) {
+					$userCount[$userMarketMonth[0]['formatted']] = $userMarketMonth[0]['count'];
+				}
+
+				// For each month of marketplace, check if shift count exceeds limit
+
+				foreach($marketMonths as $marketMonth) {
+					if ($userCount[$marketMonth[0]['formatted']] <= $limit) {
+						// If limit is hit, remove all marketplace shifts in that month
+
+						$this->Shift->updateAll(
+								array('Shift.marketplace' => false),
+								array(
+										'Shift.date >=' => date('Y-m-01', strtotime($marketMonth[0]['formatted'])),
+										'Shift.date <=' => date('Y-m-t', strtotime($marketMonth[0]['formatted'])),
+
+								));
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 }

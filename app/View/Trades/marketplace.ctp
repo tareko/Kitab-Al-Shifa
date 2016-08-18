@@ -14,6 +14,7 @@ echo $this->Html->script('jquery');
 			<th><?php echo $this->Paginator->sort('location');?></th>
 			<th><?php echo $this->Paginator->sort('shifts_type_id');?></th>
 			<th><?php echo $this->Paginator->sort('user_id');?></th>
+			<th><?= __('Actions');?></th>
 	</tr>
 	<?php
 	$i = 0;
@@ -23,6 +24,12 @@ echo $this->Html->script('jquery');
 		<td><?= $locations[$shift['ShiftsType']['location_id']]?>&nbsp;</td>
 		<td><?= $shift['ShiftsType']['times']?>&nbsp;</td>
 		<td><?= $shift['User']['name']?>&nbsp;</td>
+		<td><a href="<?= $this->Html->url(array(
+				'controller' => 'trades',
+				'action' => 'market_take',
+				'?' => array(
+					'id' => $shift['Shift']['id'])
+			));?>"><button class="btn btn-default btn-xs" type="submit">Take shift</button></a></td>
 	</tr>
 <?php endforeach; ?>
 	</table>

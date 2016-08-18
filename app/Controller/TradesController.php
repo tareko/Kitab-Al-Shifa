@@ -126,19 +126,115 @@ class TradesController extends AppController {
 		$this->render();
 	}
 
+	/**
+	 * Marketplace take shift method
+	 */
+	public function market_take() {
+		if (isset($this->request->query['id'])) {
+
+			// Load models that we will use
+			$this->loadModel('Shift');
+
+			// Get shift information
+			$this->Shift->id = $this->request->query['id'];
+			$this->Shift->recursive = 2;
+
+			// Read shift; return if invalid shift ID
+			if (!$this->Shift->read()) {
+				$this->Flash->alert(__('The shift you entered is invalid'));
+				return $this->redirect(array(
+						'action' => 'marketplace'));
+			}
+			$shift = $this->Shift->read()['Shift'];
+			// Is shift in marketplace? If not, error and dump
+			if (!$shift['marketplace'] == true) {
+				$this->Flash->alert(__('The shift you entered is not in the marketplace'));
+				return $this->redirect(array(
+						'action' => 'marketplace'));
+			}
+
+			// Has the taking user taken more than today's limit? This is set in
+			// bootstrap.php as 'marketplace_take_limit'
+
+
+			if ($this->Trade->marketTradesToday($this->_usersId()) >= Configure::read('marketplace_take_limit')) {
+				$this->Flash->alert(__('You have reached your marketplace limit ('.Configure::read('marketplace_take_limit').'for the day. Try again after '. Configure::read('marketplace_take_limit_restart') . '00h'));
+				return $this->redirect(array(
+						'action' => 'marketplace'));
+			}
+
+			// Has the limit for the giving user been crossed?
+			if ($this->Trade->marketLimitReached($shift) == true) {
+				$this->Flash->alert(__('Unfortunately, '. $this->Shift->read()['User']['name'].' has reached their limit for ' . date('F', strtotime($shift['date']))));
+				return $this->redirect(array(
+						'action' => 'marketplace'));
+			}
+
+			// Has the user confirmed? If not, ask for confirmation
+			if (!isset($this->request->query['confirm']) || $this->request->query['confirm'] != 1)
+			{
+				$this->set('shift', $this->Shift->read());
+				return $this->render();
+			}
+
+			// After all of these hurdles have been jumped, go ahead with the trade
+			// Set the Trade data
+			// Set the TradesDetail data
+
+			$data = array(
+					'Trade' => array(
+							'user_id' => $shift['user_id'],
+							'shift_id' => $shift['id'],
+							'submitted_by' => $this->_usersId(),
+							'consideration' => 3,
+							'confirmed' => 1,
+					),
+					'TradesDetail' => array(
+							0 => array(
+									'user_id' => $this->_usersId()
+							)
+					)
+			);
+
+
+			if ($this->Trade->saveAll($data)) {
+				$this->Flash->success(__('The shift has been successfully taken'));
+
+				$this->Shift->set('marketplace', false);
+				if ($this->Shift->save()) {
+					$this->set('success', true);
+				}
+				else {
+					$this->set('success', false);
+				}
+			} else {
+				$this->Flash->alert(__('The trade could not be saved. Please try again or report the error.'));
+				debug($this->Trade->validationErrors);
+				$this->set('success', false);
+			}
+		}
+
+		return $this->redirect(array(
+				'action' => 'marketplace'));
+	}
+
 /**
  * add method
  *
  * @return void
  */
 	public function index() {
+		$this->set('success', false);
 		if ($this->request->isPost() && !empty($this->request->data)) {
 			(!empty($this->request->data['TradesDetail']) ? $this->Trade->TradesDetail->set($this->request->data['TradesDetail']['0']): false);
 			if ($this->Trade->TradesDetail->validates()) {
 				$this->request->data['Trade']['submitted_by'] = $this->_usersId();
 				if ($this->Trade->saveAll($this->request->data)) {
-						$this->Flash->success(__('The trade has been saved'));
+					$this->set('success', true);
+					$this->Flash->success(__('The trade has been saved'));
 				} else {
+					$this->Trade->validates();
+					debug($this->Trade->validationErrors);
 					$this->Flash->alert(__('The trade could not be saved. Please fix the errors below and try again.'));
 				}
 			} else {
@@ -249,6 +345,8 @@ class TradesController extends AppController {
 		else {
 			$this->Flash->alert(__('Pending trades not successfully processed.'));
 		}
+		$this->set('success', $success);
+		$this->render();
 	}
 
 	/**
@@ -256,8 +354,9 @@ class TradesController extends AppController {
 	 * Enter accepted shift trade into calendar
 	 */
 	public function completeAccepted() {
-		$this->Trade->completeAccepted();
-		$this->set('success', 1);
+		$this->Trade->completeAccepted(); // Complete pending accepted trades
+		$this->Trade->cleanMarketplace(); // Clean the marketplace
+		$this->set('success', true);
 		$this->render();
 	}
 

@@ -29,7 +29,8 @@ class TradeRequest {
 			$email = new CakeEmail('default');
 
 			if ($trade['SubmittedUser']['email'] != $toUser['email']) {
-				$email->from(array($trade['SubmittedUser']['email'] => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+				$email->from(array(key($email->from()) => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+				$email->replyTo(array($trade['SubmittedUser']['email'] => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
 			}
 
 			$success = $email->template($template)
@@ -82,7 +83,8 @@ class TradeRequest {
 
 			$email->template('tradeRequestRecipientStatusChangeToOriginator')
 				->emailFormat('text')
-				->from(array($tradesDetail['User']['email'] => $tradesDetail['User']['name'] . ' (via Kitab)'))
+				->from(array(key($email->from()) => $tradesDetail['User']['name'] . ' (via Kitab)'))
+				->replyTo(array($tradesDetail['User']['email'] => $tradesDetail['User']['name'] . ' (via Kitab)'))
 				->to($tradesDetail['Trade']['User']['email'])
 				->subject('[Kitab] Trade '.$statusWord .': '.$tradesDetail['Trade']['Shift']['date'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['times'])
 				->viewVars(array(

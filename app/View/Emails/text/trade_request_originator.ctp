@@ -1,7 +1,9 @@
 <?php $consideration = array(
 		'0' => 'Cash',
 		'1' => 'Trade',
-		'2' => 'Future consideration')?>
+		'2' => 'Future consideration',
+		'3' => 'Marketplace')?>
+
 Dear <?=$user['name']?>,
 
 <?=$submittedUser['name'] ?> has submitted a request to trade your shift:

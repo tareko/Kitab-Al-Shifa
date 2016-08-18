@@ -101,6 +101,7 @@ class UsersController extends AppController {
 		$this->User->recursive = 0;
 		$this->set('user', $this->User->read(null, $id));
 		$this->set('preference', $this->User->Preference->getSection($this->User->id, 'Profile'));
+		$this->render();
 	}
 	
 /**
