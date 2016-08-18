@@ -157,7 +157,7 @@ class TradesController extends AppController {
 			// bootstrap.php as 'marketplace_take_limit'
 
 			if ($this->Trade->marketTradesToday($this->_usersId()) >= Configure::read('marketplace_take_limit')) {
-				$this->Flash->alert(__('You have reached your marketplace limit ('.Configure::read('marketplace_take_limit').'for the day. Try again after '. Configure::read('marketplace_take_limit_restart') . '00h'));
+				$this->Flash->alert(__('You have reached your marketplace limit ('.Configure::read('marketplace_take_limit').' for the day). Try again after '. Configure::read('marketplace_take_limit_restart') . '00h'));
 				return $this->redirect(array(
 						'action' => 'marketplace'));
 			}
