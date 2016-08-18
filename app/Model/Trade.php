@@ -728,6 +728,7 @@ class Trade extends AppModel {
 								array(
 										'Shift.date >=' => date('Y-m-01', strtotime($marketMonth[0]['formatted'])),
 										'Shift.date <=' => date('Y-m-t', strtotime($marketMonth[0]['formatted'])),
+										'user_id' => $marketUser['Shift']['user_id']
 
 								));
 					}
