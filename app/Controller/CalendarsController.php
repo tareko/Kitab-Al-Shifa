@@ -8,6 +8,8 @@ App::uses('AppController', 'Controller');
 class CalendarsController extends AppController {
 
 	public $scaffold = 'admin';
+	public $components = array('RequestHandler', 'Flash');
+
 /**
  * index method
  *
