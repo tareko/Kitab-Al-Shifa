@@ -6,6 +6,7 @@ App::uses('Controller', 'Controller');
 /**
  * TestCalendarsController *
  */
+
 class TestCalendarsController extends CalendarsController {
 /**
  * Auto render
@@ -37,7 +38,17 @@ class CalendarsControllerTestCase extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.calendar', 'app.usergroup', 'app.group', 'app.user', 'app.profile', 'app.user_usergroup_map', 'app.shift', 'app.shifts_type', 'app.location');
+	public $fixtures = array(
+			'app.calendar',
+			'app.preference',
+			'app.usergroup',
+			'app.group',
+			'app.user',
+			'app.profile',
+			'app.user_usergroup_map',
+			'app.shift',
+			'app.shifts_type',
+			'app.location');
 
 /**
  * setUp method
@@ -50,7 +61,7 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 		$this->Calendars = new TestCalendarsController();
 		$this->Calendars->constructClasses();
 	}
-	
+
 	public function testIndex() {
 		$result = $this->testAction('/calendars/index');
 		debug($result);
@@ -75,48 +86,48 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 
 	public function testAddWithData() {
 		$Calendars = $this->generate('Calendars', array(
-					'methods' => array(
-							'_requestAllowed'
-					),
+				'methods' => array(
+						'_requestAllowed'
+				),
 		));
-		
+
 		$Calendars->expects($this->any())
-			->method('_requestAllowed')
-			->will($this->returnValue(true));
-		
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+
 		$data = array(
-			'Calendar' => array(
-					'usergroups_id' => 1,
-					'name' => 'Test Calendar',
-					'start_date' => array(
-							'month' => '12',
-							'day' => '11',
-							'year' => '2012'),
-					'end_date' => array(
-							'month' => '1',
-							'day' => '11',
-							'year' => '2013'),
-					'published' => 1,
-					'comments' => 'Comments for test calendar'
-			)
+				'Calendar' => array(
+						'usergroups_id' => 1,
+						'name' => 'Test Calendar',
+						'start_date' => array(
+								'month' => '12',
+								'day' => '11',
+								'year' => '2012'),
+						'end_date' => array(
+								'month' => '1',
+								'day' => '11',
+								'year' => '2013'),
+						'published' => 1,
+						'comments' => 'Comments for test calendar'
+				)
 		);
 		$result = $this->testAction(
-			'/calendars/add',
-			array('data' => $data, 'method' => 'post'));
+				'/calendars/add',
+				array('data' => $data, 'method' => 'post'));
 		$this->assertTextEndsWith('/calendars', $this->headers['Location']);
 	}
 
 	public function testAddWithBadData() {
 		$data = array();
 		$Calendars = $this->generate('Calendars', array(
-						'components' => array(
-							'Session'
-						)
+				'components' => array(
+						'Flash',
+				)
 		));
-		
-		$Calendars->Session
-			->expects($this->any())
-			->method('setFlash');
+
+		$Calendars->Flash
+		->expects($this->any())
+		->method('alert');
 
 		$this->testAction(
 				'/calendars/add',
@@ -161,35 +172,20 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 	}
 
 	/**
-	* Test that a request with urlencoded bits in the main GET parameter are filtered out.
-	*
-	* @return void
-	*/
+	 * Test that a request with urlencoded bits in the main GET parameter are filtered out.
+	 *
+	 * @return void
+	 */
 	public function testGetParamWithUrlencodedElement() {
 		$_GET = array();
 		$_GET['/shifts/calendarView/id:1'] = '';
 		$_SERVER['REQUEST_URI'] = '/shifts/calendarView/id%3A1';
-	
+
 		$request = new CakeRequest();
 		$this->assertEquals(array(), $request->query);
 	}
-	
-	public function testGetParamWithUrlencodedElement2() {
-	
-		/**
-		 * Test that a request with urlencoded bits in the main GET parameter are filtered out.
-		 *
-		 * @return void
-		 */
-		$result = $this->testAction('/shifts/icsView/id%3A1');
-		$result2 = $this->testAction('/shifts/icsView/id:1');
-		
-		$this->assertEquals($result, $result2);
-		if (!empty($result)) {
-			$this->assertNoPattern('/Please type a name/', $result);
-		}
-	}
-	
+
+
 /**
  * tearDown method
  *

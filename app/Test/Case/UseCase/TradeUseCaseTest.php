@@ -11,7 +11,14 @@ class TradeUseCaseTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.trade', 'app.user', 'app.shift', 'app.trades_detail', 'app.shifts_type', 'app.location');
+	public $fixtures = array(
+			'app.trade',
+			'app.user',
+			'app.shift',
+			'app.trades_detail',
+			'app.shifts_type',
+			'app.location'
+	);
 
 /**
  * setUp method

@@ -402,4 +402,21 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->markTestIncomplete('testMarketplaceUser not implemented.');
 	}
 
+	public function testGetParamWithUrlencodedElement2() {
+
+		/**
+		 * Test that a request with urlencoded bits in the main GET parameter are filtered out.
+		 *
+		 * @return void
+		 */
+		//		$result = $this->testAction('/shifts/icsView/id%3A1');
+		//		$result2 = $this->testAction('/shifts/icsView/id:1');
+
+		//		$this->assertEquals($result, $result2);
+		//		if (!empty($result)) {
+		//			$this->assertNoPattern('/Please type a name/', $result);
+		//		}
+		$this->markTestIncomplete('Cannot properly test ICS downloads.');
+	}
+
 }
