@@ -41,10 +41,10 @@ class CalendarsController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Calendar->create();
 			if ($this->Calendar->save($this->request->data)) {
-				$this->Session->setFlash(__('The calendar has been saved'));
+				$this->Flash->success(__('The calendar has been saved'));
 				return $this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The calendar could not be saved. Please, try again.'));
+				$this->Flash->alert(__('The calendar could not be saved. Please, try again.'));
 			}
 		}
 		$usergroups = $this->Calendar->Usergroup->find('list');
@@ -65,10 +65,10 @@ class CalendarsController extends AppController {
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($this->Calendar->save($this->request->data)) {
-				$this->Session->setFlash(__('The calendar has been saved'));
+				$this->Flash->success(__('The calendar has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The calendar could not be saved. Please, try again.'));
+				$this->Flash->alert(__('The calendar could not be saved. Please, try again.'));
 			}
 		} else {
 			$this->request->data = $this->Calendar->read(null, $id);
@@ -92,10 +92,10 @@ class CalendarsController extends AppController {
 			throw new NotFoundException(__('Invalid calendar'));
 		}
 		if ($this->Calendar->delete()) {
-			$this->Session->setFlash(__('Calendar deleted'));
+			$this->Flash->warning(__('Calendar deleted'));
 			$this->redirect(array('action'=>'index'));
 		}
-		$this->Session->setFlash(__('Calendar was not deleted'));
+		$this->Flash->alert(__('Calendar was not deleted'));
 		$this->redirect(array('action' => 'index'));
 	}
 }
