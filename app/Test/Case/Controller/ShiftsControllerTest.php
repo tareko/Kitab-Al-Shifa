@@ -66,25 +66,19 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		$this->Shifts->constructClasses();
 		$Shifts = $this->generate('Shifts', array(
 				'methods' => array(
-						'_requestAllowed'
+						'_requestAllowed',
+						'_usersId'
 				),
 		));
 
 		$Shifts->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
+		$Shifts->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
 	}
 
-/**
- * tearDown method
- *
- * @return void
- */
-	public function tearDown() {
-		unset($this->Shifts);
-
-		parent::tearDown();
-	}
 
 /**
  * testIndex method
@@ -93,30 +87,26 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  * @return void
  */
 	public function testIndex() {
-		$result = $this->testAction('/shifts/index');
-		$this->assertContains('<td>2011-12-02&nbsp;</td>
-		<td><a href="/locations/view/1">Bermuda</a>&nbsp;</td>
-		<td><a href="/shifts_types/view/3">1000-1600 U45</a>&nbsp;</td>
-		<td><a href="/users/view/2">Harold Morrissey</a>&nbsp;</td>
-		<td>2011-10-19 08:23:49&nbsp;</td>', $result);
+		$result = $this->testAction('/shifts/index', array('return' => 'vars'));
+		$this->assertEquals($result['shifts'][0]['Shift']['id'], 16);
+		$this->assertEquals($result['shifts'][1]['Shift']['id'], 52);
 	}
 
 	public function testIndexId() {
-		$result = $this->testAction('/shifts/index/id:1');
-		$this->assertContains('<td><a href="/shifts_types/view/8">1000-1800 </a>&nbsp;</td>', $result);
+		$result = $this->testAction('/shifts/index/id:1', array('return' => 'vars'));
+		$this->assertEquals($result['shifts'][1]['Shift']['user_id'], '1');
 	}
 
 	//TODO: This is probably wrong. Calendar #1 doesn't include the dates shown.
 	public function testIndexCalendar() {
-		$result = $this->testAction('/shifts/index/calendar:1');
-		$this->assertContains('<td><a href="/shifts_types/view/6">0800-1600 </a>&nbsp;</td>', $result);
-		$this->assertTextNotContains('<td><a href="/kitab/shifts_types/view/12">04-10 </a>&nbsp;</td>', $result);
+		$result = $this->testAction('/shifts/index/calendar:1', array('return' => 'vars'));
+		$this->assertEquals($result['shifts'][8]['Shift']['id'], '213');
 	}
 
 
 	public function testIndexCalendarId() {
-		$result = $this->testAction('/shifts/index/calendar:1/id:1');
-		$this->assertContains('Page 1 of 1, showing 2 records out of 2 total, starting on record 1, ending on 2	</p>', $result);
+		$result = $this->testAction('/shifts/index/calendar:1/id:1', array('return' => 'vars'));
+		$this->assertEquals(count($result['shifts']), 3);
 	}
 
 	/**
@@ -253,7 +243,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 	public function testCalendarEditCalGiven() {
 		$this->testAction('/shifts/calendarEdit/calendar:1');
-		$this->assertContains('<form action="/shifts/add/Action:calendarEdit/calendar:1"', $this->view);
+		$this->assertContains('/shifts/add/Action:calendarEdit/calendar:1"', $this->view);
 	}
 
 /**
@@ -268,12 +258,14 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 
 	public function testCalendarViewCalGiven() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1');
-		$this->assertContains('<td>Thu, Dec 1</td> <td>&nbsp;</td> <td>&nbsp;</td> <td><a href="/shifts/edit/16">Bynum</a></td>', $this->contents);
+		$this->assertContains('<td>Thu, Dec 1</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>', $this->contents);
+		$this->assertContains('/shifts/edit/16">Bynum</a></td>', $this->contents);
 	}
 
 	public function testCalendarViewIdGiven() {
 		$result = $this->testAction('/shifts/calendarView/calendar:1/id:2');
-		$this->assertContains('<td>Fri, Dec 2</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td><a href="/shifts/edit/52">Morrissey</a></td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>', $this->contents);
+		$this->assertContains('<td>Fri, Dec 2</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td><a href="', $this->contents);
+		$this->assertContains('/shifts/edit/52">Morrissey</a></td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td>', $this->contents);
 	}
 	public function testCalendarViewIdNoCalGiven() {
 		$result = $this->testAction('/shifts/calendarView/id:2');
@@ -288,7 +280,7 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  */
 	public function testIcsViewNoId() {
 		$result = $this->testAction('/shifts/icsView');
-		$this->assertContains('<form action="/shifts/icsView" id="ShiftPhysic', $result);
+		$this->assertContains('/shifts/icsView" id="ShiftPhysic', $result);
 	}
 
 	public function testIcsViewId() {
@@ -352,8 +344,8 @@ class ShiftsControllerTestCase extends ControllerTestCase {
  		$result = $this->testAction('/shifts/edit');
 	}
 	public function testEditId() {
-		$this->testAction('/shifts/edit/16');
-		$this->assertContains('form action="/shifts/edit/16" id="ShiftEditForm"', $this->contents);
+		$result = $this->testAction('/shifts/edit/16', array('return' => 'vars'));
+		$this->assertEquals($result['Shift']['Shift']['id'], 16);
 	}
 
 	// Tests to make sure that delete and so on is possible. Tests issue #113
@@ -432,6 +424,17 @@ class ShiftsControllerTestCase extends ControllerTestCase {
 		//			$this->assertNoPattern('/Please type a name/', $result);
 		//		}
 		$this->markTestIncomplete('Cannot properly test ICS downloads.');
+	}
+
+	/**
+	 * tearDown method
+	 *
+	 * @return void
+	 */
+	public function tearDown() {
+		unset($this->Shifts);
+
+		parent::tearDown();
 	}
 
 }

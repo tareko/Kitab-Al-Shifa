@@ -51,12 +51,10 @@ class GroupsControllerTestCase extends ControllerTestCase {
 		$this->Groups->constructClasses();
 	}
 
-	
+
 	public function testIndex() {
-	$result = $this->testAction('/groups/index');
-	        debug($result);
 	}
-	
+
 /**
  * tearDown method
  *

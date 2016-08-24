@@ -608,7 +608,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 
 		$result = $this->testAction('/trades/market_take', array('return' => 'vars'));
-		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
 
@@ -625,7 +625,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 
 		$result = $this->testAction('/trades/market_take?id=1', array('return' => 'vars'));
-		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
 	// Dump back to marketplace if shift is not on marketplace
@@ -641,7 +641,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 
 		$result = $this->testAction('/trades/market_take?id=16', array('return' => 'vars'));
-		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
 	// Dump back to marketplace if user has taken more than X shifts per 24 hour period
@@ -667,7 +667,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(4));
 
 		$result = $this->testAction('/trades/market_take?id=52', array('return' => 'vars'));
-		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
 	// Dump back to marketplace if user limit has been reached
@@ -699,7 +699,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(true));
 
 		$result = $this->testAction('/trades/market_take?id=52', array('return' => 'vars'));
-		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
 	// Dump back to marketplace if not yet confirmed
@@ -768,7 +768,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		->will($this->returnValue(false));
 
 		$result = $this->testAction('/trades/market_take?id=52&confirm=1');
-		$this->assertEquals($this->headers['Location'], 'http://'. $_SERVER['HTTP_HOST'] . '/trades/marketplace');
+		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
 
