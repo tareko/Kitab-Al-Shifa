@@ -293,6 +293,7 @@ class ShiftsController extends AppController {
 		}
 		$this->set('physicians', $this->Shift->User->getList(NULL, NULL, true));
 		$this->set('shiftsTypes', $this->Shift->ShiftsType->find('list'));
+		$this->set('Shift', $this->Shift->read());
 		$this->request->data = $this->Shift->read(null, $id);
 		$this->render();
 	}
