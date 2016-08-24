@@ -26,7 +26,7 @@ class TradeTestCase extends CakeTestCase {
 
 	public function testGetUnprocessedTrades() {
 		$result = $this->Trade->getUnprocessedTrades();
-		$expected = 1;
+		$expected = 2;
 		$this->assertEquals($expected, $result[9]['Trade']['id']);
 	}
 

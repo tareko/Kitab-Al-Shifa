@@ -26,6 +26,10 @@ class AccountingsExceptionTest extends CakeTestCase {
 		$this->AccountingsException = ClassRegistry::init('AccountingsException');
 	}
 
+	// Null test
+	public function testNull() {
+	}
+
 /**
  * tearDown method
  *

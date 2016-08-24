@@ -12,7 +12,10 @@ class ProfileTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.profile', 'app.user', 'app.shifts');
+	public $fixtures = array(
+			'app.profile',
+			'app.user',
+			'app.shift');
 
 /**
  * setUp method
@@ -23,6 +26,10 @@ class ProfileTestCase extends CakeTestCase {
 		parent::setUp();
 
 		$this->Profile = ClassRegistry::init('Profile');
+	}
+
+	// Null test
+	public function testNull() {
 	}
 
 /**

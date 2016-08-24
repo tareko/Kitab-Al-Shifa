@@ -31,7 +31,7 @@ class TradeFixture extends CakeTestFixture {
  *
  * @var array
  */
- 
+
 	public function init() {
 		$this->records = array(
 			array(
@@ -121,7 +121,7 @@ class TradeFixture extends CakeTestFixture {
 			),
 		array(
 				'id' => '8',
-				'user_id' => '4',
+				'user_id' => '2',
 				'shift_id' => '483',
 				'status' => '0',
 				'user_status' => '2',
@@ -161,7 +161,7 @@ class TradeFixture extends CakeTestFixture {
 				'shift_id' => '513',
 				'status' => '1',
 				'user_status' => '2',
-				'submitted_by' => 2,
+				'submitted_by' => 4,
 				'confirmed' => 0,
 				'consideration' => 1,
 				'token' => '15b6a69f207d8f6cd29c66b4cb729d40',
@@ -169,11 +169,11 @@ class TradeFixture extends CakeTestFixture {
 			),
 		array(
 				'id' => '12',
-				'user_id' => '4',
+				'user_id' => '2',
 				'shift_id' => '483',
 				'status' => '0',
 				'user_status' => '1',
-				'submitted_by' => 2,
+				'submitted_by' => 4,
 				'confirmed' => 0,
 				'consideration' => 3,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
@@ -181,11 +181,11 @@ class TradeFixture extends CakeTestFixture {
 			),
 		array(
 				'id' => '13',
-				'user_id' => '4',
+				'user_id' => '2',
 				'shift_id' => '483',
 				'status' => '2',
 				'user_status' => '2',
-				'submitted_by' => 2,
+				'submitted_by' => 4,
 				'confirmed' => 0,
 				'consideration' => 3,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
@@ -193,11 +193,11 @@ class TradeFixture extends CakeTestFixture {
 			),
 		array(
 				'id' => '14',
-				'user_id' => '4',
+				'user_id' => '2',
 				'shift_id' => '483',
 				'status' => '3',
 				'user_status' => '0',
-				'submitted_by' => 2,
+				'submitted_by' => 4,
 				'confirmed' => 0,
 				'consideration' => 3,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
@@ -205,15 +205,27 @@ class TradeFixture extends CakeTestFixture {
 			),
 		array(
 				'id' => '15',
-				'user_id' => '4',
+				'user_id' => '1',
 				'shift_id' => '483',
 				'status' => '4',
 				'user_status' => '0',
-				'submitted_by' => 2,
+				'submitted_by' => 4,
 				'confirmed' => 0,
 				'consideration' => 3,
 				'token' => 'a50e7ad2e87fe32ef46d9bb84db20012',
 				'updated' => date('Y-m-d H:i:s', strtotime('Today 15:59:42'))
+			),
+		array(
+				'id' => '16',
+				'user_id' => '194',
+				'shift_id' => '1',
+				'status' => '0',
+				'user_status' => '0',
+				'submitted_by' => 2,
+				'confirmed' => 0,
+				'consideration' => 1,
+				'token' => '15b6a69f207d8f6cd29c66b4cb729d39',
+				'updated' => '2012-05-23 11:59:40'
 			),
 		);
 		parent::init();

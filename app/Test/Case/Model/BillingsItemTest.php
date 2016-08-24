@@ -14,7 +14,7 @@ class BillingsItemTest extends CakeTestCase {
  */
 	public $fixtures = array(
 		'app.billings_item',
-		'app.billings'
+		'app.billing'
 	);
 
 /**
@@ -25,6 +25,10 @@ class BillingsItemTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->BillingsItem = ClassRegistry::init('BillingsItem');
+	}
+
+	// Null test
+	public function testNull() {
 	}
 
 /**

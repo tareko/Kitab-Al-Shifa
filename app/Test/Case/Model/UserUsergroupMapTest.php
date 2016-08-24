@@ -25,6 +25,10 @@ class UserUsergroupMapTestCase extends CakeTestCase {
 		$this->UserUsergroupMap = ClassRegistry::init('UserUsergroupMap');
 	}
 
+	// Null test
+	public function testNull() {
+	}
+
 /**
  * tearDown method
  *
