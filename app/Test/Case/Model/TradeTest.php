@@ -74,25 +74,21 @@ class TradeTestCase extends CakeTestCase {
 	// Test checkDuplicates with no duplicate
 	public function testcheckDuplicates() {
 
-		$this->Trade->data = array(
-				'Trade' => array(
-						'user_id' => 194,
-						'shift_id' => 1
-				));
-		$result = $this->Trade->checkDuplicate($this->Trade->data);
-		$this->assertEqual($result, true);
+		$check = array(
+					'shift_id' => 1
+				);
+		$result = $this->Trade->checkDuplicate($check);
+		$this->assertEqual($result, false);
 	}
 
 	// Test checkDuplicates with duplicate
 	public function testcheckDuplicatesFalse() {
 
-		$this->Trade->data = array(
-				'Trade' => array(
-						'user_id' => 4,
-						'shift_id' => 483
-				));
-		$result = $this->Trade->checkDuplicate($this->Trade->data);
-		$this->assertEqual($result, false);
+		$check = array(
+					'shift_id' => 520
+				);
+		$result = $this->Trade->checkDuplicate($check);
+		$this->assertEqual($result, true);
 	}
 
 	// Test checkShiftExists with existing shift

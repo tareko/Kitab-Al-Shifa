@@ -217,7 +217,7 @@ class TradeFixture extends CakeTestFixture {
 			),
 		array(
 				'id' => '16',
-				'user_id' => '194',
+				'user_id' => '5',
 				'shift_id' => '1',
 				'status' => '0',
 				'user_status' => '0',

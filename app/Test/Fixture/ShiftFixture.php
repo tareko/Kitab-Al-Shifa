@@ -30,6 +30,14 @@ class ShiftFixture extends CakeTestFixture {
  */
 	public $records = array(
 		array(
+			'id' => '1',
+			'user_id' => '1',
+			'date' => '2011-12-01',
+			'shifts_type_id' => '1',
+			'marketplace' => '0',
+			'updated' => '2011-10-16 12:13:02'
+		),
+		array(
 			'id' => '16',
 			'user_id' => '1',
 			'date' => '2011-12-01',

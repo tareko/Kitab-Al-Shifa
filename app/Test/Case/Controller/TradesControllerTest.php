@@ -168,7 +168,7 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$data = array(
 				'Trade' => array(
 						'user_id' => 2,
-						'shift_id' => 16,
+						'shift_id' => 514,
 						'confirmed' => 0,
 				),
 				'TradesDetail' => array(
