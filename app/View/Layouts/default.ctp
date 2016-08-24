@@ -71,7 +71,7 @@
 <div id="container-fluid">
 	<?php
 		$isLive = '';
-		$currentPage = 	$_SERVER['REQUEST_URI'];
+		$currentPage = 	(!empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null);
 	?>
 		<nav id="secondary-menu" <?php if ($currentPage != Router::url('/trades/index') && $currentPage != Router::url('/trades') && $currentPage != Router::url('/trades/history')) {echo 'style="display: none;"';}?>>
 		<ul>
