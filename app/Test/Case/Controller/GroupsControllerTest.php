@@ -44,8 +44,7 @@ class GroupsControllerTestCase extends ControllerTestCase {
 			'app.user',
 			'app.profile',
 			'app.shift',
-			'app.user_usergroup_map
-	');
+			'app.user_usergroup_map');
 
 /**
  * setUp method
