@@ -195,10 +195,10 @@ class Trade extends AppModel {
 				'conditions' => array(
 						'Trade.user_status <' => 2,
 						'Trade.status !=' => 2,
-						'Trade.user_id' => $this->data['Trade']['user_id'],
-						'Trade.shift_id' => $this->data['Trade' ]['shift_id']),
+						'Trade.user_id' => $check['Trade']['user_id'],
+						'Trade.shift_id' => $check['Trade' ]['shift_id']),
 		));
-		return ($trade ? false : true);
+		return (empty($trade) ? false : true);
 	}
 
 	/*
