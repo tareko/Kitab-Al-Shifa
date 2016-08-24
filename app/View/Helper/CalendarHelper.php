@@ -61,7 +61,7 @@ class CalendarHelper extends AppHelper {
 		$output .= $this->Html->tableCells($output1, array ('class' => 'calendarHeaderTimes'));
 		$output .= "</thead>";
 		$output .= "<tbody>";
-		
+
 
 		//Output Days of the month
 		while ($k <= $calendar['Calendar']['end_date']) {
@@ -69,7 +69,7 @@ class CalendarHelper extends AppHelper {
 			$output1[] = date('D, M j', strtotime($k));
 			foreach ($masterSet['ShiftsType'] as $shiftsType) {
 				if (isset($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']])) {
-					$output1[] = $this->Html->link($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name'], array('controller' => 'shifts', 'action' => 'edit', $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['id']));
+					$output1[] = $this->Html->link((empty($masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name']) ? '&nbsp;' : $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['name']), array('controller' => 'shifts', 'action' => 'edit', $masterSet[$k][$shiftsType['ShiftsType']['location_id']][$shiftsType['ShiftsType']['id']]['id']));
 				}
 				else {
 					$output1[] =
