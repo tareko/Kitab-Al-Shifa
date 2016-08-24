@@ -195,10 +195,9 @@ class Trade extends AppModel {
 				'conditions' => array(
 						'Trade.user_status <' => 2,
 						'Trade.status !=' => 2,
-						'Trade.user_id' => $check['Trade']['user_id'],
-						'Trade.shift_id' => $check['Trade' ]['shift_id']),
+						'Trade.shift_id' => $check['shift_id']),
 		));
-		return (empty($trade) ? false : true);
+		return (empty($trade) ? true : false);
 	}
 
 	/*
@@ -236,7 +235,6 @@ class Trade extends AppModel {
 
 		//Find unprocessed trade details within the trade
 		foreach ($unprocessedTrades as $trade) {
-
 			// The trade must be approved by the originator in one of two ways:
 			// - Originator initiates the trade (from user account)
 			// - Originator confirms trade (if sent by another party)
