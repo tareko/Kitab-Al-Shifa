@@ -18,7 +18,7 @@ class CalendarHelper extends AppHelper {
 
 		// Create Form to save any possibly empty entries
 		$output .= $this->Form->create('Shift', array(
-			'action' => 'add/Action:calendarEdit/calendar:'.$this->request->named['calendar'],
+			'url' => 'add/Action:calendarEdit/calendar:'.$this->request->named['calendar'],
 			'inputDefaults' => array(
 				'empty' => true
 		)));
