@@ -60,11 +60,26 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 
 		$this->Calendars = new TestCalendarsController();
 		$this->Calendars->constructClasses();
+
+		$Calendars = $this->generate('Calendars', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId'
+				),
+		));
+
+		$Calendars->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Calendars->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+
 	}
 
 	public function testIndex() {
-		$result = $this->testAction('/calendars/index');
-		debug($result);
+		$result = $this->testAction('/calendars/index', array('return' => 'vars'));
+		$this->assertContains('10', $result['calendars'][0]['Calendar']['id']);
 	}
 
 	public function testViewNoId() {
@@ -76,25 +91,15 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/calendars/view/1888');
 	}
 	public function testViewId() {
-		$result = $this->testAction('/calendars/view/1');
-		debug ($result);
+		$result = $this->testAction('/calendars/view/1', array('return' => 'vars'));
+		$this->assertEqual($result['calendar']['Calendar']['id'], '1');
 	}
 	public function testAddEmpty() {
-		$result = $this->testAction('/calendars/add');
-		debug ($result);
+		$result = $this->testAction('/calendars/add', array('return' => 'vars'));
+		$this->assertEqual($result['usergroups']['1'], 'Public');
 	}
 
 	public function testAddWithData() {
-		$Calendars = $this->generate('Calendars', array(
-				'methods' => array(
-						'_requestAllowed'
-				),
-		));
-
-		$Calendars->expects($this->any())
-		->method('_requestAllowed')
-		->will($this->returnValue(true));
-
 		$data = array(
 				'Calendar' => array(
 						'usergroups_id' => 1,
@@ -119,20 +124,11 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 
 	public function testAddWithBadData() {
 		$data = array();
-		$Calendars = $this->generate('Calendars', array(
-				'components' => array(
-						'Flash',
-				)
-		));
 
-		$Calendars->Flash
-		->expects($this->any())
-		->method('alert');
-
-		$this->testAction(
+		$result = $this->testAction(
 				'/calendars/add',
-				array('data' => $data, 'method' => 'post'));
-		$this->assertContains('/calendars/add', $this->view);
+				array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+		$this->assertFalse($result['success']);
 	}
 
 	public function testEditNoId() {
@@ -144,8 +140,8 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 		$result = $this->testAction('/calendars/edit/1888');
 	}
 	public function testEditId() {
-		$result = $this->testAction('/calendars/edit/1');
-		debug ($result);
+		$result = $this->testAction('/calendars/edit/1', array('return' => 'vars'));
+		$this->assertEqual($result['usergroups']['1'], 'Public');
 	}
 
 	public function testEditWithData() {
@@ -167,8 +163,8 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 		);
 		$result = $this->testAction(
 				'/calendars/edit/1',
-				array('data' => $data, 'method' => 'post'));
-		debug($result);
+				array('data' => $data, 'method' => 'post', 'return' => 'vars'));
+		$this->assertTrue($result['success']);
 	}
 
 	/**

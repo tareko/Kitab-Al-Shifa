@@ -21,10 +21,17 @@ class AccountingsExceptionsControllerTest extends ControllerTestCase {
 		'app.location',
 		'app.trade',
 		'app.trades_detail',
-		'app.shifts',
 		'app.usergroup',
 		'app.group',
 		'app.user_usergroup_map'
 	);
+
+	/**
+	 * testIndex method
+	 *
+	 * @return void
+	 */
+	public function testIndex() {
+	}
 
 }
