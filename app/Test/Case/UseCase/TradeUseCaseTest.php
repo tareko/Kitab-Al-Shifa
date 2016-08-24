@@ -71,11 +71,13 @@ class TradeUseCaseTestCase extends CakeTestCase {
 
 		$this->Trade->completeAccepted();
 		$result = $this->Trade->read(null, 1);
+//		debug($result);
 		$this->assertEqual($result['Trade']['status'], 2);
 		$this->assertEqual($result['Trade']['user_status'], 2);
 		$this->assertEqual($result['TradesDetail'][0]['status'], 2);
 
 		$result = $this->Trade->Shift->read(null, 16);
+//		debug($result);
 		$this->assertEqual($result['Shift']['user_id'], 2);
 	}
 
