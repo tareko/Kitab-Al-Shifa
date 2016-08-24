@@ -277,12 +277,12 @@ class Shift extends AppModel {
 		}
 		return $this->isUnique($fields, false);
 	}
-	
+
 	/**
 	 * Import function to import shifts into database
 	 */
 	function import ($filename, $calendar, $discard = 3) {
-		
+
 		// Get start dates for file
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
@@ -295,13 +295,13 @@ class Shift extends AppModel {
 		if (($handle = fopen($filename, "r")) === FALSE) {
 			throw new NotFoundException("Failed opening file: error was ".$php_errormsg);
 		}
-	
+
 		// Start parsing for shifts
 		$data = array();
 		$output = array();
-		
+
 		$row = 1;
-		
+
 		$shiftsType = $this->ShiftsType->find('all', array(
 				'fields' => array('id', 'display_order'),
 				'recursive' => 0,
@@ -311,7 +311,7 @@ class Shift extends AppModel {
 				),
 				'order' => array('display_order ASC', 'shift_start ASC'),
 		));
-		
+
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 			// Discard first N lines. If none present, select 3
 			if ($row <= $discard) { $row++ ; continue; }
@@ -326,7 +326,7 @@ class Shift extends AppModel {
 
 				// Look up user ID if entry not blank
 				$userId = $this->User->lookupUserId($data[$c], 'cb_displayname');
-				
+
 				// If entry is not found, skip to next entry and leave blank.
 				if ($userId == false) { continue ; }
 
@@ -335,7 +335,7 @@ class Shift extends AppModel {
 						'date' => $date,
 						'shifts_type_id' => $shiftsType[$c-1]['ShiftsType']['id']
 						);
-			
+
 				// Save information into overall save array (shifts_type and user_id)
 			}
 			$row++;
