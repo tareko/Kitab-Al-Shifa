@@ -15,6 +15,7 @@ class AccountingsControllerTest extends ControllerTestCase {
 	public $fixtures = array(
 		'app.accounting',
 		'app.user',
+		'app.preference',
 		'app.profile',
 		'app.shifts_type',
 		'app.location',

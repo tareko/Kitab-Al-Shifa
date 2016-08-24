@@ -15,6 +15,7 @@ class AccountingsExceptionsControllerTest extends ControllerTestCase {
 	public $fixtures = array(
 		'app.accountings_exception',
 		'app.user',
+		'app.preference',
 		'app.profile',
 		'app.shift',
 		'app.shifts_type',

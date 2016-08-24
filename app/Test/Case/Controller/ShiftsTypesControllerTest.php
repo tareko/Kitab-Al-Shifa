@@ -17,6 +17,7 @@ class ShiftsTypesControllerTest extends ControllerTestCase {
 		'app.location',
 		'app.shift',
 		'app.user',
+		'app.preference',
 		'app.profile',
 		'app.billing',
 		'app.billings_item',
