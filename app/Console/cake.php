@@ -12,8 +12,8 @@
  *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
- * @package       app.Console
- * @since         CakePHP(tm) v 2.0
+ * @package       Cake.Console
+ * @since         CakePHP(tm) v 1.2.0.5012
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -22,26 +22,33 @@ if (!defined('DS')) {
 }
 
 $dispatcher = 'Cake' . DS . 'Console' . DS . 'ShellDispatcher.php';
+$found = false;
+$paths = explode(PATH_SEPARATOR, ini_get('include_path'));
 
-if (function_exists('ini_set')) {
-	$root = dirname(dirname(dirname(__FILE__)));
-	$appDir = basename(dirname(dirname(__FILE__)));
-	$install = $root . DS . 'lib';
-	$composerInstall = $root . DS . $appDir . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
-
-	// the following lines differ from its sibling
-	// /lib/Cake/Console/Templates/skel/Console/cake.php
-	if (file_exists($composerInstall . DS . $dispatcher)) {
-		$install = $composerInstall;
+foreach ($paths as $path) {
+	if (file_exists($path . DS . $dispatcher)) {
+		$found = $path;
+		break;
 	}
-
-	ini_set('include_path', $install . PATH_SEPARATOR . ini_get('include_path'));
-	unset($root, $appDir, $install, $composerInstall);
 }
 
-if (!include $dispatcher) {
-	trigger_error('Could not locate CakePHP core files.', E_USER_ERROR);
+if (!$found) {
+	$rootInstall = dirname(dirname(dirname(__FILE__))) . DS . $dispatcher;
+	$composerInstall = dirname(dirname(__FILE__)) . DS . $dispatcher;
+
+	if (file_exists($composerInstall)) {
+		include $composerInstall;
+	} elseif (file_exists($rootInstall)) {
+		include $rootInstall;
+	} else {
+		trigger_error('Could not locate CakePHP core files.', E_USER_ERROR);
+	}
+	unset($rootInstall, $composerInstall);
+
+} else {
+	include $found . DS . $dispatcher;
 }
-unset($dispatcher);
+
+unset($paths, $path, $found, $dispatcher);
 
 return ShellDispatcher::run($argv);
