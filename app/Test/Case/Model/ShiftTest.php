@@ -43,15 +43,6 @@ class ShiftTestCase extends CakeTestCase {
 		$this->assertFalse($this->Shift->validates());
 	}
 
-	public function testImport2() {
-
-		$result = $this->Shift->import('test', '1');
-		$expected = array(
-				'1' => 'test',
-				'2' => '1');
-		$this->assertEqual($result, $expected);
-	}
-
 	// Test import function
 	public function testImport() {
 

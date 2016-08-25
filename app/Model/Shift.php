@@ -282,11 +282,6 @@ class Shift extends AppModel {
 	 * Import function to import shifts into database
 	 */
 	function import ($filename = null, $calendar = null, $discard = 3) {
-
-		return (array(
-				1 => $filename,
-				2 => $calendar
-		));
 		// Get start dates for file
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
