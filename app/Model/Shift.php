@@ -286,11 +286,12 @@ class Shift extends AppModel {
 		// Get start dates for file
 		App::uses('Calendar', 'Model');
 		$this->Calendar = new Calendar();
-		if (is_null($calendar) || is_null($filename)) {
+		if (is_null($calendar) || empty($calendar) || empty($filename) || is_null($filename)) {
 			return false;
 		}
+		echo $calendar;
 		$calendar = $this->Calendar->getStartEndDates($calendar);
-		if (!$calender || isempty($calendar)) {
+		if ($calender == false || empty($calendar)) {
 			return false;
 		}
 
