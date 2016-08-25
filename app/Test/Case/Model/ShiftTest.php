@@ -58,6 +58,8 @@ class ShiftTestCase extends CakeTestCase {
 			'date' => '2011-12-3',
 			'shifts_type_id' => '3');
 		$this->assertEqual($result[19], $expected);
+
+		//TODO: Fix this test for Travis
 	}
 
 /**
