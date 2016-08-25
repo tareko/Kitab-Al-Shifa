@@ -291,10 +291,10 @@ class Shift extends AppModel {
 			return false;
 		}
 		$calendar = $this->Calendar->getStartEndDates($calendar_raw);
-		if (!isset($calendar)) {
+		if (!isset($calendar) || is_null($calendar)) {
 			return false;
 		}
-		if ($calender == false || empty($calendar)) {
+		if (empty($calendar)) {
 			return false;
 		}
 
