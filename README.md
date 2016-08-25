@@ -8,6 +8,11 @@ The work is released as AGPL v3
 
 You may contact the author, Tarek Loubani, at tarek *at* tarek dot org
 
+# Requirements
+ * PHP 5.6+
+ * Apache
+ * MySQL
+
 # Development
 For development, see the vagrant directory
 
