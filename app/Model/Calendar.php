@@ -147,7 +147,7 @@ class Calendar extends AppModel {
 				'fields' => array('start_date', 'end_date'),
 				'conditions' => array('Calendar.id' => $id)
 		));
-		return $data['Calendar'];
+		return (!empty($data['Calendar']) ? $data['Calendar'] : false);
 	}
 }
 ?>
