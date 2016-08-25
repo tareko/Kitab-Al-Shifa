@@ -51,7 +51,8 @@ class ShiftTestCase extends CakeTestCase {
         ->method('lookupUserId')
         ->will($this->returnValue(1));
 
-		$result = $this->Shift->import(APP . 'Test' . DS . 'Files' . DS . 'shift-import.csv', 1);
+        $file = APP . 'Test' . DS . 'Files' . DS . 'shift-import.csv';
+		$result = $this->Shift->import($file, '1');
 		$expected = array(
 			'user_id' => (int) 1,
 			'date' => '2011-12-3',
