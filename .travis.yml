@@ -20,7 +20,7 @@ before_script:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
 
--sh -c "echo $TRAVIS_BUILD_DIR"
+  - sh -c "echo $TRAVIS_BUILD_DIR"
   - sh -c "cp app/Config/core.php.default app/Config/core.php"
   - sh -c "cp app/Config/email.php.default app/Config/email.php"
 
