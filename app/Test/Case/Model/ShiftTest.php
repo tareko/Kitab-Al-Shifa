@@ -51,12 +51,13 @@ class ShiftTestCase extends CakeTestCase {
         ->method('lookupUserId')
         ->will($this->returnValue(1));
 
-        $file = APP . 'Test' . DS . 'Files' . DS . 'shift-import.csv';
+        $file = (isset($_ENV['TRAVIS']) ? $_ENV['TRAVIS_BUILD_DIR'].'/app/': APP) . 'Test' . DS . 'Files' . DS . 'shift-import.csv';
 		$result = $this->Shift->import($file, '1');
 		$expected = array(
 			'user_id' => (int) 1,
 			'date' => '2011-12-3',
 			'shifts_type_id' => '3');
+
 		$this->assertEqual($result[19], $expected);
 
 		//TODO: Fix this test for Travis
