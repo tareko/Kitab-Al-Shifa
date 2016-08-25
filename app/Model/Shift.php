@@ -290,6 +290,9 @@ class Shift extends AppModel {
 			return false;
 		}
 		$calendar = $this->Calendar->getStartEndDates($calendar);
+		if (!$calendar) {
+			return false;
+		}
 
 		// Get all shift types for calendar
 
