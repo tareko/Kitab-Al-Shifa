@@ -14,7 +14,7 @@ matrix:
   fast_finish: true
 
 before_script:
-  - sh -c "composer global require 'phpunit/phpunit=3.6.10'"
+  - sh -c "composer global require 'phpunit/phpunit=3.7.38'"
   - sh -c "ln -s ~/.composer/vendor/phpunit/phpunit/PHPUnit ./vendors/PHPUnit"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
