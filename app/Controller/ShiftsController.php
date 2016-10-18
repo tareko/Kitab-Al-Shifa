@@ -39,11 +39,24 @@ class ShiftsController extends AppController {
 			)));
         $this->paginate['conditions'] = $this->Shift->parseCriteria($this->passedArgs);
 
-        if (isset($this->request->params['named']['id'])) {
+        // If the calendar is unpublished, only allow the user to see their own schedule,
+        // unless user is an admin
+
+        if(isset($calendar) && !$calendar['Calendar']['published'] && !$this->_isAdmin()) {
+        	$this->set('shifts', $this->paginate(array(
+        			'Shift.user_id' => $this->_usersId())
+        			+ $conditions));
+        }
+
+        // Pull only the IDs entered
+        elseif (isset($this->request->params['named']['id'])) {
         	$this->set('shifts', $this->paginate(array(
         			'Shift.user_id' => $this->request->params['named']['id'])
         			+ $conditions));
         }
+
+
+
         else {
         	$this->set('shifts', $this->paginate($conditions));
         }
@@ -159,8 +172,20 @@ class ShiftsController extends AppController {
 		}
 
 		$calendar = $this->request->params['named']['calendar'];
-		$id = (isset($this->request->params['named']['id'])) ? $this->request->params['named']['id'] : null;
 
+		// If the calendar is unpublished, only allow the user to see their own schedule,
+		// unless user is an admin
+
+		if(isset($calendar) && !$this->Calendar->findById($calendar)['Calendar']['published'] && !$this->_isAdmin()) {
+			$id = $this->_usersId();
+		}
+		elseif(isset($this->request->params['named']['id'])) {
+			$id = $this->request->params['named']['id'];
+		}
+
+		else {
+			$id = null;
+		}
 		$masterSet = $this->Shift->getMasterSet($calendar, $id);
 
 		$this->pdfConfig = array(
