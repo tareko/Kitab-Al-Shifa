@@ -128,8 +128,7 @@ class Shift extends AppModel {
 	}
 
 	function getMasterSet ($calendar = NULL, $id = NULL) {
-		App::uses('Calendar', 'Model');
-		$this->Calendar = new Calendar();
+		$this->Calendar = ClassRegistry::init('Calendar');
 		$masterSet['calendar'] = $this->Calendar->findById($calendar);
 		$masterSet['calendar']['lastupdated'] = $this->Calendar->lastUpdated($calendar);
 
