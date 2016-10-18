@@ -362,6 +362,7 @@ class TradesController extends AppController {
 	public function completeAccepted() {
 		$this->Trade->completeAccepted(); // Complete pending accepted trades
 		$this->Trade->cleanMarketplace(); // Clean the marketplace
+		$this->Trade->removeStaleMarketplace(); // Remove marketplace shifts that have already passed
 		$this->set('success', true);
 		$this->render();
 	}

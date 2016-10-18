@@ -655,6 +655,39 @@ class Trade extends AppModel {
 	}
 
 	/**
+	 * Remove stale marketplace shifts
+	 *
+	 * This function will remove all marketplace entries for any person who's
+	 * over the limit. For now, this is based on a preference for each calendar month.
+	 *
+	 * @return bool Returns true unless errors
+	 *
+	 */
+	public function removeStaleMarketplace() {
+
+		// Get stale shifts
+
+		$staleShifts = $this->Shift->find('all', array(
+				'conditions' => array(
+						'Shift.marketplace' => 1,
+						'Shift.date <=' => date('Y-m-d', strtotime('-1 day'))
+				),
+				'recursive' => -1,
+		));
+
+		// Foreach shift
+		foreach ($staleShifts as $staleShift) {
+			// Save shift
+			$this->Shift->updateAll(
+					// Change marketplace setting to false
+					array('Shift.marketplace' => false),
+					array('Shift.id' => $staleShift['Shift']['id'])
+			);
+		}
+		return true;
+	}
+
+	/**
 	 * Clean marketplace
 	 *
 	 * This function will remove all marketplace entries for any person who's
