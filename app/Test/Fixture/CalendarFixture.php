@@ -121,5 +121,15 @@ class CalendarFixture extends CakeTestFixture {
 			'comments' => '',
 			'updated' => '2011-12-15 00:47:35'
 		),
-	);
+ 		array(
+ 			'id' => '11',
+ 			'usergroups_id' => '11',
+ 			'name' => 'June 2012',
+ 			'start_date' => '2012-07-01',
+ 			'end_date' => '2012-07-31',
+ 			'published' => 0,
+ 			'comments' => 'unpublished',
+ 			'updated' => '2011-12-15 00:47:35'
+ 		),
+ 	);
 }
