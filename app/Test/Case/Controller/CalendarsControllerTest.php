@@ -79,7 +79,7 @@ class CalendarsControllerTestCase extends ControllerTestCase {
 
 	public function testIndex() {
 		$result = $this->testAction('/calendars/index', array('return' => 'vars'));
-		$this->assertContains('10', $result['calendars'][0]['Calendar']['id']);
+		$this->assertContains('11', $result['calendars'][0]['Calendar']['id']);
 	}
 
 	public function testViewNoId() {
