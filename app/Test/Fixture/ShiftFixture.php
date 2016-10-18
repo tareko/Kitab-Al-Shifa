@@ -165,7 +165,7 @@ class ShiftFixture extends CakeTestFixture {
 			'marketplace' => '0',
 			'updated' => '2011-10-19 13:55:23'
 		),
-			array(
+		array(
 			'id' => '520',
 			'user_id' => '2',
 			'date' => '2013-11-23',
@@ -173,7 +173,7 @@ class ShiftFixture extends CakeTestFixture {
 			'marketplace' => '0',
 			'updated' => '2011-10-19 12:55:23'
 		),
-			array(
+		array(
 			'id' => '521',
 			'user_id' => '3',
 			'date' => '2013-11-24',
@@ -181,7 +181,7 @@ class ShiftFixture extends CakeTestFixture {
 			'marketplace' => '0',
 			'updated' => '2011-10-19 11:55:23'
 		),
-			array(
+		array(
 			'id' => '522',
 			'user_id' => '4',
 			'date' => '2013-11-25',
@@ -189,7 +189,7 @@ class ShiftFixture extends CakeTestFixture {
 			'marketplace' => '0',
 			'updated' => '2011-10-19 10:55:23'
 		),
-			array(
+		array(
 			'id' => '523',
 			'user_id' => '5',
 			'date' => '2013-11-26',
@@ -197,7 +197,7 @@ class ShiftFixture extends CakeTestFixture {
 			'marketplace' => '0',
 			'updated' => '2011-10-19 10:35:23'
 		),
-			array(
+		array(
 			'id' => '524',
 			'user_id' => '5',
 			'date' => '2013-11-26',
@@ -205,5 +205,21 @@ class ShiftFixture extends CakeTestFixture {
 			'marketplace' => '1',
 			'updated' => '2011-10-19 10:35:23'
 		),
-		);
+		array(
+			'id' => '525',
+			'user_id' => '5',
+			'date' => '2012-07-01',
+			'shifts_type_id' => '1',
+			'marketplace' => '0',
+			'updated' => '2011-10-19 10:35:23'
+		),
+		array(
+			'id' => '526',
+			'user_id' => '1',
+			'date' => '2012-07-01',
+			'shifts_type_id' => '10',
+			'marketplace' => '0',
+			'updated' => '2011-10-19 10:35:23'
+		),
+	);
 }
