@@ -110,6 +110,13 @@ class TradesController extends AppController {
 	 * @return void
 	 */
 	public function marketplace() {
+		// If the marketplace is blinded, then kick the user back to the index
+		if (Configure::read('marketplace_blind') && !$this->_isAdmin()) {
+			$this->Flash->alert(__('You may not access the marketplace at this time'));
+			return $this->redirect(array(
+					'action' => 'index'));
+		}
+
 		$this->loadModel('Shift');
 
 		//Set paginate conditions from passed arguments

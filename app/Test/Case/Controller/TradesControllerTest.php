@@ -771,6 +771,106 @@ class TradesControllerTestCase extends ControllerTestCase {
 		$this->assertContains('/trades/marketplace', $this->headers['Location']);
 	}
 
+	// Make sure marketplace is not accessible except by admin
+	// When set as Configure::write('marketplace_blind', true)
+	public function testMarketBlindTrueNoAdmin() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId',
+						'_isAdmin'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		$Trades->expects($this->any())
+		->method('_isAdmin')
+		->will($this->returnValue(false));
+		$Trades->expects($this->any())
+		->method('redirect')
+		->will($this->returnValue(true));
+
+		Configure::write('marketplace_blind', true);
+		$result = $this->testAction('/trades/marketplace');
+		$this->assertNotContains('/trades/marketplace', $this->headers['Location']);
+	}
+
+	public function testMarketBlindTrueAdmin() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId',
+						'_isAdmin'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		$Trades->expects($this->any())
+		->method('_isAdmin')
+		->will($this->returnValue(true));
+
+		Configure::write('marketplace_blind', true);
+		$result = $this->testAction('/trades/marketplace', array('return' => 'vars'));
+		$this->assertNotEmpty($result['shifts']);
+	}
+
+	public function testMarketBlindFalseNoAdmin() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId',
+						'_isAdmin'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		$Trades->expects($this->any())
+		->method('_isAdmin')
+		->will($this->returnValue(false));
+
+		Configure::write('marketplace_blind', false);
+		$result = $this->testAction('/trades/marketplace', array('return' => 'vars'));
+		$this->assertNotEmpty($result['shifts']);
+	}
+
+	public function testMarketBlindFalseAdmin() {
+		$Trades = $this->generate('Trades', array(
+				'methods' => array(
+						'_requestAllowed',
+						'_usersId',
+						'_isAdmin'
+				),
+		));
+
+		$Trades->expects($this->any())
+		->method('_requestAllowed')
+		->will($this->returnValue(true));
+		$Trades->expects($this->any())
+		->method('_usersId')
+		->will($this->returnValue(1));
+		$Trades->expects($this->any())
+		->method('_isAdmin')
+		->will($this->returnValue(true));
+
+		Configure::write('marketplace_blind', false);
+		$result = $this->testAction('/trades/marketplace', array('return' => 'vars'));
+		$this->assertNotEmpty($result['shifts']);
+	}
 
 /**
  * tearDown method

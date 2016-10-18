@@ -113,7 +113,7 @@ Cache::config('default', array('engine' => 'File'));
  		'download' => true,
  		'pageSize' => 'Letter',
  ));
- 
+
  /* Option to save OHIP numbers for patients when entering billing information
   * Note: Do not enable this unless you have a very, very secure system
   * as it compromises patient safety if in the public.
@@ -125,10 +125,14 @@ Cache::config('default', array('engine' => 'File'));
   * Default: 3
   */
  Configure::write('marketplace_take_limit', 3);
- 
+
  /* Time at which the take limit restarts (24 hour clock. Give only hour)
-  * 
+  *
   */
  Configure::write('marketplace_take_limit_restart', 12);
- 
- 
+
+ /* Should the marketplace be available to users?
+  * TODO: Make this setting web-adjustable
+  *
+  */
+ Configure::write('marketplace_blind', true);
