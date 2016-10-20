@@ -105,8 +105,12 @@ class Calendar extends AppModel {
 
 	/**
 	 * Get list of calendars
+	 *
+	 *  @param date $dateAfter
+	 *  @return calendars
 	 */
-	function getList() {
+
+	function getList($startDate = null, $endDate = null) {
 		return $this->find('list', array(
 			'fields' => array('Calendar.start_date', 'Calendar.name', 'Calendar.id'),
 			'order'=>array('Calendar.start_date DESC')));

@@ -1,8 +1,16 @@
 <?php echo $this->Form->create('Preference');?>
 	<fieldset>
-		<legend><?php echo __('Shift preferences for '. $user['User']['name']);?></legend>
+		<legend><?php echo __('Minimum number of shifts for '. $user['User']['name']);?></legend>
 	<?php
-		echo $this->Form->input('limit', array('default' => (isset($preference['limit']) ? $preference['limit']: false)));
+		//Foreach calendar from one month ago
+		foreach($calendars as $calendarId => $calendarName) {
+			// Create input for trading limit
+			echo $this->Form->input('limit' . $calendarId, array(
+			'default' => (isset($preference['limit' . $calendarId]) ? $preference['limit' . $calendarId]: false),
+			'label' => $calendarName
+			));
+			echo "<br/>";
+		}
 	?>
 	</fieldset>
 <?php echo $this->Form->end(__('Submit'));?>

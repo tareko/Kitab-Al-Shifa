@@ -38,13 +38,14 @@ class UsersControllerTestCase extends ControllerTestCase {
  * @var array
  */
 	public $fixtures = array(
-			'app.user', 
-			'app.profile', 
-			'app.shift', 
-			'app.usergroup', 
+			'app.user',
+			'app.profile',
+			'app.shift',
+			'app.usergroup',
 			'app.user_usergroup_map',
 			'app.group',
-			'app.preference'
+			'app.preference',
+			'app.calendar'
 		);
 
 /**
@@ -161,7 +162,7 @@ class UsersControllerTestCase extends ControllerTestCase {
 	}
 /**
  * testListUsers method
- * 
+ *
  */
 
 	public function testListUsersPermissionDenied() {
@@ -174,11 +175,11 @@ class UsersControllerTestCase extends ControllerTestCase {
 		$Users->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
-		
+
 		$result = $this->testAction('/users/listUsers');
 		$this->assertEqual($result, '');
 	}
-	
+
 	public function testListUsersPermissionGranted() {
 		$Users = $this->generate('Users', array(
 						'methods' => array(
@@ -186,7 +187,7 @@ class UsersControllerTestCase extends ControllerTestCase {
 							'_usersId'
 						),
 		));
-	
+
 		$Users->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -194,11 +195,11 @@ class UsersControllerTestCase extends ControllerTestCase {
 		$Users->expects($this->any())
 		->method('_usersId')
 		->will($this->returnValue(1));
-		
+
 		$result = $this->testAction('/users/listUsers.json');
 		$this->assertEqual($result, '');
 	}
-	
+
 	// Test if non-admin user can give other people's preferences
 	public function testPrefUserNotAdminPermissionDenied() {
 		$Users = $this->generate('Users', array(
@@ -208,7 +209,7 @@ class UsersControllerTestCase extends ControllerTestCase {
 						'_isadmin'
 				),
 		));
-	
+
 		$Users->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -218,7 +219,7 @@ class UsersControllerTestCase extends ControllerTestCase {
 		$Users->expects($this->any())
 		->method('_isadmin')
 		->will($this->returnValue(false));
-		
+
 		$result = $this->testAction('/users/preferences?id=2', array('return' => 'vars'));
 		$this->assertEqual($result['user']['User']['id'], 1);
 		$this->assertEqual($result['admin'], false);
@@ -233,7 +234,7 @@ class UsersControllerTestCase extends ControllerTestCase {
 						'_isadmin'
 				),
 		));
-	
+
 		$Users->expects($this->any())
 		->method('_requestAllowed')
 		->will($this->returnValue(true));
@@ -243,10 +244,10 @@ class UsersControllerTestCase extends ControllerTestCase {
 		$Users->expects($this->any())
 		->method('_isadmin')
 		->will($this->returnValue(true));
-	
+
 		$result = $this->testAction('/users/preferences?id=2', array('return' => 'vars'));
 		$this->assertEqual($result['user']['User']['id'], 2);
 		$this->assertEqual($result['admin'], true);
 	}
-	
+
 }

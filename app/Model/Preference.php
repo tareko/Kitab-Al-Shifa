@@ -1,5 +1,5 @@
 <?php
-class Preference extends AppModel 
+class Preference extends AppModel
 {
     public $actsAs = array('Utils.Keyvalue');
     public $useTable = 'preferences';
@@ -9,7 +9,7 @@ class Preference extends AppModel
     				'foreignKey' => 'user_id',
     				'conditions' => '',
     		));
-    
+
     public $validate = array(
     		'user_id' => array(
     				'numeric' => array(
@@ -24,7 +24,7 @@ class Preference extends AppModel
     		'limit' => array(
     				'numeric' => array(
     						'rule' => array('numeric'),
-    						'message' => 'Please select a proper user',
+    						'message' => 'Please enter a numeric value',
     						//'allowEmpty' => false,
     						//'required' => false,
     						//'last' => false, // Stop validation after this rule

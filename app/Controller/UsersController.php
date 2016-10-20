@@ -6,7 +6,7 @@ App::uses('AppController', 'Controller');
  * @property User $User
  */
 class UsersController extends AppController {
-	var $components = array('RequestHandler');
+	var $components = array('RequestHandler', 'Flash');
 
 /**
  * index method
@@ -79,6 +79,7 @@ class UsersController extends AppController {
 	 * @return void
 	 */
 	public function preferences($id = null) {
+		$this->loadModel('Calendar');
 		// If user is an administrator, allow the editing of other users' preferences
 		if ($this->_isAdmin()) {
 			$this->User->id = (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId());
@@ -90,20 +91,28 @@ class UsersController extends AppController {
 			throw new NotFoundException(__('Invalid user'));
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->User->Preference->saveSection($this->User->id, $this->request->data, 'Profile')) {
-				$this->Session->setFlash(__('Your preferences have been saved'), 'success');
-			} else {
-				$this->Session->setFlash(__('Your preferences could not be saved. Please, try again. If you still have issues, please report them'), 'alert');
+			foreach($this->request->data['Preference'] as $key => $value) {
+				if ($this->User->Preference->saveSection($this->User->id, array('Preference' => array($key => $value)), 'Profile')) {
+					$this->Flash->success(__('Your preferences have been saved'), 'success');
+				} else {
+					$this->Flash->alert(__('Your preferences could not be saved. Please, try again. If you still have issues, please report them'), 'alert');
+				}
 			}
 		} else {
 			$this->request->data = $this->User->read(null, $id);
 		}
 		$this->User->recursive = 0;
 		$this->set('user', $this->User->read(null, $id));
+		$this->set('calendars',
+				$this->Calendar->find('list', array(
+						'fields' => array('Calendar.id', 'Calendar.name'),
+						'order'=>array('Calendar.start_date ASC'),
+						'conditions' => array('Calendar.end_date >=' => date('Y-m-d', strtotime('now')))
+				)));
 		$this->set('preference', $this->User->Preference->getSection($this->User->id, 'Profile'));
 		$this->render();
 	}
-	
+
 /**
  * delete method
  *
@@ -210,7 +219,7 @@ class UsersController extends AppController {
 		$this->Session->setFlash(__('User was not deleted'), 'alert');
 		$this->redirect(array('action' => 'index'));
 	}
-	
+
 	public function login() {
 		if ($this->Auth->login()) {
 			$this->redirect($this->Auth->redirect());
@@ -220,14 +229,14 @@ class UsersController extends AppController {
 			}
 			else {
 			}
-			
+
 		}
 	}
-	
+
 	public function logout() {
 		$this->redirect($this->Auth->logout());
 	}
-	
+
 	public function listUsers() {
 		$userOptions = array();
 		$full = null;
@@ -240,7 +249,7 @@ class UsersController extends AppController {
 		}
 		if (isset($this->request->query['term'])) {
 			$conditions = array(
-				'or' => 
+				'or' =>
 					array('Profile.lastname LIKE' => $this->request->query['term'].'%',
 						'Profile.firstname LIKE' => $this->request->query['term'].'%',
 						'Profile.cb_displayname LIKE' => $this->request->query['term'].'%')
