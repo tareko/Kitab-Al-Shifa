@@ -90,7 +90,7 @@ class UsersController extends AppController {
 		if (!$this->User->exists()) {
 			throw new NotFoundException(__('Invalid user'));
 		}
-		if ($this->request->is('post') || $this->request->is('put')) {
+		if (($this->request->is('post') || $this->request->is('put')) && isset($this->request->data['Preference'])) {
 			foreach($this->request->data['Preference'] as $key => $value) {
 				if ($this->User->Preference->saveSection($this->User->id, array('Preference' => array($key => $value)), 'Profile')) {
 					$this->Flash->success(__('Your preferences have been saved'), 'success');
