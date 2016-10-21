@@ -1246,6 +1246,22 @@ class TradeTestCase extends CakeTestCase {
 		$this->assertEqual($result, true);
 	}
 
+	// Ensure that shift is removed from marketplace when trade is finalized
+	// Marketplace = 1
+	public function testcompleteAccepted1() {
+		$this->Trade->completeAccepted();
+
+		$result = $this->Trade->Shift->find('all',array(
+				'conditions' => array(
+						'Shift.id' => 513
+				)
+		));
+
+		$this->assertEqual($result[0]['Shift']['marketplace'], 0);
+	}
+
+
+
 	// Test change Status function
 
 	public function testchangeStatus() {

@@ -114,7 +114,7 @@ class ShiftFixture extends CakeTestFixture {
 			'user_id' => '5',
 			'date' => '2011-12-28',
 			'shifts_type_id' => '12',
-			'marketplace' => '0',
+			'marketplace' => '1',
 			'updated' => '2011-10-19 16:56:23'
 		),
 		array(

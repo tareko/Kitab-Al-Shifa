@@ -577,8 +577,13 @@ class Trade extends AppModel {
 				$this->Shift->read(null, $trade['Trade']['shift_id']);
 				$this->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
 				$this->Shift->set('updated', date("Y-m-d H:i:s",time()));
+				$this->Shift->set('marketplace', 0);
 				if ($this->Shift->save()) {
-					$this->updateAll(array('status' => 2), array('Trade.id' => $trade['Trade']['id'] ));
+					$this->updateAll(
+							array(
+									'status' => 2
+							), 
+							array('Trade.id' => $trade['Trade']['id'] ));
 
 					//Log successfully completed trade.
 					CakeLog::write('TradeComplete', 'trade[Trade][id]: ' .$trade['Trade']['id'] . '; Entered trade on calendar for shift ' . $trade['Trade']['shift_id'] . ' from ' . $trade['Trade']['user_id'] . ' to ' . $trade['TradesDetail'][0]['user_id']);
