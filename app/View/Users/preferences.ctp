@@ -5,8 +5,8 @@
 		//Foreach calendar from one month ago
 		foreach($calendars as $calendarId => $calendarName) {
 			// Create input for trading limit
-			echo $this->Form->input('limit' . $calendarId, array(
-			'default' => (isset($preference['limit' . $calendarId]) ? $preference['limit' . $calendarId]: false),
+			echo $this->Form->input($calendarId, array(
+			'default' => (isset($preference[$calendarId]) ? $preference[$calendarId]: false),
 			'label' => $calendarName
 			));
 			echo "<br/>";

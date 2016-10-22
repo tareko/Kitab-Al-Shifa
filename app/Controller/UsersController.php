@@ -92,7 +92,7 @@ class UsersController extends AppController {
 		}
 		if (($this->request->is('post') || $this->request->is('put')) && isset($this->request->data['Preference'])) {
 			foreach($this->request->data['Preference'] as $key => $value) {
-				if ($this->User->Preference->saveSection($this->User->id, array('Preference' => array($key => $value)), 'Profile')) {
+				if ($this->User->Preference->saveSection($this->User->id, array('Preference' => array($key => $value)), 'ShiftLimit')) {
 					$this->Flash->success(__('Your preferences have been saved'), 'success');
 				} else {
 					$this->Flash->alert(__('Your preferences could not be saved. Please, try again. If you still have issues, please report them'), 'alert');
@@ -109,7 +109,7 @@ class UsersController extends AppController {
 						'order'=>array('Calendar.start_date ASC'),
 						'conditions' => array('Calendar.end_date >=' => date('Y-m-d', strtotime('now')))
 				)));
-		$this->set('preference', $this->User->Preference->getSection($this->User->id, 'Profile'));
+		$this->set('preference', $this->User->Preference->getSection($this->User->id, 'ShiftLimit'));
 		$this->render();
 	}
 

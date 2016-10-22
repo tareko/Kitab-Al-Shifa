@@ -45,7 +45,9 @@ class UsersControllerTestCase extends ControllerTestCase {
 			'app.user_usergroup_map',
 			'app.group',
 			'app.preference',
-			'app.calendar'
+			'app.calendar',
+			'app.trade',
+			'app.trades_detail'
 		);
 
 /**

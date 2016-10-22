@@ -11,7 +11,17 @@ class TradeTestCase extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array('app.trade', 'app.user', 'app.shift', 'app.trades_detail', 'app.shifts_type', 'app.location');
+	public $fixtures = array(
+			'app.trade',
+			'app.user',
+			'app.shift',
+			'app.trades_detail',
+			'app.shifts_type',
+			'app.location',
+			'app.preference',
+			'app.calendar',
+			'app.usergroup'
+	);
 
 /**
  * setUp method
@@ -1616,6 +1626,33 @@ class TradeTestCase extends CakeTestCase {
 
 		$result = $this->Trade->marketTradesToday(4);
 		$this->assertEqual($result, 2);
+	}
+
+	// Test marketLimit function
+	// Limit is reached (limit = 10, shifts = 3)
+	public function testmarketLimitReached1() {
+
+		$shift = array(
+			'id' => '1',
+			'user_id' => '1',
+			'date' => '2011-12-03',
+			'shifts_type_id' => '1',
+			'marketplace' => '0',
+			'updated' => '2011-10-16 12:13:02'
+		);
+
+		$result = $this->Trade->marketLimitReached($shift);
+		$this->assertTrue($result);
+	}
+
+	// Test cleanMarketplace function
+
+	public function testcleanMarketplace1() {
+
+		$this->markTestIncomplete('Cannot properly set time');
+
+		$result = $this->Trade->cleanMarketplace();
+		$this->assertTrue($result);
 	}
 
 /**

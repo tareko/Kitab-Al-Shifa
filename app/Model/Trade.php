@@ -582,7 +582,7 @@ class Trade extends AppModel {
 					$this->updateAll(
 							array(
 									'status' => 2
-							), 
+							),
 							array('Trade.id' => $trade['Trade']['id'] ));
 
 					//Log successfully completed trade.
@@ -600,38 +600,62 @@ class Trade extends AppModel {
 	}
 
 	/**
-	 * Decide if user's market limit has been reached for month
-	 *
-	 * Eventually, this will become more specific, but for now, one number
-	 * from preferences dictates the overall market limit
+	 * Decide if user's market limit has been reached for a particular calendar
 	 *
 	 * @param array $shift Shift information
-	 * @return integer Number of trades in the 24 hour period.
+	 * @return boolean True = limit has been reached
 	 *
 	 */
 
 	public function marketLimitReached($shift = null) {
+		$this->Calendar = ClassRegistry::init('Calendar');
+
+		// Set starting limit as zero
+		$limit = 0;
+		$i = 0;
 
 		// Get user limit from preferences
-		$userLimit = $this->User->Preference->getSection($shift['user_id'], 'Profile');
+		$userLimit = $this->User->Preference->getSection($shift['user_id'], 'ShiftLimit');
 
-		// Return false if not set at all or not a number
-		if (!is_numeric($userLimit['limit']) || empty($userLimit['limit'])) {
-			return false;
+		// Get calendars that cover relevant shift. Assumption: That marketplace does not contain stale shifts.
+
+		$calendars = $this->Calendar->find('all', array(
+				'conditions' => array(
+						'Calendar.start_date <=' => $shift['date'],
+						'Calendar.end_date >=' => $shift['date'],
+				)));
+		// Get limits for each calendar
+		foreach ($calendars as $calendar) {
+			if ($i == 0) {
+				$selectedCalendar = $calendar;
+				$i++;
+			}
+
+			// If no number is set, then automatically assume 0 and stop.
+			if (!is_numeric($userLimit[$calendar['Calendar']['id']]) || empty($userLimit[$calendar['Calendar']['id']])) {
+				$limit = 0;
+			}
+
+			else {
+				// Pick highest (most conservative) limit if multiple calendars
+				if ($limit < $userLimit[$calendar['Calendar']['id']]) {
+					$limit = $userLimit[$calendar['Calendar']['id']];
+					$selectedCalendar = $calendar;
+				}
+			}
 		}
 
 		// Get total shifts worked for the month of the shift
 		$shiftCount = $this->Shift->find('count', array(
 				'conditions' => array(
 						'Shift.user_id' => $shift['user_id'],
-						'Shift.date <=' => date('Y-m-t', strtotime($shift['date'])),
-						'Shift.date >=' => date('Y-m-01', strtotime($shift['date'])),
+						'Shift.date >=' => date('Y-m-d', strtotime($selectedCalendar['Calendar']['start_date'])),
+						'Shift.date <=' => date('Y-m-d', strtotime($selectedCalendar['Calendar']['end_date'])),
 				)
 		));
 
-
 		// Compare to the shift limit and return value
-		return ($userLimit <= $shiftCount ? true : false);
+		return ($limit >= $shiftCount ? true : false);
 	}
 
 	/**
@@ -703,6 +727,8 @@ class Trade extends AppModel {
 	 */
 
 	public function cleanMarketplace() {
+		$this->Calendar = ClassRegistry::init('Calendar');
+
 		// Get all users with marketplace shifts
 		$marketUsers = $this->Shift->find('all', array(
 				'conditions' => array(
@@ -715,68 +741,71 @@ class Trade extends AppModel {
 						'user_id'),
 		));
 
+
 		// Foreach user
 		foreach($marketUsers as $marketUser) {
-		// Get user's limit if set
-			$limit = $this->User->Preference->getSection($marketUser['Shift']['user_id'], 'Profile')['limit'];
-			if (is_numeric($limit)) {
+			// Get user's limit if set
+			$limits = $this->User->Preference->getSection($marketUser['Shift']['user_id'], 'ShiftLimit');
 
-				// Get count of all shifts worked each month for user
-				$userMarketMonths = $this->Shift->find('all', array(
+			// Get months with marketplace shifts
+
+			$marketMonths = $this->Shift->find('all', array(
+					'conditions' => array(
+							'Shift.user_id' => $marketUser['Shift']['user_id'],
+							'marketplace' => true
+							),
+							'fields' => array(
+									'user_id',
+									'id',
+									'DATE_FORMAT(date, \'%Y-%m\') AS formatted',
+							),
+							'recursive' => -1,
+							'group' => array(
+									'DATE_FORMAT(date, \'%Y-%m\')'),
+			));
+
+			// Foreach marketMonth
+			foreach($marketMonths as $marketMonth) {
+
+				// Get associated calendar
+				$calendars = $this->Calendar->find('all', array(
 						'conditions' => array(
-								'Shift.user_id' => $marketUser['Shift']['user_id'],
-								'Shift.date >=' => date('Y-m-d', strtotime('-6 months'))
-						),
-						'fields' => array(
-								'user_id',
-								'id',
-								'DATE_FORMAT(date, \'%Y-%m\') AS formatted',
-								'COUNT(1) as count'
-						),
-						'recursive' => -1,
-						'group' => array(
-								'DATE_FORMAT(date, \'%Y-%m\')'),
+								'Calendar.start_date >=' => date('Y-m-01', strtotime($marketMonth[0]['formatted'])),
+								'Calendar.end_date <=' => date('Y-m-t', strtotime($marketMonth[0]['formatted'])),
+						)));
+			}
+
+			// Foreach calendar
+			foreach($calendars as $calendar) {
+
+				// Count how many shifts
+				$userCount = $this->Shift->find('count', array(
+						'conditions' => array(
+								'Shift.date >=' => $calendar['Calendar']['start_date'],
+								'Shift.date <=' => $calendar['Calendar']['end_date'],
+								'user_id' => $marketUser['Shift']['user_id']
+						)
 				));
 
 
-				// Get list of months in which there are marketplace shifts
-				$marketMonths = $this->Shift->find('all', array(
-						'conditions' => array(
-								'Shift.user_id' => $marketUser['Shift']['user_id'],
-								'marketplace' => true
-								),
-								'fields' => array(
-										'user_id',
-										'id',
-										'DATE_FORMAT(date, \'%Y-%m\') AS formatted',
-								),
-								'recursive' => -1,
-								'group' => array(
-										'DATE_FORMAT(date, \'%Y-%m\')'),
-						));
-
-
-				// Make array useable
-				foreach ($userMarketMonths as $userMarketMonth) {
-					$userCount[$userMarketMonth[0]['formatted']] = $userMarketMonth[0]['count'];
+				if (!is_numeric($limits[$calendar['Calendar']['id']])) {
+					continue;
 				}
 
-				// For each month of marketplace, check if shift count exceeds limit
+				// If count breaks limit
+				if ($userCount <= $limits[$calendar['Calendar']['id']]) {
 
-				foreach($marketMonths as $marketMonth) {
-					if ($userCount[$marketMonth[0]['formatted']] <= $limit) {
-						// If limit is hit, remove all marketplace shifts in that month
+					// Then remove all marketplace shifts in that calendar
+					$this->Shift->updateAll(
+							array('Shift.marketplace' => false),
+							array(
+									'Shift.date >=' => $calendar['Calendar']['start_date'],
+									'Shift.date <=' => $calendar['Calendar']['end_date'],
+									'user_id' => $marketUser['Shift']['user_id']
 
-						$this->Shift->updateAll(
-								array('Shift.marketplace' => false),
-								array(
-										'Shift.date >=' => date('Y-m-01', strtotime($marketMonth[0]['formatted'])),
-										'Shift.date <=' => date('Y-m-t', strtotime($marketMonth[0]['formatted'])),
-										'user_id' => $marketUser['Shift']['user_id']
-
-								));
-					}
+							));
 				}
+
 			}
 		}
 		return true;
