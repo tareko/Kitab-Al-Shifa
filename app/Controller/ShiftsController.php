@@ -215,6 +215,7 @@ class ShiftsController extends AppController {
 		$shiftList = $this->Shift->getShiftList(
 			array (
 				'Shift.date >=' => date('Y-m-d', strtotime("-6 months")),
+				'Shift.date <' => Configure::read('ics_date_limit'),
 				'Shift.user_id' => $this->request->params['named']['id'],
 			)
 		);

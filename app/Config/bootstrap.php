@@ -136,3 +136,8 @@ Cache::config('default', array('engine' => 'File'));
   *
   */
  Configure::write('marketplace_blind', true);
+
+ /* Limit ICS calendars to never be past this date
+  * Format: (Y-m-d)
+  */
+ Configure::write('ics_date_limit', '2017-01-01');
