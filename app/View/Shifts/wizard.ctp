@@ -40,7 +40,7 @@ echo $this->Html->css('ui-lightness/jquery-ui');
 
 	<?= $this->Form->input('archive', array(
 				'type' => 'checkbox',
-				'label' => 'Include archived calendars',
+				'label' => 'Include archived and unpublished calendars',
 			
 	));?>
 	<?= $this->Js->get('#ShiftArchive')->event('click', 'shiftArchive()', array ('stop' => false));?>
