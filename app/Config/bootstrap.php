@@ -141,3 +141,8 @@ Cache::config('default', array('engine' => 'File'));
   * Format: (Y-m-d)
   */
  Configure::write('ics_date_limit', '2017-01-01');
+
+ /* Forbid trades for any shifts after the following date
+  * Format: (Y-m-d)
+  */
+ Configure::write('trade_date_limit', '2017-01-01');
