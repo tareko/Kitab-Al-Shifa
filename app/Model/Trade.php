@@ -786,7 +786,7 @@ class Trade extends AppModel {
 							)
 					));
 
-					debug($marketUser['Shift']['user_id'] . " " . $calendar['Calendar']['id'] . " " . $userCount . " " . $limits[$calendar['Calendar']['id']] );
+//					debug($marketUser['Shift']['user_id'] . " " . $calendar['Calendar']['id'] . " " . $userCount . " " . $limits[$calendar['Calendar']['id']] );
 					if (!is_numeric($limits[$calendar['Calendar']['id']])) {
 						continue;
 					}
