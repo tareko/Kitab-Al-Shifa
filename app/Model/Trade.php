@@ -773,40 +773,40 @@ class Trade extends AppModel {
 								'Calendar.start_date >=' => date('Y-m-01', strtotime($marketMonth[0]['formatted'])),
 								'Calendar.end_date <=' => date('Y-m-t', strtotime($marketMonth[0]['formatted'])),
 						)));
-			}
 
-			// Foreach calendar
-			foreach($calendars as $calendar) {
+				// Foreach calendar
+				foreach($calendars as $calendar) {
 
-				// Count how many shifts
-				$userCount = $this->Shift->find('count', array(
-						'conditions' => array(
-								'Shift.date >=' => $calendar['Calendar']['start_date'],
-								'Shift.date <=' => $calendar['Calendar']['end_date'],
-								'user_id' => $marketUser['Shift']['user_id']
-						)
-				));
-
-
-				if (!is_numeric($limits[$calendar['Calendar']['id']])) {
-					continue;
-				}
-
-				// If count breaks limit
-				if ($userCount <= $limits[$calendar['Calendar']['id']]) {
-
-					// Then remove all marketplace shifts in that calendar
-					$this->Shift->updateAll(
-							array('Shift.marketplace' => false),
-							array(
+					// Count how many shifts
+					$userCount = $this->Shift->find('count', array(
+							'conditions' => array(
 									'Shift.date >=' => $calendar['Calendar']['start_date'],
 									'Shift.date <=' => $calendar['Calendar']['end_date'],
 									'user_id' => $marketUser['Shift']['user_id']
+							)
+					));
 
-							));
+					debug($marketUser['Shift']['user_id'] . " " . $calendar['Calendar']['id'] . " " . $userCount . " " . $limits[$calendar['Calendar']['id']] );
+					if (!is_numeric($limits[$calendar['Calendar']['id']])) {
+						continue;
+					}
+
+					// If count breaks limit
+					if ($userCount <= $limits[$calendar['Calendar']['id']]) {
+
+						// Then remove all marketplace shifts in that calendar
+						$this->Shift->updateAll(
+								array('Shift.marketplace' => false),
+								array(
+										'Shift.date >=' => $calendar['Calendar']['start_date'],
+										'Shift.date <=' => $calendar['Calendar']['end_date'],
+										'user_id' => $marketUser['Shift']['user_id']
+
+								));
+					}
 				}
-
 			}
+
 		}
 		return true;
 	}
