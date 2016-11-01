@@ -409,7 +409,7 @@ class ShiftsController extends AppController {
 			$this->set('usersId', $this->_usersId());
 		}
 		// Add date limit from configure
-		$shiftOptions = array_merge($shiftOptions, array('Shift.date <' => Configure::read('ics_date_limit')));
+		$shiftOptions = array_merge($shiftOptions, array('Shift.date <' => Configure::read('trade_date_limit')));
 		$this->set('shiftList', $this->Shift->getShiftList(array($shiftOptions)));
 		$this->set('_serialize', array('shiftList'));
 	}
