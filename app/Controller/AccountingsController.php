@@ -13,13 +13,20 @@ class AccountingsController extends AppController {
  */
 	public $scaffold;
 
-	function calculateX() {
+	function calculateHours() {
 		$this->loadModel('Shift');
-		$shifts = $this->Shift->shiftsWorkedbyOhipNumber('10800');
-		$seconds = $this->Shift->secondsWorkedbyOhipNumber('10800');
-		$hours = $this->Shift->secondsToHours($seconds);
-		$X = $this->Accounting->calculateX($shifts);
-		$this->set(compact('seconds', 'hours', 'X'));
+
+		$startDate = '2017-01-31';
+		$endDate = '2017-01-31';
+
+		$users = $this->Shift->usersWhoWorkedShifts($startDate, $endDate);
+
+		$seconds = $this->Shift->secondsWorkedbyUser($users, $startDate, $endDate);
+		$hours = array();
+		foreach($seconds as $i => $second) {
+			$hours[$i] = $this->Shift->secondsToHours($second);
+		}
+		$this->set(compact('seconds', 'hours', 'users'));
 		$this->render();
 	}
 

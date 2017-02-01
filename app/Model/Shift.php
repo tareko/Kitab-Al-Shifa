@@ -180,77 +180,101 @@ class Shift extends AppModel {
 	}
 
 	/**
-	 * The shifts worked by a physician (or several physicians) by OHIP Number
+	 * Get all physicians who worked any shifts during a certain period
 	 *
-	 * @param unknown_type $healthcare_provider
-	 * @param unknown_type $start_date
-	 * @param unknown_type $end_date
-	 * @param array $conditions
-	 * @return array $output
+	 * @param unknown $start_date
+	 * @param unknown $end_date
 	 */
-	function shiftsWorkedbyOhipNumber ($healthcare_provider = NULL, $start_date = NULL, $end_date = NULL, $conditions = array()) {
-		$conditionsProfile = array_merge($conditions, array(
-			'Profile.cb_ohip' => $healthcare_provider,
-		));
-		$conditionsShift = array();
-		if ($start_date) {
-			$conditionsShift = array_merge($conditionsShift, array(
-					'Shift.date >=' => $start_date
-					));
-		}
-		if ($end_date) {
-			$conditionsShift = array_merge($conditionsShift, array(
-					'Shift.date <=' => $end_date,
-					));
-		}
 
-		return $this->User->Profile->find('all', array(
-				'contain' => array(
-						'Shift' => array(
-								'fields' => array('id', 'date'),
-								'conditions' => $conditionsShift,
-								'ShiftsType' => array(
-									'fields' => array('id', 'shift_start', 'shift_end'),
-									'Location' => array(
-										'fields' => 'location')),
-								'User' => array(
-									'fields' => array('name'),
-								))),
-				'fields' => array('cb_ohip'),
-				'conditions' => $conditionsProfile,
-				'recursive' => '3',
-		));
-
+	function usersWhoWorkedShifts($start_date = NULL, $end_date = NULL) {
+		$options = array(
+				'conditions' => array(
+						'date >=' => $start_date,
+						'date <=' => $end_date,
+						),
+				'fields'=>array('user_id'),
+				'group' => 'user_id',
+				'recursive' => -1,
+		);
+		return $this->find('all', $options);
 	}
 
 	/**
-	 * The hours worked by a physician (or several physicians) by OHIP Number
+	 * The shifts worked by a one or more users
 	 *
-	 * @param unknown_type $healthcare_provider
+	 * @param array $user
+	 * @param unknown_type $start_date
+	 * @param unknown_type $end_date
+	 * @param array $conditions
+	 * @return array $output
+	 */
+	function shiftsWorkedbyUser ($users = array(), $start_date = NULL, $end_date = NULL, $conditions = array()) {
+		$return = array();
+		foreach($users as $user) {
+			$conditionsUser = array_merge($conditions, array(
+				'User.id' => $user['Shift']['user_id'],
+			));
+
+			$conditionsShift = array();
+			if ($start_date) {
+				$conditionsShift = array_merge($conditionsShift, array(
+						'Shift.date >=' => $start_date
+						));
+			}
+			if ($end_date) {
+				$conditionsShift = array_merge($conditionsShift, array(
+						'Shift.date <=' => $end_date,
+						));
+			}
+			$return[$user['Shift']['user_id']] = $this->User->find('all', array(
+					'contain' => array(
+							'Shift' => array(
+									'fields' => array('id', 'date'),
+									'conditions' => $conditionsShift,
+									'ShiftsType' => array(
+										'fields' => array('id', 'shift_start', 'shift_end'),
+										'Location' => array(
+											'fields' => 'location')),
+									)),
+					'conditions' => $conditionsUser,
+					'recursive' => '3',
+			));
+		}
+		return $return;
+	}
+
+	/**
+	 * The hours worked by one or more users
+	 *
+	 * @param array $users
 	 * @param unknown_type $start_date
 	 * @param unknown_type $end_date
 	 * @param array $conditions
 	 * @return array $output
 	 */
 
-	function secondsWorkedbyOhipNumber ($healthcare_provider = NULL, $start_date = NULL, $end_date = NULL, $conditions = array()) {
+	function secondsWorkedbyUser ($users = array(), $start_date = NULL, $end_date = NULL, $conditions = array()) {
 		$secondsWorked = array();
-		$profiles = $this->shiftsWorkedbyOhipNumber($healthcare_provider, $start_date, $end_date, $conditions);
-		foreach ($profiles as $profile) {
-			foreach($profile['Shift'] as $shift) {
-				// More usable variables for end and start times
-				$start = $shift['ShiftsType']['shift_start'];
-				$end = $shift['ShiftsType']['shift_end'];
+		$return = array();
+		foreach($users as $user) {
+			$profiles = $this->shiftsWorkedbyUser(array($user), $start_date, $end_date, $conditions);
+			foreach ($profiles as $profile) {
+				foreach($profile['0']['Shift'] as $shift) {
+					// More usable variables for end and start times
+					$start = $shift['ShiftsType']['shift_start'];
+					$end = $shift['ShiftsType']['shift_end'];
 
-				// Calculate time worked in seconds per location
-				$secondsWorked[$shift['ShiftsType']['Location']['location']] = (isset($secondsWorked[$shift['ShiftsType']['Location']['location']]) ? $secondsWorked[$shift['ShiftsType']['Location']['location']] : 0) + ($end < $start ? strtotime($end . " + 24 hours") : strtotime($end)) - strtotime($start);
+					// Calculate time worked in seconds per location
+					$secondsWorked[$shift['ShiftsType']['Location']['location']] = (isset($secondsWorked[$shift['ShiftsType']['Location']['location']]) ? $secondsWorked[$shift['ShiftsType']['Location']['location']] : 0) + ($end < $start ? strtotime($end . " + 24 hours") : strtotime($end)) - strtotime($start);
+				}
 			}
+			$return[$user['Shift']['user_id']] = $secondsWorked;
 		}
-		return $secondsWorked;
-
+		return $return;
 	}
 
 	function secondsToHours ($seconds = null) {
+		$hours = array();
 		if (is_array($seconds)) {
 			foreach ($seconds as $id => $second) {
 				$hours[$id] = $second / 3600;

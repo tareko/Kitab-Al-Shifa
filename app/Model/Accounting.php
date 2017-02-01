@@ -83,35 +83,6 @@ class Accounting extends AppModel {
 		),
 	);
 
-	/**
-	 * Calculate the value of X for a given series of shifts
-	 *
-	 * @param array $shifts
-	 * @return array
-	 */
-	function calculateX($shifts = array()) {
-		$output = array();
-		foreach ($shifts as $shift) {
-			$output['ohip'] = $shift['Profile']['cb_ohip'];
-			$output['id'] = $shift['Profile']['id'];
-			foreach ($shift['Shift'] as $shift) {
-
-				//Calculate day of week from date
-				$day = date('N', strtotime($shift['date'])) - 1;
-
-				//Calculate start hour for shift on week scale
-				$start_time = strtotime($shift['ShiftsType']['shift_start'] . " +" . $day * 24 ." hours") - strtotime("00:00:00");
-
-				//Calculate proper end hour - add 24h if necessary
-				$end_time = strtotime($shift['ShiftsType']['shift_end'] . ($shift['ShiftsType']['shift_end'] > $shift['ShiftsType']['shift_start'] ?"": "+24 hours") . " +" . $day * 24 ." hours") - strtotime("00:00:00");
-
-				//Add X value to previously stored value for location
-				$output[$shift['ShiftsType']['Location']['location']] = (isset($output[$shift['ShiftsType']['Location']['location']]) ? $output[$shift['ShiftsType']['Location']['location']] : '') + $this->calculateXValueForShift($shift['date'], $start_time, $end_time, $shift['ShiftsType']['Location']['location']);
-			}
-		}
-		return $output;
-	}
-
 	function getBlockForShiftStart($date, $start_time) {
 		App::uses('AccountingsException', 'Model');
 		$this->AccountingsException = new AccountingsException();
