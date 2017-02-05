@@ -192,7 +192,14 @@ class Shift extends AppModel {
 						'date >=' => $start_date,
 						'date <=' => $end_date,
 						),
-				'fields'=>array('user_id'),
+				'fields'=>array(
+						'user_id',
+				),
+				'contain' => array(
+						'User' => array(
+								'fields' => 'name'
+						)
+				),
 				'group' => 'user_id',
 				'recursive' => -1,
 		);
@@ -234,7 +241,7 @@ class Shift extends AppModel {
 									'ShiftsType' => array(
 										'fields' => array('id', 'shift_start', 'shift_end'),
 										'Location' => array(
-											'fields' => 'location')),
+											'fields' => 'id')),
 									)),
 					'conditions' => $conditionsUser,
 					'recursive' => '3',
@@ -254,18 +261,18 @@ class Shift extends AppModel {
 	 */
 
 	function secondsWorkedbyUser ($users = array(), $start_date = NULL, $end_date = NULL, $conditions = array()) {
-		$secondsWorked = array();
 		$return = array();
 		foreach($users as $user) {
 			$profiles = $this->shiftsWorkedbyUser(array($user), $start_date, $end_date, $conditions);
 			foreach ($profiles as $profile) {
+				$secondsWorked = array();
 				foreach($profile['0']['Shift'] as $shift) {
 					// More usable variables for end and start times
 					$start = $shift['ShiftsType']['shift_start'];
 					$end = $shift['ShiftsType']['shift_end'];
 
 					// Calculate time worked in seconds per location
-					$secondsWorked[$shift['ShiftsType']['Location']['location']] = (isset($secondsWorked[$shift['ShiftsType']['Location']['location']]) ? $secondsWorked[$shift['ShiftsType']['Location']['location']] : 0) + ($end < $start ? strtotime($end . " + 24 hours") : strtotime($end)) - strtotime($start);
+					$secondsWorked[$shift['ShiftsType']['Location']['id']] = (isset($secondsWorked[$shift['ShiftsType']['Location']['id']]) ? $secondsWorked[$shift['ShiftsType']['Location']['id']] : 0) + ($end < $start ? strtotime($end . " + 24 hours") : strtotime($end)) - strtotime($start);
 				}
 			}
 			$return[$user['Shift']['user_id']] = $secondsWorked;
