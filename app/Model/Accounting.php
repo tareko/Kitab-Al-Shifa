@@ -131,4 +131,35 @@ class Accounting extends AppModel {
 		return $XValue;
 
 	}
+
+	/* Calculate total salary for specified period for specified physician
+	 *
+	 */
+	function calculateSalaryForUser($user = null, $date = array()) {
+		// Get all shifts of user
+
+		// Take individual shift
+
+		// Break down individual shift into its hours
+		// 19-03 would become 19, 20, 21, 22, 23, 00, 01, 02
+
+		// Calculate value of each hour
+			// Figure out what day of the week it is (e.g., Friday)
+			// Figure out which payment block the specific hour is in
+				// day * (hour+1) = Friday = 5; 1900 = 20
+				// 5 * 20 = block #100
+				// If not hour+1, then must contend with 00h, which breaks the multiplier
+				// uniqueness above.
+
+			// Multiply value by exceptions multiplier (e.g., holidays, stats)
+			// Dec 25 0800 - 2000h = 1.25x
+
+		// Add all hours for shift
+
+		// Add all shifts for period
+
+		// Add special exceptions
+		// Example, split shift = $400 premium, so add or subtract
+
+	}
 }
