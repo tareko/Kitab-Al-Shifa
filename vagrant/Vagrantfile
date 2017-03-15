@@ -115,9 +115,19 @@ Vagrant.configure("2") do |config|
   #
   #   chef.validation_client_name = "ORGNAME-validator"
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "provisioning/playbook.yml"
-    ansible.sudo = true
-#    ansible.verbose = 'vvv'
+  # Use ansible provisioner if it's installed on host, ansible_local if not.
+  if which('ansible-playbook')
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "#{dir}/provisioning/playbook.yml"
+      ansible.sudo = true
+    end
+  else
+    config.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "provisioning/playbook.yml"
+#      ansible.galaxy_role_file = "provisioning/requirements.yml"
+    end
   end
+
+
+
 end
