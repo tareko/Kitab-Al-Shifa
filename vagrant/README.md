@@ -18,6 +18,6 @@ You may also use any linux-based box, but this is the setup we use at Kitab Cent
 # Procedure
 ```
 $ sudo apt install virtualbox vagrant ansible
-$ vagrant box add wheezy https://dl.dropboxusercontent.com/u/99151903/wheezy.box
+$ vagrant box add wheezy https://www.dropbox.com/s/gikfk6vq2ve224q/wheezy.box
 $ vagrant up
 ```
