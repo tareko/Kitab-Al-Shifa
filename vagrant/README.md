@@ -11,7 +11,7 @@ with some care.
   * Get [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html)
   * Get [PuTTYGen](http://the.earth.li/~sgtatham/putty/0.63/htmldoc/Chapter8.html#puttygen-conversions)
   * Read [this](http://stackoverflow.com/questions/9885108/ssh-to-vagrant-box-in-windows).
-* [My Debian wheezy box](https://dl.dropboxusercontent.com/u/99151903/wheezy.box).
+* [My Debian wheezy box](https://www.dropbox.com/s/gikfk6vq2ve224q/wheezy.box).
 
 You may also use any linux-based box, but this is the setup we use at Kitab Central.
 
