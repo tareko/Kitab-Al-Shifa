@@ -8,21 +8,27 @@ To install:
    (you can choose another name then kitab if you like)
 3. cd kitab
 
-4. Make sure app/tmp/ and subdirectories are writeable by the webserver
+4. Initialize submodules:
+```
+git submodule init
+git submodule update
+```
 
-5. Config directory
+5. Make sure app/tmp/ and subdirectories are writeable by the webserver
+
+6. Config directory
 	a. cp app/Config/core.php.default app/Config/core.php
 	b. cp app/Config/database.php.default app/Config/database.php.default
 	c. cp app/Config/email.php.default app/Config/email.php
 
-6. Add the kitab.sql scheme and joomla.sql schema if needed
+7. Add the kitab.sql scheme and joomla.sql schema if needed
 
-7. Add to your php.ini: max_input_vars = 10000
+8. Add to your php.ini: max_input_vars = 10000
 
-8. Install wkhtmltopdf from the site (otherwise, you may not have proper PDFs):
+9. Install wkhtmltopdf from the site (otherwise, you may not have proper PDFs):
 	a. http://wkhtmltopdf.org/downloads.html
 	b. Configure the location in bootstrap.php
 	
-9. Create a cron that hits the following:
+10. Create a cron that hits the following:
 	a. /trades/startUnprocessed
 	b. /trades/completeAccepted
