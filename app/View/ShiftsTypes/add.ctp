@@ -7,7 +7,7 @@
 		echo $this->Form->input('shift_start');
 		echo $this->Form->input('shift_end');
 		echo $this->Form->input('comment');
-		echo $this->Form->input('display_order');
+		echo $this->Form->input('display_order', array('type' => 'decimal'));
 		echo $this->Form->input('start_date');
 		echo $this->Form->input('expiry_date');
 	?>
