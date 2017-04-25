@@ -13,7 +13,7 @@ echo $this->Html->script('jquery');
 			<th><?php echo $this->Paginator->sort('date');?></th>
 			<th><?php echo $this->Paginator->sort('location');?></th>
 			<th><?php echo $this->Paginator->sort('shifts_type_id');?></th>
-			<?php if (Configure::read('marketplace_hide_usernames') == false) {?>
+			<?php if (Configure::read('marketplace_hide_usernames') == false || $admin) {?>
 			<th><?php echo $this->Paginator->sort('user_id');?></th>
 			<?php }?>
 			<th><?= __('Actions');?></th>
@@ -25,7 +25,7 @@ echo $this->Html->script('jquery');
 		<td><?= h($shift['Shift']['date']); ?>&nbsp;</td>
 		<td><?= $locations[$shift['ShiftsType']['location_id']]?>&nbsp;</td>
 		<td><?= $shift['ShiftsType']['times']?>&nbsp;</td>
-		<?php if (Configure::read('marketplace_hide_usernames') == false) {?>
+		<?php if (Configure::read('marketplace_hide_usernames') == false || $admin) {?>
 		<td><?= $shift['User']['name']?>&nbsp;</td>
 		<?php }?>
 		<td><a href="<?= $this->Html->url(array(
