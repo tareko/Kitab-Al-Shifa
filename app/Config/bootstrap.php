@@ -135,14 +135,22 @@ Cache::config('default', array('engine' => 'File'));
   * TODO: Make this setting web-adjustable
   *
   */
- Configure::write('marketplace_blind', true);
+ Configure::write('marketplace_blind', false);
+
+ /* Should the usernames of givers on the marketplace
+  * be available to users?
+  * TODO: Make this setting web-adjustable
+  *
+  */
+
+ Configure::write('marketplace_hide_usernames', true);
 
  /* Limit ICS calendars to never be past this date
   * Format: (Y-m-d)
   */
- Configure::write('ics_date_limit', '2017-01-01');
+ Configure::write('ics_date_limit', '2017-07-01');
 
  /* Forbid trades for any shifts after the following date
   * Format: (Y-m-d)
   */
- Configure::write('trade_date_limit', '2017-01-01');
+ Configure::write('trade_date_limit', '2017-07-01');
