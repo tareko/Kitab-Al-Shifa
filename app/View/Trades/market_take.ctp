@@ -1,8 +1,8 @@
 <p>Please confirm that you wish to take this shift:</p>
 <ul>
 	<li>
-		<?=$shift['Shift']['date'] .' '. $shift['ShiftsType']['shift_start'] .' to '. $shift['ShiftsType']['shift_end'] .' from '. $shift['User']['name'] .' at '. $shift['ShiftsType']['Location']['location']?>
-	
+		<?=$shift['Shift']['date'] .' '. $shift['ShiftsType']['shift_start'] .' to '. $shift['ShiftsType']['shift_end'] . (!Configure::read('marketplace_hide_usernames') || $admin ? ' from '. $shift['User']['name'] : '') .' at '. $shift['ShiftsType']['Location']['location']?>
+
 </li></ul></p>
 
 
