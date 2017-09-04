@@ -13,7 +13,7 @@ foreach($this->validationErrors as $assoc) {
 <?php if (!empty($errors)) {?>
     <div class="alert alert-danger">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
-	  <?echo $this->Html->tag('ul', $errors);?>
+	  <?= $this->Html->tag('ul', $errors);?>
     </div>
 <?php }?>
 
