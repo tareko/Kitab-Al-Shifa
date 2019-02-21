@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->css($this->Html->url("/app/webroot/css/calendarPdf.css", true));
+echo $this->Html->css($this->Html->url("/css/calendarPdf.css", true));
 echo $this->Calendar->makeCalendarPdf($masterSet);
 ?>
 <br/><br/><br/><div class="notes"><p>Notes:<br/><?= $masterSet['calendar']['Calendar']['comments'];?>
