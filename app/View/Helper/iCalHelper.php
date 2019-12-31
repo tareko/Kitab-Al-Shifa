@@ -39,8 +39,8 @@ class iCalHelper extends Helper
             $end = getdate($end);
             $start = getdate($start);
 
-            $vevent->setProperty('dtstart', $start['year'], $start['mon'], $start['mday'], $start['hours'], $start['minutes'], $start['seconds']);
-            $vevent->setProperty('dtend', $end['year'], $end['mon'], $end['mday'], $end['hours'], $end['minutes'], $end['seconds']);            
+            $vevent->setProperty('dtstart', $start['year'], $start['mon'], $start['mday'], $start['hours'], $start['minutes'], $start['seconds'], 'America/Toronto');
+            $vevent->setProperty('dtend', $end['year'], $end['mon'], $end['mday'], $end['hours'], $end['minutes'], $end['seconds'], 'America/Toronto');
         }
         $vevent->setProperty('summary', $summary);
         $vevent->setProperty('description', $description);
