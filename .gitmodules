@@ -13,3 +13,6 @@
 [submodule "app/Plugin/utils"]
 	path = app/Plugin/utils
 	url = https://github.com/tareko/utils.git
+[submodule "docker"]
+	path = docker
+	url = https://github.com/cwbit/cakephp-docker.git
