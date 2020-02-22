@@ -15,4 +15,4 @@
 	url = https://github.com/tareko/utils.git
 [submodule "docker"]
 	path = docker
-	url = https://github.com/cwbit/cakephp-docker.git
+	url = https://github.com/tareko/cakephp-docker.git
