@@ -17,9 +17,7 @@
 
 --
 -- Table structure for table `jem5_accessmanager_config`
-
 --
-USE myapp;
 
 DROP TABLE IF EXISTS `jem5_accessmanager_config`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

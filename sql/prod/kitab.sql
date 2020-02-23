@@ -25,7 +25,6 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `accountings`
 --
-USE myapp;
 
 CREATE TABLE IF NOT EXISTS `accountings` (
   `id` varchar(5) NOT NULL,

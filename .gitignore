@@ -4,6 +4,7 @@ mysql
 /app/Config/database.php
 /app/tmp
 /app/logs
+logs
 /app/webroot/pdf
 /lib/Cake/Console/Templates/skel/tmp
 .DS_Store
@@ -17,3 +18,4 @@ app/Plugin/debug_kit
 composer.lock
 vendors/*
 .bash_history
+sql/dev
