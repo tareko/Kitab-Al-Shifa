@@ -2,6 +2,7 @@
 /app/Config/email.php
 /app/Config/database.php
 /app/tmp
+/app/logs
 /app/webroot/pdf
 /lib/Cake/Console/Templates/skel/tmp
 .DS_Store
