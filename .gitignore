@@ -2,6 +2,7 @@ mysql
 /app/Config/core.php
 /app/Config/email.php
 /app/Config/database.php
+/app/Config/.database.php.swp
 /app/tmp
 /app/logs
 logs
