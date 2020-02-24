@@ -1,1 +1,0 @@
-<p>This shift has already been accepted by somebody else and is no longer available</p>
