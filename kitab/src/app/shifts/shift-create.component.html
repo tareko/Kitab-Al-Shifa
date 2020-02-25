@@ -1,0 +1,12 @@
+<h2>Shifts Create</h2>
+<mat-card>
+  <mat-form-field>
+    <textarea matInput rows=6 [(ngModel)]=shiftInput></textarea>
+  </mat-form-field>
+  <button
+    mat-raised-button
+    color = "primary"
+    (click)="onShiftCreate()">submit</button>
+</mat-card>
+
+<p>{{ newShift }}</p>
