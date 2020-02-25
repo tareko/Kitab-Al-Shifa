@@ -8,18 +8,9 @@
 ```
 git submodule init
 git submodule update
+npm install
 ```
 
-5. Make sure `app/tmp/` and subdirectories are writeable by the webserver
-
-6. Config directory
-	a. `cp app/Config/core.php.default app/Config/core.php`
-	b. `cp app/Config/database.php.default app/Config/database.php.default`
-	c. `cp app/Config/email.php.default app/Config/email.php`
-
-7. Create a cron that hits the following:
-	a. /trades/startUnprocessed
-	b. /trades/completeAccepted
 
 
 # Docker instructions

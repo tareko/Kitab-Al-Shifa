@@ -1,0 +1,19 @@
+<ul>
+  <li>Schedules</li>
+  <li>Shift Trading</li>
+  <li>Preferences</li>
+  <li>Administration</li>
+</ul>
+<ul>
+  <li>Logout</li>
+</ul>
+
+<button mat-button [matMenuTriggerFor]="menu">Menu</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Item 1</button>
+  <button mat-menu-item>Item 2</button>
+</mat-menu>
+
+<mat-slider min="1" max="100" step="1" value="1"></mat-slider>
+
+<router-outlet></router-outlet>
