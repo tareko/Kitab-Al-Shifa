@@ -1,0 +1,26 @@
+<h2>Shifts Create</h2>
+<mat-card>
+  <form (submit)="onShiftCreate(shiftForm)" #shiftForm="ngForm">
+    <mat-form-field>
+      <input matInput
+      type="number"
+      name="id"
+      ngModel
+      required>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput
+      type="number"
+      name="user_id"
+      ngModel
+      required>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color = "primary"
+      type="submit">submit</button>
+    </form>
+  </mat-card>
+
+<p>{{ newShift }}</p>

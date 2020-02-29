@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ShiftCreateComponent } from './shifts/shift-create.component';
+import { ShiftCreateComponent } from './shifts/shift-create/shift-create.component';
 import { HeaderComponent } from './header/header.component';
+import { ShiftListComponent } from './shifts/shift-list/shift-list.component';
 
 // Angular Material modules
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,8 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ShiftListComponent } from './shift-list/shift-list.component';
-
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -36,6 +36,7 @@ import { ShiftListComponent } from './shift-list/shift-list.component';
     BrowserAnimationsModule,
     MatButtonModule,
     MatToolbarModule,
+    MatExpansionModule,
 
     BrowserModule,
     AppRoutingModule,

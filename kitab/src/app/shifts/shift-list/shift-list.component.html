@@ -1,1 +1,9 @@
-<p>shift-list works!</p>
+<mat-accordion *ngIf="shifts.length > 0">
+  <mat-expansion-panel *ngFor="let shift of shifts">
+    <mat-expansion-panel-header>
+      {{ shift.id }}
+    </mat-expansion-panel-header>
+    <p>{{ shift.user_id }}</p>
+  </mat-expansion-panel>
+</mat-accordion>
+<p class="mat-body-1" *ngIf="shifts.length <= 0">No shifts</p>
