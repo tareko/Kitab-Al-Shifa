@@ -8,14 +8,19 @@
 ```
 git submodule init
 git submodule update
+cd kitab
 npm install
 ```
 
-
+# Development instructions
+```
+sudo npm install -g @angular/cli
+```
 
 # Docker instructions
 
 ```
+mkdir logs
 cd docker
 docker-compose up
 ```
