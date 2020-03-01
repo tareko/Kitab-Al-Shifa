@@ -1,16 +1,7 @@
-<ul>
-  <li>Schedules</li>
-  <li>Shift Trading</li>
-  <li>Preferences</li>
-  <li>Administration</li>
-</ul>
-<ul>
-  <li>Logout</li>
-</ul>
 <app-header></app-header>
 <main>
-  <app-shift-create (shiftCreated)="onShiftAdded($event)"></app-shift-create>
-  <app-shift-list [shifts]="storedShifts"></app-shift-list>
+  <app-shift-create></app-shift-create>
+  <app-shift-list></app-shift-list>
 </main>
 
 <router-outlet></router-outlet>

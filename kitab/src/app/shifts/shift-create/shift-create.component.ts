@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { Shift } from '../shift.model';
+import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ShiftsService } from "../shifts.service";
 
 @Component({
   selector: 'app-shift-create',
@@ -12,16 +12,20 @@ export class ShiftCreateComponent {
   newShift = '';
    enteredId = 0;
    enteredUser_id = 0;
-  @Output() shiftCreated = new EventEmitter<Shift>();
+
+  constructor(/**
+   * shiftsService: ShiftsService
+
+   */
+  public shiftsService: ShiftsService
+) { }
 
   onShiftCreate(form: NgForm) {
     if (form.invalid) {
       return;
     }
-    const shift: Shift = {
-      id: form.value.id,
-      user_id: form.value.user_id
-    }
-    this.shiftCreated.emit(shift);
+
+    this.shiftsService.addShift(form.value.id, form.value.user_id);
+    form.resetForm();
   }
 }

@@ -4,6 +4,10 @@
       {{ shift.id }}
     </mat-expansion-panel-header>
     <p>{{ shift.user_id }}</p>
+    <mat-action-row>
+      <button mat-button color="primary">EDIT</button>
+      <button mat-button color="warn">DELETE</button>
+    </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>
 <p class="mat-body-1" *ngIf="shifts.length <= 0">No shifts</p>

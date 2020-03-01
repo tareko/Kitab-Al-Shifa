@@ -6,7 +6,12 @@
       type="number"
       name="id"
       ngModel
-      required>
+      required
+      placeholder="ID"
+      #id="ngModel">
+      <mat-error *ngIf="id.invalid">
+        Please enter a valid ID
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field>
@@ -14,7 +19,12 @@
       type="number"
       name="user_id"
       ngModel
-      required>
+      required
+      placeholder="User ID"
+      #user_id="ngModel">
+      <mat-error *ngIf="user_id.invalid">
+        Please select a valid user
+      </mat-error>
     </mat-form-field>
     <button
       mat-raised-button
