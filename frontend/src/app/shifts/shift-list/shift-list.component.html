@@ -1,12 +1,13 @@
 <mat-accordion *ngIf="shifts.length > 0">
   <mat-expansion-panel *ngFor="let shift of shifts">
     <mat-expansion-panel-header>
-      {{ shift.id }}
+      {{ shift.user_id }}
     </mat-expansion-panel-header>
-    <p>{{ shift.user_id }}</p>
+    <p>{{ shift.date | date:'MM/dd/yyyy' }}</p>
+    <p>{{ shift.shifts_type_id }}</p>
     <mat-action-row>
       <button mat-button color="primary">EDIT</button>
-      <button mat-button color="warn">DELETE</button>
+      <button mat-button color="warn" (click)="onDelete(shift._id)">DELETE</button>
     </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>

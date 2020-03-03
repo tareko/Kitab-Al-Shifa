@@ -10,8 +10,6 @@ import { ShiftsService } from "../shifts.service";
 
 export class ShiftCreateComponent {
   newShift = '';
-   enteredId = 0;
-   enteredUser_id = 0;
 
   constructor(/**
    * shiftsService: ShiftsService
@@ -25,7 +23,7 @@ export class ShiftCreateComponent {
       return;
     }
 
-    this.shiftsService.addShift(form.value.id, form.value.user_id);
+    this.shiftsService.addShift(form.value.user_id, form.value.date, form.value.shifts_type_id);
     form.resetForm();
   }
 }

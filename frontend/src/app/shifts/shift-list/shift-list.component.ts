@@ -25,7 +25,7 @@ export class ShiftListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.shifts = this.shiftsService.getShifts();
+    this.shiftsService.getShifts();
     this.shiftsSub = this.shiftsService.getShiftUpdateListener()
       .subscribe((shifts: Shift[]) => {
         this.shifts = shifts;
@@ -34,6 +34,10 @@ export class ShiftListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.shiftsSub.unsubscribe();
+  }
+
+  onDelete(shiftId: string) {
+    this.shiftsService.deleteShift(shiftId);
   }
 
 }

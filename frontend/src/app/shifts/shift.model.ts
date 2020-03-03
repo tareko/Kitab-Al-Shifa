@@ -1,8 +1,8 @@
 export interface Shift {
-  id: number;
+  _id: string;
   user_id: number;
-  date?: Date;
-  shifts_type_id?: number;
-  marketplace?: number;
-  updated?: Date;
+  date: string;
+  shifts_type_id: number;
+  marketplace?: boolean;
+  updated?: string;
 }

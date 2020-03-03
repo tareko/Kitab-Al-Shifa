@@ -4,19 +4,6 @@
     <mat-form-field>
       <input matInput
       type="number"
-      name="id"
-      ngModel
-      required
-      placeholder="ID"
-      #id="ngModel">
-      <mat-error *ngIf="id.invalid">
-        Please enter a valid ID
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field>
-      <input matInput
-      type="number"
       name="user_id"
       ngModel
       required
@@ -24,6 +11,32 @@
       #user_id="ngModel">
       <mat-error *ngIf="user_id.invalid">
         Please select a valid user
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput
+      type="date"
+      name="date"
+      ngModel
+      required
+      placeholder="Shift date"
+      #date="ngModel">
+      <mat-error *ngIf="date.invalid">
+        Please select a date for the shift
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput
+      type="number"
+      name="shifts_type_id"
+      ngModel
+      required
+      placeholder="Shift type"
+      #shifts_type_id="ngModel">
+      <mat-error *ngIf="date.invalid">
+        Please select the type of shift
       </mat-error>
     </mat-form-field>
     <button
