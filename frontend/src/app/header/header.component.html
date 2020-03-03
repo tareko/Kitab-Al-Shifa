@@ -1,1 +1,20 @@
-<mat-toolbar color=primary>Kitab Al-Shifa</mat-toolbar>
+<mat-toolbar color=primary>
+  <mat-toolbar-row>
+    <span><a routerLink="/">Kitab Al-Shifa</a></span>
+    <ul>
+      <li>
+        <a mat-button routerLink="/schedules">Schedules</a>
+        <a mat-button routerLink="/trades">Shift trading</a>
+        <a mat-button routerLink="/settings">Settings</a>
+        <a mat-button routerLink="/admin">Administration</a>
+      </li>
+    </ul>
+    <span class="spacer"></span>
+    <ul>
+      <li>
+        <a mat-button routerLink="/create" routerLinkActive="mat-accent">New shift</a>
+        <a mat-button routerLink="/logout">Logout</a>
+      </li>
+    </ul>
+  </mat-toolbar-row>
+</mat-toolbar>
