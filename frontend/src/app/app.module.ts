@@ -5,8 +5,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ShiftCreateComponent } from './shifts/shift-create/shift-create.component';
 import { HeaderComponent } from './header/header.component';
+import { ShiftCreateComponent } from './shifts/shift-create/shift-create.component';
 import { ShiftListComponent } from './shifts/shift-list/shift-list.component';
 
 // Angular Material modules
@@ -19,7 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatSidenavModule } from '@angular/material/sidenav'; 
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @NgModule({
   declarations: [
