@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ShiftsService } from "../shifts.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
+
+import { ShiftsService } from "../shifts.service";
 import { Shift } from '../shift.model';
 
 @Component({
