@@ -5,7 +5,7 @@
       <input matInput
       type="number"
       name="user_id"
-      [ngModel]="shift.user_id"
+      [ngModel]="shift?.user_id"
       required
       placeholder="User ID"
       #user_id="ngModel">
@@ -18,7 +18,7 @@
       <input matInput
       type="date"
       name="date"
-      [ngModel]="shift.date"
+      [ngModel]="shift?.date"
       required
       placeholder="Shift date"
       #date="ngModel">
@@ -31,7 +31,7 @@
       <input matInput
       type="number"
       name="shifts_type_id"
-      [ngModel]="shift.shifts_type_id"
+      [ngModel]="shift?.shifts_type_id"
       required
       placeholder="Shift type"
       #shifts_type_id="ngModel">
