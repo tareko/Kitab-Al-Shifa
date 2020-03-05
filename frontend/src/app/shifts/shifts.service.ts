@@ -23,6 +23,11 @@ export class ShiftsService {
     });
   }
 
+  getShift(id: string) {
+    return{...this.shifts.find(s => s._id === id)};
+
+  }
+
   getShiftUpdateListener() {
     return this.shiftsUpdated.asObservable();
   }
@@ -36,6 +41,14 @@ export class ShiftsService {
       shift._id = shiftId;
       this.shifts.push(shift);
       this.shiftsUpdated.next([...this.shifts]);
+    })
+  }
+
+  updateShift(_id: string, user_id: number, date: string, shifts_type_id: number) {
+    const shift: Shift = {_id: _id, user_id: user_id, date: date, shifts_type_id: shifts_type_id};
+    this.http.put('http://localhost:3000/api/shifts/' + _id, shift)
+    .subscribe(response => {
+      console.log(response);
     })
   }
 

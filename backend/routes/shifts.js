@@ -43,6 +43,20 @@ router.get('/', function(req, res, next) {
     })
 });
 
+router.put('/:_id', function(req, res, next) {
+  const shift = new Shift({
+    _id: req.body._id,
+    user_id: req.body.user_id,
+    date: req.body.date,
+    shifts_type_id: req.body.shifts_type_id,
+  });
+  Shift.updateOne({ _id: req.params._id}, shift)
+    .then(result => {
+      console.log(result);
+      res.status(200).json({message: 'Update successful'});
+    });
+})
+
 router.delete('/:_id', function(req, res, next) {
   Shift.deleteOne({ _id: req.params._id })
   .then(() => {

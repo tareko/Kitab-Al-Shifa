@@ -1,11 +1,11 @@
 <h2>Shifts Create</h2>
 <mat-card>
-  <form (submit)="onShiftCreate(shiftForm)" #shiftForm="ngForm">
+  <form (submit)="onShiftSave(shiftForm)" #shiftForm="ngForm">
     <mat-form-field>
       <input matInput
       type="number"
       name="user_id"
-      ngModel
+      [ngModel]="shift.user_id"
       required
       placeholder="User ID"
       #user_id="ngModel">
@@ -18,7 +18,7 @@
       <input matInput
       type="date"
       name="date"
-      ngModel
+      [ngModel]="shift.date"
       required
       placeholder="Shift date"
       #date="ngModel">
@@ -31,7 +31,7 @@
       <input matInput
       type="number"
       name="shifts_type_id"
-      ngModel
+      [ngModel]="shift.shifts_type_id"
       required
       placeholder="Shift type"
       #shifts_type_id="ngModel">

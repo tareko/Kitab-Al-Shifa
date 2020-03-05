@@ -6,7 +6,7 @@
     <p>{{ shift.date | date:'MM/dd/yyyy' }}</p>
     <p>{{ shift.shifts_type_id }}</p>
     <mat-action-row>
-      <button mat-button color="primary">EDIT</button>
+      <a mat-button color="primary" [routerLink]="['/edit', shift._id]">EDIT</a>
       <button mat-button color="warn" (click)="onDelete(shift._id)">DELETE</button>
     </mat-action-row>
   </mat-expansion-panel>

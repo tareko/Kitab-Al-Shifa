@@ -7,7 +7,7 @@ import { ShiftCreateComponent } from './shifts/shift-create/shift-create.compone
 const routes: Routes = [
   { path: '', component: ShiftListComponent },
   { path: 'create', component: ShiftCreateComponent },
-  // { path: 'edit', component: '' }
+  { path: 'edit/:shiftId', component: ShiftCreateComponent },
 ];
 
 @NgModule({
