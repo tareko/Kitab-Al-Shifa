@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import {PageEvent} from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 
 import { Shift } from '../shift.model';
@@ -16,6 +17,11 @@ export class ShiftListComponent implements OnInit, OnDestroy {
   //   {title: 'Shift 3', content: 'Shift 3 content'},
   // ]
   shifts: Shift[] = [];
+  isLoading = false;
+  totalShifts = 0;
+  shiftsPerPage = 10;
+  currentPage = 1;
+  pageSizeOptions = [10, 25, 50];
   private shiftsSub: Subscription;
 
   constructor(/**
@@ -25,10 +31,13 @@ export class ShiftListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.shiftsService.getShifts();
+    this.isLoading = true;
+    this.shiftsService.getShifts(this.shiftsPerPage, this.currentPage);
     this.shiftsSub = this.shiftsService.getShiftUpdateListener()
-      .subscribe((shifts: Shift[]) => {
-        this.shifts = shifts;
+      .subscribe((shiftData: { shifts: Shift[], shiftCount: number }) => {
+        this.shifts = shiftData.shifts;
+        this.totalShifts = shiftData.shiftCount;
+        this.isLoading = false;
       });
   }
 
@@ -37,7 +46,21 @@ export class ShiftListComponent implements OnInit, OnDestroy {
   }
 
   onDelete(shiftId: string) {
-    this.shiftsService.deleteShift(shiftId);
+    this.isLoading = true;
+    this.shiftsService.deleteShift(shiftId)
+      .subscribe(() => {
+        this.shiftsService.getShifts(this.shiftsPerPage, this.currentPage);
+      });
+  }
+
+  /**
+  Function to execute when page changes
+  */
+  onChangedPage(pageData: PageEvent) {
+    this.isLoading = true;
+    this.currentPage = pageData.pageIndex + 1;
+    this.shiftsPerPage = pageData.pageSize;
+    this.shiftsService.getShifts(this.shiftsPerPage, this.currentPage);
   }
 
 }

@@ -29,17 +29,48 @@ router.post('/', function(req, res, next) {
 
 /* GET shifts listing. */
 router.get('/', function(req, res, next) {
-  const shifts = Shift.find()
+  const pageSize = +req.query.pageSize;
+  const currentPage = +req.query.page;
+  const shiftQuery = Shift.find();
+  let fetchedShifts;
+
+  if (pageSize && currentPage) {
+    shiftQuery
+    .skip(pageSize * (currentPage - 1))
+    .limit(pageSize);
+  }
+
+  shiftQuery
     .then(documents => {
-      // console.log(documents);
-      res.status(201).json({
+      fetchedShifts = documents;
+      return Shift.countDocuments();
+    })
+    .then(count => {
+      res.status(200).json({
         message: "Shifts retrieved successfully",
-        shifts: documents
+        shifts: fetchedShifts,
+        shiftCount: count
       })
     })
     .catch(() => {
       console.log('Shift retrieval failed');
-      console.log(shifts);
+      console.log(fetchedShifts);
+      res.status(404).json({
+        message: "Shift retrieval failed",
+      })
+    })
+});
+
+/* GET listing for an individual shift with ID. */
+router.get('/:_id', function(req, res, next) {
+  Shift.findById(req.params._id)
+    .then(shift => {
+      res.status(201).json(shift)
+    })
+    .catch(() => {
+      res.status(404).json({
+        message: "Shift " + req.params._id +" not found",
+      })
     })
 });
 
@@ -52,7 +83,6 @@ router.put('/:_id', function(req, res, next) {
   });
   Shift.updateOne({ _id: req.params._id}, shift)
     .then(result => {
-      console.log(result);
       res.status(200).json({message: 'Update successful'});
     });
 })

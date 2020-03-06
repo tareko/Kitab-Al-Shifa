@@ -1,6 +1,7 @@
 <h2>Shifts Create</h2>
 <mat-card>
-  <form (submit)="onShiftSave(shiftForm)" #shiftForm="ngForm">
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form (submit)="onShiftSave(shiftForm)" #shiftForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
       <input matInput
       type="number"
@@ -18,7 +19,7 @@
       <input matInput
       type="date"
       name="date"
-      [ngModel]="shift?.date"
+      [ngModel]="shift?.date | date: 'yyyy-MM-dd'"
       required
       placeholder="Shift date"
       #date="ngModel">
@@ -35,7 +36,7 @@
       required
       placeholder="Shift type"
       #shifts_type_id="ngModel">
-      <mat-error *ngIf="date.invalid">
+      <mat-error *ngIf="shifts_type_id.invalid">
         Please select the type of shift
       </mat-error>
     </mat-form-field>

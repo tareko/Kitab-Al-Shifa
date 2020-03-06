@@ -1,4 +1,5 @@
-<mat-accordion *ngIf="shifts.length > 0">
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+<mat-accordion *ngIf="shifts.length > 0 && !isLoading">
   <mat-expansion-panel *ngFor="let shift of shifts">
     <mat-expansion-panel-header>
       {{ shift.user_id }}
@@ -11,4 +12,5 @@
     </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>
-<p class="mat-body-1" *ngIf="shifts.length <= 0">No shifts</p>
+<mat-paginator [length]="totalShifts" [pageSize]="shiftsPerPage" [pageSizeOptions]="pageSizeOptions" (page)="onChangedPage($event)" *ngIf="shifts.length > 0"></mat-paginator>
+<p class="mat-body-1" *ngIf="shifts.length <= 0 && !isLoading">No shifts</p>

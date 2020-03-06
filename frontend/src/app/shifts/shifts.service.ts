@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from "@angular/router";
 
 import { Shift } from "./shift.model";
 import { Subject } from 'rxjs';
@@ -10,22 +11,29 @@ import { Subject } from 'rxjs';
 
 export class ShiftsService {
   private shifts: Shift[] = [];
-  private shiftsUpdated = new Subject<Shift[]>();
+  private shiftsUpdated = new Subject<{ shifts: Shift[], shiftCount: number }>();
 
-  constructor (private http: HttpClient) {}
+  constructor (private http: HttpClient, private router: Router) {}
 
-  getShifts() {
-    this.http.get<{message: string, shifts: Shift[] }>
-    ('http://localhost:3000/api/shifts')
+  // Get all available shifts
+
+  getShifts(pageSize: number, currentPage: number) {
+    const queryParams = `?pageSize=${pageSize}&page=${currentPage}`;
+
+    this.http.get<{message: string, shifts: Shift[], shiftCount: number }>
+    ('http://localhost:3000/api/shifts' + queryParams)
     .subscribe((shiftData) => {
       this.shifts = shiftData.shifts;
-      this.shiftsUpdated.next([...this.shifts]);
+      this.shiftsUpdated.next({
+        shifts: [...this.shifts],
+        shiftCount: shiftData.shiftCount
+      });
     });
   }
 
-  getShift(id: string) {
-    return{...this.shifts.find(s => s._id === id)};
-
+  // Get a single shift dictated by String
+  getShift(_id: string) {
+    return this.http.get<Shift>('http://localhost:3000/api/shifts/' + _id);
   }
 
   getShiftUpdateListener() {
@@ -33,22 +41,14 @@ export class ShiftsService {
   }
 
   addShift(user_id: number, date: string, shifts_type_id: number) {
-    const shift: Shift = {_id: null, user_id: user_id, date: date, shifts_type_id: shifts_type_id};
-    this.http.post<{ message: string, shiftId: string }>('http://localhost:3000/api/shifts', shift)
-    .subscribe((responseData) => {
-      console.log(responseData.message);
-      var shiftId = responseData.shiftId;
-      shift._id = shiftId;
-      this.shifts.push(shift);
-      this.shiftsUpdated.next([...this.shifts]);
-    })
+      this.router.navigate(["/"]);
   }
 
   updateShift(_id: string, user_id: number, date: string, shifts_type_id: number) {
     const shift: Shift = {_id: _id, user_id: user_id, date: date, shifts_type_id: shifts_type_id};
     this.http.put('http://localhost:3000/api/shifts/' + _id, shift)
     .subscribe(response => {
-      console.log(response);
+      this.router.navigate(["/"]);
     })
   }
 
@@ -56,12 +56,7 @@ export class ShiftsService {
   Delete shifts
   */
   deleteShift(shiftId: string) {
-    this.http.delete('http://localhost:3000/api/shifts/' + shiftId)
-    .subscribe(() => {
-      console.log("Shift " + shiftId + " deleted.");
-      const updatedShifts = this.shifts.filter(shift => shift._id !== shiftId);
-      this.shifts = updatedShifts;
-      this.shiftsUpdated.next([...this.shifts]);
-    });
+    return this.http.delete('http://localhost:3000/api/shifts/' + shiftId);
   }
+
 }
