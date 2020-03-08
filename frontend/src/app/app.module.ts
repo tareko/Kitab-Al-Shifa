@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { ShiftCreateComponent } from './shifts/shift-create/shift-create.component';
 import { ShiftListComponent } from './shifts/shift-list/shift-list.component';
+import { LoginComponent } from './auth/login/login.component';
 
 // Angular Material modules
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -29,6 +30,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     ShiftCreateComponent,
     HeaderComponent,
     ShiftListComponent,
+    LoginComponent,
   ],
   imports: [
     // Angular Material modules
