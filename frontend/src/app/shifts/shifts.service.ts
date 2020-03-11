@@ -41,7 +41,11 @@ export class ShiftsService {
   }
 
   addShift(user_id: number, date: string, shifts_type_id: number) {
+    const shift: Shift = {user_id: user_id, date: date, shifts_type_id: shifts_type_id};
+    this.http.post('http://localhost:3000/api/shifts', shift)
+    .subscribe(response => {
       this.router.navigate(["/"]);
+    })
   }
 
   updateShift(_id: string, user_id: number, date: string, shifts_type_id: number) {
