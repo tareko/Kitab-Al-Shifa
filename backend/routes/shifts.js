@@ -1,7 +1,9 @@
 var express = require('express');
+var auth = require('./auth');
 var router = express.Router();
 
 var Shift = require('../models/shift');
+
 
 /* POST shifts */
 router.post('/', function(req, res, next) {
