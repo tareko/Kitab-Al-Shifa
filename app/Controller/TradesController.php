@@ -125,7 +125,7 @@ class TradesController extends AppController {
 		$this->paginate['limit'] = '25';
 		$this->paginate['order'] = 'Shift.date ASC';
 
-		if  (isset(!$this->request->query['showVolunteer'])) {
+		if  (!isset($this->request->query['showVolunteer'])) {
 			$conditions =  array(
 					'user_id !=' => 507,
 					);
