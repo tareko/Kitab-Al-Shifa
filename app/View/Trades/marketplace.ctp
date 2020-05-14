@@ -52,7 +52,7 @@ echo $this->Html->script('jquery');
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
-		<li><?php echo $this->Html->link(__('Show Volunteer Shifts'), array('?' => array('showVolunteer' => '1')))); ?></li>
+		<li><?php echo $this->Html->link(__('Show Volunteer Shifts'), array('?' => array('showVolunteer' => '1'))); ?></li>
 	<?php if ($admin) {?>
 			<li><?php echo $this->Html->link(__('New Shift'), array('action' => 'add')); ?></li>
 			<li><?php echo $this->Html->link(__('List Users'), array('controller' => 'users', 'action' => 'index')); ?> </li>
