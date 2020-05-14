@@ -125,6 +125,15 @@ class TradesController extends AppController {
 		$this->paginate['limit'] = '25';
 		$this->paginate['order'] = 'Shift.date ASC';
 
+		if  (isset(!$this->request->query['showVolunteer'])) {
+			$conditions =  array(
+					'user_id !=' => 507,
+					);
+			$this->Paginator->settings = array(
+					'conditions' => $conditions,
+			);
+		}
+
 		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
 			'fields' => array('Location.location'),
 		)));
