@@ -126,12 +126,10 @@ class TradesController extends AppController {
 		$this->paginate['order'] = 'Shift.date ASC';
 
 		if  (!isset($this->request->query['showVolunteer'])) {
-			$conditions =  array(
-					'user_id !=' => 507,
+			$this->paginate['conditions'] = array(
+				$this->Shift->parseCriteria($this->passedArgs),
+				'user_id !=' => 507,
 					);
-			$this->Paginator->settings = array(
-					'conditions' => $conditions,
-			);
 		}
 
 		$this->set('locations', $this->Shift->ShiftsType->Location->find('list', array(
