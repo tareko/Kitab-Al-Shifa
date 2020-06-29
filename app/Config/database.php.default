@@ -60,10 +60,10 @@ class DATABASE_CONFIG {
 	public $default = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
-		'host' => '',
-		'login' => '',
-		'password' => '',
-		'database' => '',
+		'host' => 'localhost',
+		'login' => 'myapp',
+		'password' => 'myapp',
+		'database' => 'kitab',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	);
@@ -71,10 +71,10 @@ class DATABASE_CONFIG {
 	public $joomla = array(
 			'datasource' => 'Database/Mysql',
 			'persistent' => false,
-			'host' => '',
-			'login' => '',
-			'password' => '',
-			'database' => '',
+			'host' => 'localhost',
+			'login' => 'myapp',
+			'password' => 'myapp',
+			'database' => 'joomla',
 			'prefix' => 'jem5_',
 	//'encoding' => 'utf8',
 	);
