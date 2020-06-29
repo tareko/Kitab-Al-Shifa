@@ -26,6 +26,7 @@ git submodule update
 
 ```
 cd docker
+cp .env.sample .env # Edit this file from the defaults
 docker-compose up
 ```
 
