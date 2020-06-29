@@ -52,7 +52,8 @@
           <ul class="nav navbar-nav">
             <li><?=$this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard'));?></li>
             <li><?=$this->Html->link('Shift trading', array('controller' => 'trades', 'action' => 'index'));?></li>
-            <li><?=$this->Html->link('Preferences', array('controller' => 'users', 'action' => 'preferences'));?></li>
+						<li><?=$this->Html->link('Preferences', array('controller' => 'users', 'action' => 'preferences'));?></li>
+						<li class="emergency-link"><?=$this->Html->link('On-Call emergency', "/oncall");?></li>
 			<?php if ($admin) { ?>
             <li><?=$this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin'));?></li>
 			<?php } ?>
