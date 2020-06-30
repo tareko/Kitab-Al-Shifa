@@ -1,0 +1,68 @@
+<h2>Submit an oncall request</h2>
+<p>
+  Please submit your request for on-call relief below. If you have any issues,
+  please contact <a href="mailto:tarek@tarek.org">Tarek Loubani</a>.
+</p>
+
+<mat-card>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form (submit)="onOncallSave(oncallForm)" #oncallForm="ngForm" *ngIf="!isLoading">
+    <mat-form-field>
+      <input matInput
+      type="text"
+      name="user_name"
+      [ngModel]="oncall?.user_name"
+      required
+      placeholder="Name of the person who needs on-call coverage"
+      #user_name="ngModel">
+      <mat-error *ngIf="user_name.invalid">
+        Please enter a valid name
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput
+      type="date"
+      name="date"
+      [ngModel]="oncall?.date | date: 'yyyy-MM-dd'"
+      required
+      placeholder="Please select a date for the oncall"
+      #date="ngModel">
+      <mat-error *ngIf="date.invalid">
+        Please select a date for the oncall
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput
+      type="time"
+      name="shift_start_time"
+      [ngModel]="oncall?.shift_start_time"
+      required
+      placeholder="Start time of shift"
+      #shift_start_time="ngModel">
+      <mat-error *ngIf="shift_start_time.invalid">
+        Please select the shift's start time
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput
+      type="text"
+      name="message"
+      [ngModel]="oncall?.message"
+      placeholder="Message to those receiving this request"
+      #message="ngModel">
+      <mat-error *ngIf="message.invalid">
+        Please enter a message
+      </mat-error>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color = "primary"
+      type="submit">submit</button>
+    </form>
+  </mat-card>
+
+<p>{{ newOncall }}</p>

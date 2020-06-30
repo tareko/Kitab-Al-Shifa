@@ -1,0 +1,17 @@
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+<mat-accordion *ngIf="oncalls.length > 0 && !isLoading">
+  <mat-expansion-panel *ngFor="let oncall of oncalls">
+    <mat-expansion-panel-header>
+      {{ oncall.user_name }}
+    </mat-expansion-panel-header>
+    <p>{{ oncall.date | date:'MM/dd/yyyy' }}</p>
+    <p>{{ oncall.shift_start_time }}</p>
+    <p>{{ oncall.message }}</p>
+    <mat-action-row>
+      <a mat-button color="primary" [routerLink]="['/edit', oncall._id]">EDIT</a>
+      <button mat-button color="warn" (click)="onDelete(oncall._id)">DELETE</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+</mat-accordion>
+<mat-paginator [length]="totalOncalls" [pageSize]="oncallsPerPage" [pageSizeOptions]="pageSizeOptions" (page)="onChangedPage($event)" *ngIf="oncalls.length > 0"></mat-paginator>
+<p class="mat-body-1" *ngIf="oncalls.length <= 0 && !isLoading">No shifts</p>
