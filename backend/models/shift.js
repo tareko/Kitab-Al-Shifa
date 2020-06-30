@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const db = mongoose.connection;
 
 const shiftSchema = mongoose.Schema({
   user_id: { type: Number, required: true},
@@ -8,4 +9,4 @@ const shiftSchema = mongoose.Schema({
   updated: {type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Shift', shiftSchema);
+module.exports = db.model('Shift', shiftSchema);

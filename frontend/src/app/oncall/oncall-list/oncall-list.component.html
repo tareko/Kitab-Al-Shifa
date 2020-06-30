@@ -8,7 +8,7 @@
     <p>{{ oncall.shift_start_time }}</p>
     <p>{{ oncall.message }}</p>
     <mat-action-row>
-      <a mat-button color="primary" [routerLink]="['/edit', oncall._id]">EDIT</a>
+      <a mat-button color="primary" [routerLink]="['/oncall/edit', oncall._id]">EDIT</a>
       <button mat-button color="warn" (click)="onDelete(oncall._id)">DELETE</button>
     </mat-action-row>
   </mat-expansion-panel>
