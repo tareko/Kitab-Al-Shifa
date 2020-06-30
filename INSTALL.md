@@ -31,6 +31,7 @@ I suggest instead starting the above 3 commands in separate terminals or screens
 ```
 sudo npm install -g @angular/cli
 cd docker
+cp .env.sample .env
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
