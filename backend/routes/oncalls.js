@@ -1,8 +1,10 @@
 var express = require('express');
 var auth = require('./auth');
 var router = express.Router();
-
 var Oncall = require('../models/oncall');
+
+// Get variables from configuration
+const config = require ('../config');
 
 
 /* POST oncalls */
@@ -27,7 +29,31 @@ router.post('/', function(req, res, next) {
         message: "Save failed"
       });
       console.log(oncall);
-    })
+    });
+
+  // Dial into those who want to be dialed into (default for now)
+
+  const client = require('twilio')(config.twilio.accountSid, config.twilio.authToken);
+  client.calls
+        .create({
+           url: config.serverbase + '/twilio/oncall-initiated.xml',
+           to: config.twilio.destNumber,
+           from: config.twilio.fromNumber,
+           method: 'GET'
+         })
+        .then(call => {
+          console.log("Call sent with SID " + call.sid);
+          // console.log(call)
+        });
+
+  // Send Txt messages to those who want texts
+  // client.messages
+  //       .create({
+  //         body: 'Hi there! ' + req.body.user_name + ' has initiated an on-call emergency. Please go online to check out the details!',
+  //         from: config.twilio.fromNumber,
+  //         to: config.twilio.destNumber})
+  //       .then(message => console.log("SMS sent with SID " + message.sid));
+
 });
 
 /* GET oncalls listing. */

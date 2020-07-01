@@ -18,6 +18,7 @@
     "passport": "^0.4.1",
     "passport-ldapauth": "^2.1.4",
     "passport-local": "^1.0.0",
-    "pug": "^2.0.4"
+    "pug": "^2.0.4",
+    "twilio": "^3.47.0"
   }
 }

@@ -10,3 +10,4 @@ node_modules package-lock.json *.log *.gz
 coverage
 # Benchmarking
 benchmarks/graphs
+config.js
