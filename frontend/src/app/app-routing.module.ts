@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'shifts/create', component: ShiftCreateComponent },
   { path: 'shifts/edit/:shiftId', component: ShiftCreateComponent },
   { path: 'oncall/list', component: OncallListComponent },
-  { path: 'oncall', component: OncallListComponent },
+  { path: 'oncall', component: OncallCreateComponent },
   { path: 'oncall/create', component: OncallCreateComponent },
   { path: 'oncall/edit/:oncallId', component: OncallCreateComponent },
 ];

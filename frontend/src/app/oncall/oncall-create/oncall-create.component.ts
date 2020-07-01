@@ -48,6 +48,7 @@ export class OncallCreateComponent implements OnInit {
         this.isLoading = false;
       } else {
         this.mode = 'create';
+        this.isLoading = false;
         this.oncallId = null;
       }
     });
@@ -74,7 +75,7 @@ export class OncallCreateComponent implements OnInit {
     } else {
       this.oncallsService.updateOncall(this.oncallId, form.value.user_name, form.value.date, form.value.shift_start_time, form.value.message)
     }
-
+    this.isLoading = false;
     form.resetForm();
   }
 
