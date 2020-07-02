@@ -29,12 +29,12 @@ router.post('/', function(req, res, next) {
 
   // Dial into those who want to be dialed into (default for now)
 
-  const client = require('twilio')(process.env.twilio.accountSid, process.env.twilio.authToken);
+  const client = require('twilio')(process.env.twilio_accountSid, process.env.twilio_authToken);
   client.calls
         .create({
-           url: process.env.serverbase + '/twilio/oncall-initiated.xml',
-           to: process.env.twilio.destNumber,
-           from: process.env.twilio.fromNumber,
+           url: process.env.server_base + '/twilio/oncall-initiated.xml',
+           to: process.env.twilio_destNumber,
+           from: process.env.twilio_fromNumber,
            method: 'GET'
          })
         .then(call => {
