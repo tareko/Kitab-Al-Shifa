@@ -3,10 +3,6 @@ var auth = require('./auth');
 var router = express.Router();
 var Oncall = require('../models/oncall');
 
-// Get variables from configuration
-const config = require ('../config');
-
-
 /* POST oncalls */
 router.post('/', function(req, res, next) {
   const oncall = new Oncall({
@@ -33,12 +29,12 @@ router.post('/', function(req, res, next) {
 
   // Dial into those who want to be dialed into (default for now)
 
-  const client = require('twilio')(config.twilio.accountSid, config.twilio.authToken);
+  const client = require('twilio')(process.env.twilio.accountSid, process.env.twilio.authToken);
   client.calls
         .create({
-           url: config.serverbase + '/twilio/oncall-initiated.xml',
-           to: config.twilio.destNumber,
-           from: config.twilio.fromNumber,
+           url: process.env.serverbase + '/twilio/oncall-initiated.xml',
+           to: process.env.twilio.destNumber,
+           from: process.env.twilio.fromNumber,
            method: 'GET'
          })
         .then(call => {

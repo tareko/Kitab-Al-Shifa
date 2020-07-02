@@ -25,6 +25,13 @@ cd ../backend
 npm run start:server &
 ```
 
+# Running on a production server
+```
+ng build --prod
+```
+
+* Edit .env in backend from .env.sample
+
 I suggest instead starting the above 3 commands in separate terminals or screens.
 
 # Development instructions
