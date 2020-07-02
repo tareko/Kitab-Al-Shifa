@@ -25,14 +25,19 @@ cd ../backend
 npm run start:server &
 ```
 
+I suggest instead starting the above 3 commands in separate terminals or screens.
+
 # Running on a production server
 ```
+cd frontend
 ng build --prod
+cd ../backend
+PORT=3001 pm2 start bin/www #or whatever port. Default is 3000
 ```
 
 * Edit .env in backend from .env.sample
 
-I suggest instead starting the above 3 commands in separate terminals or screens.
+Consider using PM2 as in [these instructions](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04).
 
 # Development instructions
 ```
