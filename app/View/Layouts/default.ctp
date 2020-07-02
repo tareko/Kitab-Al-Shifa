@@ -50,13 +50,15 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+<?php if($logged_in) { ?>
             <li><?=$this->Html->link('Schedules', array('controller' => 'shifts', 'action' => 'wizard'));?></li>
             <li><?=$this->Html->link('Shift trading', array('controller' => 'trades', 'action' => 'index'));?></li>
-						<li><?=$this->Html->link('Preferences', array('controller' => 'users', 'action' => 'preferences'));?></li>
-						<li class="emergency-link"><?=$this->Html->link('On-Call emergency', "https://oncall.emlondon.ca/oncall");?></li>
+            <li><?=$this->Html->link('Preferences', array('controller' => 'users', 'action' => 'preferences'));?></li>
+            <li class="emergency-link"><?=$this->Html->link('On-Call emergency', "https://oncall.emlondon.ca/oncall");?></li>
 			<?php if ($admin) { ?>
             <li><?=$this->Html->link('Administration', array('controller' => 'pages', 'action' => 'admin'));?></li>
-			<?php } ?>
+			<?php }
+} ?>
           </ul>
           <ul class="nav navbar-nav navbar-right">
 		  <li><?php if($logged_in) {
