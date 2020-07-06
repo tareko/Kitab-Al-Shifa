@@ -23,6 +23,7 @@ App::uses('AppModel', 'Model');
  * 1 => 'Trade',
  * 2 => 'Future consideration'
  * 3 => 'Marketplace'
+ * 4 => 'On-call Premium shift'
  */
 class Trade extends AppModel {
 
@@ -324,11 +325,13 @@ class Trade extends AppModel {
 					}
 				}
 
+
 				else {
 
 					// When user has submitted trade request, skip originator confirmation and
 					// Go onto DB writes
-					if ($trade['Trade']['submitted_by'] == $trade['Trade']['user_id']) {
+					// Also make this exception if it's an emergency or premium shift
+					if ($trade['Trade']['submitted_by'] == $trade['Trade']['user_id'] || $trade['Trade']['consideration'] == 4) {
 						// Update Status of Trade to 1
 						$data = array('user_status' => 2);
 
@@ -379,7 +382,14 @@ class Trade extends AppModel {
 					// If user has already received email (TradesDetail['status'] == 1), then do not send email.
 					if ($tradesDetail['status'] == 0) {
 						$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
-						$sendDetails = $this->_TradeRequest->send($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestRecipient', 'Trade request: ' . $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+						// Put in the logic to determine the language used in the Subject
+						if ($trade['Trade']['consideration'] == 4) {
+							$sendDetails = $this->_TradeRequest->send($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestPremiumRecipient', 'ONCALL EMERGENCY: ' . $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+						}
+						else {
+							$request_language = 'Trade request';
+							$sendDetails = $this->_TradeRequest->send($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestRecipient', 'Trade request: ' . $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times']);
+						}
 
 						if ($sendDetails['return'] == true) {
 							// Assuming success, update Status of TradesDetail to 1

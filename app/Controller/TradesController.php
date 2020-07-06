@@ -259,6 +259,7 @@ class TradesController extends AppController {
 
 		$this->set('usersId', (isset($this->request->query['id']) ? $this->request->query['id'] : $this->_usersId()));
 		$this->set('groupList', $this->User->getGroupsForUser($this->_usersId(), array(), true, true));
+		$this->set('admin', $this->_isAdmin());
 		$this->render();
 	}
 

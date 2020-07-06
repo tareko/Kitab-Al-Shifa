@@ -2,7 +2,7 @@
 
 <?= $this->Form->create('Trade', array('class' => 'form-horizontal'));?>
 
-<?php 
+<?php
 $errors = '';
 foreach($this->validationErrors as $assoc) {
     foreach ($assoc as $k => $v) {
@@ -22,15 +22,15 @@ foreach($this->validationErrors as $assoc) {
 		<div class="form-group">
 			<?php
 			echo $this->Form->input('from_user_id', array(
-					'type' => 'text', 
+					'type' => 'text',
 					'placeholder' => "me",
 					'label' => __('From'),
 					'class' => 'form-control',
 					'div' => 'TradeFromUserIdDiv required'));
-	
+
 			echo $this->Form->input('Trade.user_id', array(
-					'type' => 'text', 
-					'default' => $usersId, 
+					'type' => 'text',
+					'default' => $usersId,
 					'div' => 'input text TradeFromUserIdHiddenDiv',
 					'type' => 'hidden',
 					'label' => false,
@@ -59,8 +59,8 @@ foreach($this->validationErrors as $assoc) {
 				<label><?=__('Offered to')?></label>
 			</div>
 			<div id="usergroupSelected" class="checkbox">
-				<?php 
-			
+				<?php
+
 				// Allow user to send request to entire group of users
 				echo $this->Form->select('usergroup', $groupList, array(
 					'multiple' => 'checkbox',
@@ -93,7 +93,7 @@ foreach($this->validationErrors as $assoc) {
 			'class' => 'form-control',
 			'rows' => '5',
 			'placeholder' => 'Enter a message explaining why you\'d like to trade this shift'));?>
-	</div>	
+	</div>
 	<div class="form-group">
 		<div class="checkbox">
 			<label>
@@ -106,17 +106,33 @@ foreach($this->validationErrors as $assoc) {
 	<div class="form-group">
 		Trade this shift for: <div class="btn-group" data-toggle="buttons">
 			<?php
+      if ($admin) {
 				echo $this->Form->radio('TradeConsideration', array (
 						'0' => 'Cash',
 						'1' => 'Trade',
-						'2' => 'Future consideration'),
+						'2' => 'Future consideration',
+            '4' => 'On-call premium shift'),
 						array (
 								'name' => 'data[Trade][consideration]',
 								'class' => 'btn btn-primary',
-								'value' => 1, 
+								'value' => 1,
 								'legend' => false,
 								'hiddenField' => false
 						));
+          }
+        else {
+          echo $this->Form->radio('TradeConsideration', array (
+              '0' => 'Cash',
+              '1' => 'Trade',
+              '2' => 'Future consideration'),
+              array (
+                  'name' => 'data[Trade][consideration]',
+                  'class' => 'btn btn-primary',
+                  'value' => 1,
+                  'legend' => false,
+                  'hiddenField' => false
+              ));
+        }
 				?>
 		</div>
 	</div>
@@ -127,8 +143,8 @@ foreach($this->validationErrors as $assoc) {
     <button type="submit" class="btn btn-primary">Submit</button>
 
 <?= $this->Js->get("#usergroupSelected input")->event('change', 'addGroupUsers(event)', array ('stop' => false)); ?>
-	
-	
+
+
 
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -136,12 +152,12 @@ foreach($this->validationErrors as $assoc) {
 
 		//Add active class to default trade consideration
 		$( "label[for=TradeTradeConsideration1]" ).addClass( "active" );
-		
+
 		$('#TradeFromUserId').autocomplete({
-			minLength: 3, 
+			minLength: 3,
 			source: '<?= $this->Html->url(array(
-					'controller' => 'users', 
-					'action' => 'listUsers.json', 
+					'controller' => 'users',
+					'action' => 'listUsers.json',
 					'?' => array(
 							'full' => '1'
 							)
@@ -156,7 +172,7 @@ foreach($this->validationErrors as $assoc) {
 		});
 	});
 
-	/* 
+	/*
 	 * This function will activate when #TradeStartDate is selected or changes.
 	 * It then empties the previous shift area, and fills in the shift information
 	 * for all shifts found that day.
@@ -175,12 +191,12 @@ foreach($this->validationErrors as $assoc) {
 			});
 	}
 
-	/* 
+	/*
 	 * This function will activate when a physician is selected (TradeFromUserId), and update #TradeStartDate's active
 	 * values (shiftDays).
 	 *
 	 */
-		 
+
 	function docChange(event, data) {
         $('input#TradeFromUserId').val(data.item.label);
         $('input#TradeFromUserIdHiddenDiv').val(data.item.value);
@@ -204,11 +220,11 @@ foreach($this->validationErrors as $assoc) {
 	        else {
 	        	$("input#TradeExcludeWorking").attr("disabled", false);
 	        }
-		    
+
 	        if($("input#" + event.target.id).is(":checked")) {
 		        var add = 1;
 	        }
-	        
+
 	        // Add shift for exclusion if the option to exclude shifts is selected.
 	        if ($("input#TradeExcludeWorking").is(':checked')) {
 		        var exclude = $("select#TradeShiftId option").val()
@@ -216,24 +232,24 @@ foreach($this->validationErrors as $assoc) {
 	        else { var exclude = undefined; }
 
 	        $.getJSON('<?= Router::url(array(
-					'controller' => 'users', 
+					'controller' => 'users',
 					'action' => 'listUsers.json'));
 			?>', {
 					full: "1",
 					group: event.target.id.slice(14),
 					excludeShift: exclude
-			}, 
+			},
 				function(data){
 					var len = data.length;
 					for (var i = 0; i< len; i++) {
 						if (add == 1) {
 				        	$("#tags").tagit("createTag", data[i].value, data[i].label);
-						} else {		        
+						} else {
 				        	$("#tags").tagit("removeTagByLabel", data[i].value);
 				        }
 					}
 				});
-				
+
 		    }
 		</script>
 	<?= $this->Js->writeBuffer();?>
