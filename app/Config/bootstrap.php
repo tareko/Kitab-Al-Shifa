@@ -154,3 +154,8 @@ Cache::config('default', array('engine' => 'File'));
   * Format: (Y-m-d)
   */
  Configure::write('trade_date_limit', '2050-07-01');
+
+ /* Email address of on-call person
+  *
+  */
+Configure::write('oncall_email', 'oncall@emlondon.ca');

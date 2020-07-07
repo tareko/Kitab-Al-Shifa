@@ -117,6 +117,7 @@ class TradesDetail extends AppModel {
 								'fields' => array(
 										'status',
 										'user_status',
+										'consideration',
 										'shift_id'),
 								'TradesDetail' => array(
 										'fields' => array('status')

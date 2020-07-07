@@ -81,18 +81,36 @@ class TradeRequest {
 			//Send a message to the originator about the decision
 			$email = new CakeEmail('default');
 
-			$email->template('tradeRequestRecipientStatusChangeToOriginator')
-				->emailFormat('text')
-				->from(array(key($email->from()) => $tradesDetail['User']['name'] . ' (via Kitab)'))
-				->replyTo(array($tradesDetail['User']['email'] => $tradesDetail['User']['name'] . ' (via Kitab)'))
-				->to($tradesDetail['Trade']['User']['email'])
-				->subject('[Kitab] Trade '.$statusWord .': '.$tradesDetail['Trade']['Shift']['date'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['times'])
-				->viewVars(array(
-							'userOriginator' => $tradesDetail['Trade']['User'],
-							'userRecipient' => $tradesDetail['User'],
-							'statusWord' => $statusWord,
-							'shift' => $tradesDetail['Trade']['Shift']))
-				->send();
+			// If this is a premium oncall shift, then send emails to the originating user, not to the sick person
+			if ($tradesDetail['Trade']['consideration'] == 4) {
+				$email->template('tradeRequestPremiumRecipientStatusChangeToOriginator')
+					->emailFormat('text')
+					->from(array(key($email->from()) => $tradesDetail['User']['name'] . ' (via Kitab)'))
+					->replyTo(array($tradesDetail['User']['email'] => $tradesDetail['User']['name'] . ' (via Kitab)'))
+					->to(Configure::read('oncall_email'))
+					->subject('[Kitab] Oncall Trade '.$statusWord .': '.$tradesDetail['Trade']['Shift']['date'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['times'])
+					->viewVars(array(
+								'userOriginator' => $tradesDetail['Trade']['User'],
+								'userRecipient' => $tradesDetail['User'],
+								'statusWord' => $statusWord,
+								'shift' => $tradesDetail['Trade']['Shift']))
+					->send();
+				}
+
+				else {
+					$email->template('tradeRequestRecipientStatusChangeToOriginator')
+						->emailFormat('text')
+						->from(array(key($email->from()) => $tradesDetail['User']['name'] . ' (via Kitab)'))
+						->replyTo(array($tradesDetail['User']['email'] => $tradesDetail['User']['name'] . ' (via Kitab)'))
+						->to($tradesDetail['Trade']['User']['email'])
+						->subject('[Kitab] Trade '.$statusWord .': '.$tradesDetail['Trade']['Shift']['date'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $tradesDetail['Trade']['Shift']['ShiftsType']['times'])
+						->viewVars(array(
+									'userOriginator' => $tradesDetail['Trade']['User'],
+									'userRecipient' => $tradesDetail['User'],
+									'statusWord' => $statusWord,
+									'shift' => $tradesDetail['Trade']['Shift']))
+						->send();
+					}
 		}
 		return true;
 	}
