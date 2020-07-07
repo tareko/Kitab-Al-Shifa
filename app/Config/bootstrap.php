@@ -148,9 +148,9 @@ Cache::config('default', array('engine' => 'File'));
  /* Limit ICS calendars to never be past this date
   * Format: (Y-m-d)
   */
- Configure::write('ics_date_limit', '2017-07-01');
+ Configure::write('ics_date_limit', '2050-07-01');
 
  /* Forbid trades for any shifts after the following date
   * Format: (Y-m-d)
   */
- Configure::write('trade_date_limit', '2017-07-01');
+ Configure::write('trade_date_limit', '2050-07-01');
