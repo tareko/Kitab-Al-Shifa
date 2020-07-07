@@ -402,7 +402,10 @@ class ShiftsController extends AppController {
 			$shiftOptions = array_merge($shiftOptions, array('Shift.date' => $this->request->query['date']));
 		}
 		if (isset($this->request->query['id'])) {
-			$shiftOptions = array_merge($shiftOptions, array('Shift.user_id' => $this->request->query['id']));
+			$shiftOptions = array_merge($shiftOptions, array(
+				'Shift.user_id' => $this->request->query['id'],
+				'Shift.date >' => date('Y-m-d', strtotime("-3 months"))
+			));
 		}
 		else {
 			$shiftOptions = array_merge($shiftOptions, array('Shift.user_id' => $this->_usersId()));
