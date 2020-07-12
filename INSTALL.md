@@ -32,7 +32,7 @@ I suggest instead starting the above 3 commands in separate terminals or screens
 cd frontend
 ng build --prod
 cd ../backend
-PORT=3001 pm2 start bin/www #or whatever port. Default is 3000
+PORT=3000 pm2 start bin/www -l ../logs/backend.log --time #may change log file or port
 ```
 
 * Edit .env in backend from .env.sample
