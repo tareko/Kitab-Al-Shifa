@@ -2,6 +2,9 @@ var express = require('express');
 var auth = require('./auth');
 var router = express.Router();
 var Oncall = require('../models/oncall');
+var twilio = require('twilio');
+var client = new twilio(process.env.twilio_accountSid, process.env.twilio_authToken);
+
 
 /* POST oncalls */
 router.post('/', function(req, res, next) {
@@ -21,36 +24,20 @@ router.post('/', function(req, res, next) {
       console.log(oncall);
     })
     .catch(() => {
-      res.status(201).json({
-        message: "Save failed"
-      });
+       res.status(201).json({
+         message: "Save failed"
+       });
+      console.log('Save failed');
       console.log(oncall);
     });
 
-  // Dial into those who want to be dialed into (default for now)
+    // Execute all the things that have to happen for administrators
+    runAdminSave(req);
 
-  const client = require('twilio')(process.env.twilio_accountSid, process.env.twilio_authToken);
-  client.calls
-        .create({
-           url: process.env.server_base + '/twilio/oncall-initiated.xml',
-           to: process.env.twilio_destNumber,
-           from: process.env.twilio_fromNumber,
-           method: 'GET'
-         })
-        .then(call => {
-          console.log("Call sent with SID " + call.sid);
-          // console.log(call)
-        });
+    // Execute all the things that have to happen to notify other users
+    startOnCallBlast(req);
+  });
 
-  // Send Txt messages to those who want texts
-  // client.messages
-  //       .create({
-  //         body: 'Hi there! ' + req.body.user_name + ' has initiated an on-call emergency. Please go online to check out the details!',
-  //         from: config.twilio.fromNumber,
-  //         to: config.twilio.destNumber})
-  //       .then(message => console.log("SMS sent with SID " + message.sid));
-
-});
 
 /* GET oncalls listing. */
 router.get('/', function(req, res, next) {
@@ -126,3 +113,82 @@ router.delete('/:_id', function(req, res, next) {
 });
 
 module.exports = router;
+
+/**
+ * The commands to run to notify administrators that an on-call event has been
+ * initiated
+ *
+ * @param  {[type]}   req  Incoming request
+ * @param  {[type]}   res  [description]
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
+function runAdminSave(req, res, next) {
+      // Make Twilio call and then SMS.
+      // Add 1s delay so as to not overwhelm twilio
+      console.log('Admin blast started');
+      makeSms(req);
+      //Reformat env into array and iterate through with forEach
+      var index = 0;
+      process.env.twilio_destNumber.split(",")
+        .forEach(function(destNumber, index){
+          //setTimeout is async, so index * number of calls is needed to modify this
+          setTimeout(function() {makeCall(destNumber)}, (index + 1) * 1000);
+        });
+}
+
+/**
+ * Function to contact all users about a sick person
+ * @return {[type]} [description]
+ */
+function startOnCallBlast(req, res, next) {
+  console.log('Oncall blast started - nothing here yet')
+}
+
+function makeCall(destNumber) {
+  // Create twilio call
+  client.calls
+        .create({
+           url: process.env.server_base + '/twilio/oncall-initiated.xml',
+           to: destNumber,
+           from: process.env.twilio_fromNumber,
+           method: 'GET'
+         })
+        .then(call => {
+          console.log("Call sent with SID " + call.sid);
+          // console.log(call)
+        })
+        .catch(call => {
+          console.log('Failed to call to Twilio');
+          console.log(call.code);
+        }).done();
+}
+
+// Send SMS messages to those who want to be notified this way
+function makeSms(req) {
+
+  // Initialize the twilio messaging service as per
+  // https://www.twilio.com/blog/2017/12/send-bulk-sms-twilio-node-js.html
+  const service = client.notify.services(process.env.twilio_messaging_service_sid);
+
+  // Convert .env setting (string) to an array
+  const numbers = process.env.twilio_destNumber.split(",");
+
+  // Map the numbers to a JSON string that can be used by twilio
+  const bindings = numbers.map(number => {
+        return JSON.stringify({ binding_type: 'sms', address: number })
+      });
+
+  service.notifications
+    .create({
+          toBinding: bindings,
+          body: 'Hi there! ' + req.body.user_name + ' has initiated an on-call emergency. Please go online to check out the details!'
+    })
+    .then(notification => {
+          console.log(notification);
+    })
+    .catch(err => {
+          console.error(err);
+    })
+    .done();
+}
