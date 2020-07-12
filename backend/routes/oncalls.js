@@ -185,7 +185,7 @@ function makeSms(req) {
           body: 'Hi there! ' + req.body.user_name + ' has initiated an on-call emergency. Please go online to check out the details!'
     })
     .then(notification => {
-          console.log(notification);
+          console.log("SMS blast sent with SID " + notification.sid);
     })
     .catch(err => {
           console.error(err);
