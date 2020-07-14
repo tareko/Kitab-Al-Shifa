@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm, FormControl } from '@angular/forms';
+import { NgForm, FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { HttpClient } from '@angular/common/http';
 
@@ -17,7 +17,14 @@ import { debounceTime, distinctUntilChanged, filter, map, switchMap, startWith }
 })
 
 export class OncallCreateComponent implements OnInit {
-  newOncall = '';
+  // Initialize form
+  oncallFormGroup = this.fb.group({
+    userName: [''],
+    date: [''],
+    shiftStartTime: [''],
+    message: ['']
+  });
+
   oncall: Oncall;
   isLoading = false;
   private mode = 'create';
@@ -32,7 +39,8 @@ export class OncallCreateComponent implements OnInit {
   constructor(
     public oncallsService: OncallsService,
     public route: ActivatedRoute,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private fb: FormBuilder,
   ) { }
 
   ngOnInit() {
@@ -43,7 +51,14 @@ export class OncallCreateComponent implements OnInit {
         this.isLoading = true;
         this.oncallsService.getOncall(this.oncallId)
           .subscribe(oncallData => {
-            this.oncall = oncallData;
+            console.log(oncallData);
+            this.oncallFormGroup.setValue({
+              userName: oncallData.user_name,
+              date: oncallData.date,
+              shiftStartTime: oncallData.shift_start_time,
+              message: oncallData.message
+
+            })
           });
         this.isLoading = false;
       } else {
@@ -65,18 +80,25 @@ export class OncallCreateComponent implements OnInit {
 
   }
 
-  onOncallSave(form: NgForm) {
-    if (form.invalid) {
+  onOncallSave() {
+    if (this.oncallFormGroup.value.invalid) {
       return;
     }
     this.isLoading = true;
     if (this.mode === 'create') {
-      this.oncallsService.addOncall(form.value.user_name, form.value.date, form.value.shift_start_time, form.value.message);
+      this.oncallsService.addOncall(this.oncallFormGroup.value.userName, this.oncallFormGroup.value.date, this.oncallFormGroup.value.shiftStartTime, this.oncallFormGroup.value.message);
     } else {
-      this.oncallsService.updateOncall(this.oncallId, form.value.user_name, form.value.date, form.value.shift_start_time, form.value.message)
+      this.oncallsService.updateOncall(this.oncallId, this.oncallFormGroup.value.userName, this.oncallFormGroup.value.date, this.oncallFormGroup.value.shiftStartTime, this.oncallFormGroup.value.message)
     }
     this.isLoading = false;
-    form.resetForm();
+
+    // reset the form
+    this.oncallFormGroup.reset();
+
+    // reset the errors of all the controls
+    for (let name in this.oncallFormGroup.controls) {
+      this.oncallFormGroup.controls[name].setErrors(null);
+    }
   }
 
   /* TODO: Typeahead work
