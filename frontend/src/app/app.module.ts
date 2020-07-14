@@ -28,6 +28,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatAutocompleteModule,
     MatSnackBarModule,
     MatDatepickerModule,
+    MatNativeDateModule,
 
     BrowserModule,
     AppRoutingModule,
@@ -63,7 +65,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    MatDatepickerModule,
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
