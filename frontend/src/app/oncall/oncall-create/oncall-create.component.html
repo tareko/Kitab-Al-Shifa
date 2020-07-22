@@ -20,7 +20,7 @@
           {{option}}
         </mat-option>
       </mat-autocomplete>
-      <mat-error *ngIf="userName.hasError('forbiddenNames')">
+      <mat-error *ngIf="!userName.valid">
         Please enter a valid name
       </mat-error>
     </mat-form-field>
@@ -67,6 +67,7 @@
         !oncallFormGroup.get('shiftStartTime').valid ||
         !oncallFormGroup.get('message').valid ||
         !userName.valid"
+      (click)="openSnackBar('Your shift has been submitted')"
       type="submit">submit</button>
     </form>
   </mat-card>

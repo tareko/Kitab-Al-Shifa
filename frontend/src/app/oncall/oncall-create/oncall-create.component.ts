@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm, FormGroup, FormControl, FormBuilder, Validators, AbstractControl, ValidatorFn, FormGroupDirective } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 import { OncallsService } from "../oncalls.service";
 import { Oncall } from '../oncall.model';
@@ -34,7 +35,8 @@ export class OncallCreateComponent implements OnInit {
     public oncallsService: OncallsService,
     public route: ActivatedRoute,
     private http: HttpClient,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private _snackBar: MatSnackBar
   ) {
 
     // Initialize form
@@ -78,14 +80,15 @@ export class OncallCreateComponent implements OnInit {
     // Set this list in the callback to be our 'options' array
     this.http
       .get('http://localhost:3000/api/users', {
-        observe: 'response',
+        observe: 'body',
         // params: {
         //   q: 'a',
         // }
       })
     .subscribe((data) => {
       var count = 0;
-      for(let user of data.body){
+      for(let user of data) {
+        // console.log(user);
         // this.options.push({ key : count, value: user.name });
         this.options.push(user.name);
         count++;
@@ -134,7 +137,6 @@ export class OncallCreateComponent implements OnInit {
     // this.oncallFormGroup.markAsPristine();
     // this.oncallFormGroup.markAsUntouched();
     // this.oncallFormGroup.updateValueAndValidity();
-
   }
 
   // Filter function called from autocomplete
@@ -171,5 +173,12 @@ export class OncallCreateComponent implements OnInit {
           }
       }
       return invalid;
+  }
+
+  // Open snackbar to acknowledge submission
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action, {
+      duration: 10000,
+    });
   }
 }
