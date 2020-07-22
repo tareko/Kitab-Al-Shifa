@@ -66,7 +66,8 @@ export class OncallCreateComponent implements OnInit {
               date: oncallData.date,
               shiftStartTime: oncallData.shift_start_time,
               message: oncallData.message
-            })
+            });
+            this.userName.setErrors(null);
           });
         this.isLoading = false;
       } else {
