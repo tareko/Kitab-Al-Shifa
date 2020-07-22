@@ -114,7 +114,7 @@ export class OncallCreateComponent implements OnInit {
     }
     this.isLoading = true;
     if (this.mode === 'create') {
-      this.oncallsService.addOncall(this.oncallFormGroup.value.userName, this.oncallFormGroup.value.date, this.oncallFormGroup.value.shiftStartTime, this.oncallFormGroup.value.message);
+      this.oncallsService.addOncall(this.userName.value, this.oncallFormGroup.value.date, this.oncallFormGroup.value.shiftStartTime, this.oncallFormGroup.value.message);
     } else {
       this.oncallsService.updateOncall(this.oncallId, this.oncallFormGroup.value.userName, this.oncallFormGroup.value.date, this.oncallFormGroup.value.shiftStartTime, this.oncallFormGroup.value.message)
     }
