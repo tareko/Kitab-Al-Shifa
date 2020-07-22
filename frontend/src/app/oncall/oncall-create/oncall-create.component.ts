@@ -85,7 +85,7 @@ export class OncallCreateComponent implements OnInit {
         //   q: 'a',
         // }
       })
-    .subscribe((data) => {
+    .subscribe((data:any) => {
       var count = 0;
       for(let user of data) {
         // console.log(user);
