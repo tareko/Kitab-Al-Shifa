@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm, FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { NgForm, FormGroup, FormControl, FormBuilder, Validators, AbstractControl, ValidatorFn, FormGroupDirective } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 import { OncallsService } from "../oncalls.service";
 import { Oncall } from '../oncall.model';
-import { User } from '../../users/user.model';
+import { Users, User } from '../../users/user.model';
+import { ServerResponse } from '../../app.interface';
 
-import { Observable, BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, switchMap, startWith } from 'rxjs/operators';
+import { Observable, observable, BehaviorSubject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, switchMap, startWith, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-oncall-create',
@@ -17,31 +18,37 @@ import { debounceTime, distinctUntilChanged, filter, map, switchMap, startWith }
 })
 
 export class OncallCreateComponent implements OnInit {
-  // Initialize form
-  oncallFormGroup = this.fb.group({
-    userName: [''],
-    date: [''],
-    shiftStartTime: [''],
-    message: ['']
-  });
 
   oncall: Oncall;
+  oncallFormGroup: FormGroup;
   isLoading = false;
   private mode = 'create';
   private oncallId: string;
 
-  /* TODO: Typeahead work
-  myControl = new FormControl();
-  options: string[] = ['One', 'Two', 'Three'];
+  // Set some options for the autocompleted physician list
   filteredOptions: Observable<string[]>;
-  */
+  userName: FormControl = new FormControl();
+  options: string[] = [];
 
   constructor(
     public oncallsService: OncallsService,
     public route: ActivatedRoute,
-    private httpClient: HttpClient,
-    private fb: FormBuilder,
-  ) { }
+    private http: HttpClient,
+    private fb: FormBuilder
+  ) {
+
+    // Initialize form
+
+    this.oncallFormGroup = new FormGroup({
+      userName: new FormControl('',[Validators.required,this.forbiddenNamesValidator(this.options)]),
+      date: new FormControl(),
+      shiftStartTime: new FormControl(),
+      message: new FormControl()
+    });
+
+    // Set validator for autocomplete names
+    this.userName.setValidators(this.forbiddenNamesValidator(this.options));
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -51,13 +58,12 @@ export class OncallCreateComponent implements OnInit {
         this.isLoading = true;
         this.oncallsService.getOncall(this.oncallId)
           .subscribe(oncallData => {
-            console.log(oncallData);
+            console.log(this.oncallFormGroup);
             this.oncallFormGroup.setValue({
               userName: oncallData.user_name,
               date: oncallData.date,
               shiftStartTime: oncallData.shift_start_time,
               message: oncallData.message
-
             })
           });
         this.isLoading = false;
@@ -68,19 +74,38 @@ export class OncallCreateComponent implements OnInit {
       }
     });
 
-    /* TODO: Typeahead work
+    // Get list of physicians one time (won't change much)
+    // Set this list in the callback to be our 'options' array
+    this.http
+      .get('http://localhost:3000/api/users', {
+        observe: 'response',
+        // params: {
+        //   q: 'a',
+        // }
+      })
+    .subscribe((data) => {
+      var count = 0;
+      for(let user of data.body){
+        // this.options.push({ key : count, value: user.name });
+        this.options.push(user.name);
+        count++;
+      }
+      console.log(this.options)
 
-    // Filter autocomplete for names
-    this.filteredOptions = this.myControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
-    */
+    }
+  );
 
+  // Autocomplete
+
+    this.filteredOptions = this.userName.valueChanges
+          .pipe(
+            debounceTime(300),
+            startWith(''),
+            map(value => this._filter(value))
+          );
   }
 
-  onOncallSave() {
+  onOncallSave(formData: any, formDirective: FormGroupDirective) {
     if (this.oncallFormGroup.value.invalid) {
       return;
     }
@@ -92,40 +117,59 @@ export class OncallCreateComponent implements OnInit {
     }
     this.isLoading = false;
 
-    // reset the form
-    this.oncallFormGroup.reset();
-
     // reset the errors of all the controls
     for (let name in this.oncallFormGroup.controls) {
-      this.oncallFormGroup.controls[name].setErrors(null);
+      this.oncallFormGroup.controls[name].reset();
+      this.oncallFormGroup.controls[name].markAsPristine();
+      this.oncallFormGroup.controls[name].markAsUntouched();
+      this.oncallFormGroup.controls[name].updateValueAndValidity();
+
+      // this.oncallFormGroup.controls[name].setErrors(null);
     }
+    this.userName.reset();
+
+    // reset the form
+    this.oncallFormGroup.reset();
+    formDirective.resetForm();
+    // this.oncallFormGroup.markAsPristine();
+    // this.oncallFormGroup.markAsUntouched();
+    // this.oncallFormGroup.updateValueAndValidity();
+
   }
 
-  /* TODO: Typeahead work
-
-  colorSearchTextInput = new FormControl();
-
-  searchColor$ = new BehaviorSubject<string>('');
-
-  colors$: Observable<string[]> = this.searchColor$.pipe(
-    debounceTime(500),
-    switchMap(searchColorText => {
-      return this.httpClient
-//        .get<User[]>('https://kitab.emlondon.ca/users/listUsers.json?full=1&term=' + searchColorText);
-       .get<User[]>('http://localhost:4250/colors?name_like=' + searchColorText);
-    }),
-    map((colors: User[]) => colors.map(color => color.name)),
-  );
-
-  // Filter values
+  // Filter function called from autocomplete
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
+    if (value) {
+      var filterValue = value.toString().toLowerCase();
+    }
+    else { var filterValue = '' }
 
     return this.options.filter(option => option.toLowerCase().includes(filterValue));
   }
 
-  doColorSearch() {
-    this.searchColor$.next(this.colorSearchTextInput.value);
+  // Forbid names that are not in the options list from being selected
+  private forbiddenNamesValidator(names: string[]): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      // below findIndex will check if control.value is equal to one of our options or not
+      const index = names.findIndex(name => {
+        return (new RegExp('\^' + name + '\$')).test(control.value);
+      });
+      return index < 0 ? { 'forbiddenNames': { value: control.value } } : null;
+    };
   }
-  */
+
+
+  // Debug function
+  log(val) { console.log("test" + JSON.stringify(val)); }
+
+  public findInvalidControls() {
+      const invalid = [];
+      const controls = this.oncallFormGroup.controls;
+      for (const name in controls) {
+          if (controls[name].invalid) {
+              invalid.push(name);
+          }
+      }
+      return invalid;
+  }
 }

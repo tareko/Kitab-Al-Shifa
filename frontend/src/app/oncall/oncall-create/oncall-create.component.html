@@ -6,14 +6,21 @@
 
 <mat-card>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form (ngSubmit)="onOncallSave()" [formGroup]="oncallFormGroup" *ngIf="!isLoading">
+  <form (ngSubmit)="onOncallSave(oncallFormGroup, formDirective)" [formGroup]="oncallFormGroup" #formDirective="ngForm" *ngIf="!isLoading">
     <mat-form-field>
       <input matInput
       type="text"
       required
       placeholder="Name of the person who needs on-call coverage"
-      formControlName="userName">
-      <mat-error>
+      [formControl]="userName"
+      formControlName="userName"
+      [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="userName.hasError('forbiddenNames')">
         Please enter a valid name
       </mat-error>
     </mat-form-field>
@@ -55,7 +62,11 @@
     <button
       mat-raised-button
       color = "primary"
-      [disabled]="!oncallFormGroup.valid"
+      [disabled]="
+        !oncallFormGroup.get('date').valid ||
+        !oncallFormGroup.get('shiftStartTime').valid ||
+        !oncallFormGroup.get('message').valid ||
+        !userName.valid"
       type="submit">submit</button>
     </form>
   </mat-card>
