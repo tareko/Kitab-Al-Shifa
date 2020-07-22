@@ -67,7 +67,7 @@
         !oncallFormGroup.get('shiftStartTime').valid ||
         !oncallFormGroup.get('message').valid ||
         !userName.valid"
-      (click)="openSnackBar('Your shift has been submitted')"
+      (click)="openSnackBar('Your shift has been submitted', 'close')"
       type="submit">submit</button>
     </form>
   </mat-card>
