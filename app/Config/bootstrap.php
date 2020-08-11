@@ -164,3 +164,8 @@ Configure::write('oncall_email', 'oncall@emlondon.ca');
  *
  */
 Configure::write('oncall_blast_time', '2');
+
+/* Timezone. Take from Olson Database https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+ *
+ */
+Configure::write('timezone', 'America/Montreal');

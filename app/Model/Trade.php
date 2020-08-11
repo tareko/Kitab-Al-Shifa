@@ -591,7 +591,7 @@ class Trade extends AppModel {
 
 				// If successful, set 'updated' timestamp to now
 
-				$data = array('updated' => date('Y-m-d H:i:s', strtotime('now')));
+				$data = array('updated' => 'CONVERT_TZ(NOW(),\'SYSTEM\',\'' . Configure::read('timezone') . '\')');
 				if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 					// Write log indicating trade was cancelled
 					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Sent repeat oncall blast');
@@ -707,7 +707,7 @@ class Trade extends AppModel {
 			if (isset($trade['TradesDetail'][0]['status'])) {
 				$this->Shift->read(null, $trade['Trade']['shift_id']);
 				$this->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
-				$this->Shift->set('updated', date("Y-m-d H:i:s",time()));
+				$this->Shift->set('updated', 'CONVERT_TZ(NOW(),\'SYSTEM\',\'' . Configure::read('timezone') . '\')');
 				$this->Shift->set('marketplace', 0);
 
 				// If this was an oncall shift, send out a blast to say it was taken
@@ -913,7 +913,7 @@ class Trade extends AppModel {
 					// Change Trade status to cancelled
 					array(
 						'status' => 3,
-						'updated' => date('Y-m-d H:i:s', strtotime('now'))
+						'updated' => 'CONVERT_TZ(NOW(),\'SYSTEM\',\'' . Configure::read('timezone') . '\')'
 					),
 					array('Trade.id' => $staleTrade['Trade']['id'])
 
