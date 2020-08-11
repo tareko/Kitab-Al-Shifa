@@ -102,7 +102,7 @@ Cache::config('default', array('engine' => 'File'));
  ));
  Configure::write('CakePdf', array(
  		'engine' => 'CakePdf.WkHtmlToPdf',
-		'binary' => '/usr/bin/wkhtmltopdf',
+		'binary' => 'www/kitab/bin/wkhtmltopdf-amd64',
  		'margin' => array(
  				'bottom' => 15,
  				'left' => 5,
@@ -124,7 +124,7 @@ Cache::config('default', array('engine' => 'File'));
   * marketplace. Set this suitably high if you want no limit
   * Default: 3
   */
- Configure::write('marketplace_take_limit', 3);
+ Configure::write('marketplace_take_limit', 5);
 
  /* Time at which the take limit restarts (24 hour clock. Give only hour)
   *
