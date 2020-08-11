@@ -896,7 +896,7 @@ class Trade extends AppModel {
 									'id',
 									'date'))),
 				'conditions' => array(
-						'Trade.status' => 1,
+						'Trade.status <=' => 1,
 						'Trade.updated <=' => date('Y-m-d', strtotime('-1 day')),
 						'Shift.date <=' => date('Y-m-d', strtotime('-5 day'))
 				),
