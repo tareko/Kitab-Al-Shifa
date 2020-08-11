@@ -159,3 +159,8 @@ Cache::config('default', array('engine' => 'File'));
   *
   */
 Configure::write('oncall_email', 'oncall@emlondon.ca');
+
+/* Time in hours between on-call blasts
+ *
+ */
+Configure::write('oncall_blast_time', '2');

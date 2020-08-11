@@ -549,6 +549,112 @@ class Trade extends AppModel {
 		}
 	}
 
+ /**
+  * Resend oncall emails every X hours
+	* Time between blasts is defined in bootstrap
+	* May be read as Configure::read('oncall_email')
+  */
+
+	public function resendOncall() {
+		$success = true;
+		// Set up libraries and get pending Trades
+		App::import('Lib', 'TradeRequest');
+		if (!$this->_TradeRequest) { // Allows for mocks to work properly
+			$this->_TradeRequest = new TradeRequest();
+		}
+
+		// Get still-open on-call shifts
+		$openOncallTrades = $this->getOpenOncallTrades();
+
+		// Has it been two hours since last update?
+
+		foreach ($openOncallTrades as $trade) {
+			if((strtotime('now') - strtotime($trade['Trade']['updated']))/3600 >= 2) {
+
+				// Send only to those who have not yet rejected or accepted
+
+				foreach ($trade['TradesDetail'] as $tradesDetail) {
+					// debug("token " . $tradesDetail['token']);
+
+					// Only send email if user has not acted on trade (TradesDetail['status'] <= 1).
+					if ($tradesDetail['status'] <= 1) {
+						$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
+						// Put in the logic to determine the language used in the Subject
+						$sendDetails = $this->_TradeRequest->sendReminder($tradesDetail['User'], $trade, $tradesDetail, $method, 'tradeRequestPremiumRecipient', 'ONCALL EMERGENCY (repeat): ' . $trade['Shift']['date'] .' '. $trade['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $trade['Shift']['ShiftsType']['times'], $tradesDetail['token']);
+						if ($sendDetails['return'] == false) {
+							$success = false;
+						}
+					}
+				}
+
+				debug('more than two hours ' . $trade['Trade']['updated']);
+
+				// If successful, set 'updated' timestamp to now
+
+				$data = array('updated' => 'now()');
+				if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
+					// Write log indicating trade was cancelled
+					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Sent repeat oncall blast');
+				} else {
+					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; DB write FAILED. Maybe didn\'t send repeat oncall blast');
+					$success = false;
+				}
+			}
+
+			else {
+				debug('less than two hours ' . $trade['Trade']['updated']);
+			}
+		}
+
+		return $success;
+	}
+
+
+	public function getOpenOncallTrades($conditions = array()) {
+		return $this->find('all', array(
+				'recursive' => 3,
+				'contain' => array(
+						'Shift' => array(
+								'fields' => array(
+										'id',
+										'date'),
+								'ShiftsType' => array(
+										'fields' => array(
+												'times'),
+										'Location' => array(
+												'location',
+												'abbreviated_name')
+										)
+								),
+						'TradesDetail' => array(
+								'User' => array(
+										'fields' => array(
+												'id',
+												'name',
+												'email')
+										)
+								),
+						'User' => array(
+								'fields' => array(
+										'id',
+										'name',
+										'email'),
+								),
+						'SubmittedUser' => array(
+								'fields' => array(
+										'id',
+										'name',
+										'email'),
+								),
+				),
+				'conditions' => array_merge(
+						array(
+							'status' => 1,
+							'consideration' => 4),
+						$conditions),
+		));
+	}
+
 	/**
 	 * Complete Accepted trades
 	 */

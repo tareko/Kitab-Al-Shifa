@@ -114,4 +114,44 @@ class TradeRequest {
 		}
 		return true;
 	}
+
+	/**
+	 * Send reminder message in which token is already set
+	 */
+
+	public function sendReminder($toUser = array(), $trade = array(), $tradesDetail = array(), $method = 'email', $template = false, $subject = false, $token = false) {
+		App::uses('CakeEmail', 'Network/Email');
+		App::uses('TimeHelper', 'View/Helper');
+
+		//Send out communication to receiving user
+
+		if ($method == 'email') {
+			//Set the 'From' user
+			$email = new CakeEmail('default');
+
+			if ($trade['SubmittedUser']['email'] != $toUser['email']) {
+				$email->from(array(key($email->from()) => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+				$email->replyTo(array($trade['SubmittedUser']['email'] => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+			}
+
+			$success = $email->template($template)
+				->emailFormat('text')
+				->to($toUser['email'])
+				->subject('[Kitab] '. $subject)
+				->viewVars(array(
+						'user' => $trade['User'],
+						'shift' => $trade['Shift'],
+						'trade' => $trade['Trade'],
+						'tradesDetail' => (empty($tradesDetail) ? $trade['TradesDetail'] : $tradesDetail),
+						'submittedUser' => $trade['SubmittedUser'],
+						'token' => $token))
+				->send();
+		}
+
+		return array(
+						'return' => ($success ? true : false),
+						'token' => $token
+		);
+	}
+
 }

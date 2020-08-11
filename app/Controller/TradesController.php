@@ -353,11 +353,19 @@ class TradesController extends AppController {
 	 */
 	public function startUnprocessed() {
 		$success = $this->Trade->processTrades();
+		$success2 = $this->Trade->resendOncall();
+
 		if ($success == true) {
 			$this->Flash->success(__('Pending trades successfully processed'));
 		}
 		else {
 			$this->Flash->alert(__('Pending trades not successfully processed.'));
+		}
+		if ($success2 == true) {
+			$this->Flash->success(__('Processed any outstanding oncalls successfully'));
+		}
+		else {
+			$this->Flash->alert(__('Did not process outstanding oncalls successfully'));
 		}
 		$this->set('success', $success);
 		$this->render();
