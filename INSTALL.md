@@ -40,7 +40,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 The dev server's ports are:
 
  * Web: http://localhost:9180
- * Mailhog: http://localhost:9125
+ * Mailhog: http://localhost:8125
  * Mysql: http://localhost:9106 
 
 # Non-Docker instructions
