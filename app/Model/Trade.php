@@ -552,7 +552,7 @@ class Trade extends AppModel {
  /**
   * Resend oncall emails every X hours
 	* Time between blasts is defined in bootstrap
-	* May be read as Configure::read('oncall_email')
+	* May be read as Configure::read('oncall_blast_time')
   */
 
 	public function resendOncall() {
@@ -569,7 +569,7 @@ class Trade extends AppModel {
 		// Has it been two hours since last update?
 
 		foreach ($openOncallTrades as $trade) {
-			if((strtotime('now') - strtotime($trade['Trade']['updated']))/3600 >= 2) {
+			if((strtotime('now') - strtotime($trade['Trade']['updated']))/3600 >= Configure::read('oncall_blast_time')) {
 
 				// Send only to those who have not yet rejected or accepted
 
