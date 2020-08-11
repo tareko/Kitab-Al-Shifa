@@ -659,11 +659,19 @@ class Trade extends AppModel {
 	 * Complete Accepted trades
 	 */
 	public function completeAccepted() {
+
+		// Set up libraries and get Trades
+		App::import('Lib', 'TradeRequest');
+		if (!$this->_TradeRequest) { // Allows for mocks to work properly
+			$this->_TradeRequest = new TradeRequest();
+		}
+
 		$trades = $this->find('all', array(
 				'fields' => array(
 						'Trade.id',
 						'Trade.user_id',
 						'Trade.shift_id',
+						'Trade.consideration',
 						'Trade.status'),
 				'conditions' => array(
 						'Trade.status' => 1,
@@ -675,6 +683,12 @@ class Trade extends AppModel {
 								)
 						),
 						'TradesDetail' => array(
+								'User' => array(
+									'fields' => array(
+										'id',
+										'name'
+									)
+								),
 								'fields' => array(
 										'trade_id',
 										'user_id',
@@ -689,11 +703,74 @@ class Trade extends AppModel {
 
 		//TODO: Save updated shift
 		foreach($trades as $trade) {
+
+			debug($trade);
 			if (isset($trade['TradesDetail'][0]['status'])) {
 				$this->Shift->read(null, $trade['Trade']['shift_id']);
 				$this->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
 				$this->Shift->set('updated', date("Y-m-d H:i:s",time()));
 				$this->Shift->set('marketplace', 0);
+
+				// If this was an oncall shift, send out a blast to say it was taken
+				if ($trade['Trade']['consideration'] == 4) {
+
+					$details = $this->find('all', array(
+							'recursive' => 3,
+							'contain' => array(
+									'Shift' => array(
+											'fields' => array(
+													'id',
+													'date'),
+											'ShiftsType' => array(
+													'fields' => array(
+															'times'),
+													'Location' => array(
+															'location',
+															'abbreviated_name')
+													)
+											),
+									'TradesDetail' => array(
+											'User' => array(
+													'fields' => array(
+															'id',
+															'name',
+															'email')
+													)
+											),
+									'User' => array(
+											'fields' => array(
+													'id',
+													'name',
+													'email'),
+											),
+									'SubmittedUser' => array(
+											'fields' => array(
+													'id',
+													'name',
+													'email'),
+											),
+							),
+							'conditions' => array(
+										'status' => 1,
+										'consideration' => 4,
+										'Trade.id' => $trade['Trade']['id']
+									)
+					));
+
+					foreach ($details['0']['TradesDetail'] as $tradesDetail) {
+						// Send email to all users who rejected or didn't act. Skip only the
+						// user who accepted (TradesDetail['status'] 0, 1, 3).
+						if ($tradesDetail['status'] <= 1 || $tradesDetail['status'] == 3) {
+							$method = $this->User->getCommunicationMethod($tradesDetail['User']['id']);
+							// Put in the logic to determine the language used in the Subject
+							$sendDetails = $this->_TradeRequest->sendAllClear($tradesDetail['User'], $details['0'], $tradesDetail, $method, 'tradeRequestResolvedEmergency', 'RESOLVED Oncall Emergency: ' . $details['0']['Shift']['date'] .' '. $details['0']['Shift']['ShiftsType']['Location']['abbreviated_name'] .' '. $details['0']['Shift']['ShiftsType']['times'], $trade['TradesDetail'][0]['User']['name']);
+							if ($sendDetails['return'] == false) {
+								$success = false;
+							}
+						}
+					}
+				}
+
 				if ($this->Shift->save()) {
 					$this->updateAll(
 							array(
@@ -827,8 +904,8 @@ class Trade extends AppModel {
 				// 'recursive' => -1,
 		));
 
-		debug("stale trades");
-		debug($staleTrades);
+		// debug("Stale trades");
+		// debug($staleTrades);
 
 		// Foreach trade
 		foreach ($staleTrades as $staleTrade) {

@@ -154,4 +154,42 @@ class TradeRequest {
 		);
 	}
 
+	/**
+	 * Send All Clear message about on call emergency
+	 */
+
+	public function sendAllClear($toUser = array(), $trade = array(), $tradesDetail = array(), $method = 'email', $template = false, $subject = false, $acceptingUser = false) {
+		App::uses('CakeEmail', 'Network/Email');
+		App::uses('TimeHelper', 'View/Helper');
+
+		//Send out communication to receiving user
+
+		if ($method == 'email') {
+			//Set the 'From' user
+			$email = new CakeEmail('default');
+
+			if ($trade['SubmittedUser']['email'] != $toUser['email']) {
+				$email->from(array(key($email->from()) => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+				$email->replyTo(array($trade['SubmittedUser']['email'] => $trade['SubmittedUser']['name'] . ' (via Kitab)'));
+			}
+
+			$success = $email->template($template)
+				->emailFormat('text')
+				->to($toUser['email'])
+				->subject('[Kitab] '. $subject)
+				->viewVars(array(
+						'user' => $trade['User'],
+						'shift' => $trade['Shift'],
+						'trade' => $trade['Trade'],
+						'tradesDetail' => (empty($tradesDetail) ? $trade['TradesDetail'] : $tradesDetail),
+						'submittedUser' => $trade['SubmittedUser'],
+						'acceptingUser' => $acceptingUser))
+				->send();
+		}
+
+		return array(
+						'return' => ($success ? true : false),
+		);
+	}
+
 }
