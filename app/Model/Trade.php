@@ -704,7 +704,6 @@ class Trade extends AppModel {
 		//TODO: Save updated shift
 		foreach($trades as $trade) {
 
-			debug($trade);
 			if (isset($trade['TradesDetail'][0]['status'])) {
 				$this->Shift->read(null, $trade['Trade']['shift_id']);
 				$this->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
