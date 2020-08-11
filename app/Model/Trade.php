@@ -800,6 +800,53 @@ class Trade extends AppModel {
 	}
 
 	/**
+	 * Remove stale trades
+	 *
+	 * This function will invalidate all trades for shifts that are in the past and
+	 * that were entered more than 24 hours ago. This should allow retrospective trade-changes
+	 *
+	 * @return bool Returns true unless errors
+	 *
+	 */
+	public function removeStaleTrades() {
+
+		// Get stale shifts
+
+		$staleTrades = $this->find('all', array(
+			'recursive' => 3,
+			'contain' => array(
+					'Shift' => array(
+							'fields' => array(
+									'id',
+									'date'))),
+				'conditions' => array(
+						'Trade.status' => 1,
+						'Trade.updated <=' => date('Y-m-d', strtotime('-1 day')),
+						'Shift.date <=' => date('Y-m-d', strtotime('-5 day'))
+				),
+				// 'recursive' => -1,
+		));
+
+		debug("stale trades");
+		debug($staleTrades);
+
+		// Foreach trade
+		foreach ($staleTrades as $staleTrade) {
+			// Save shift
+			$this->updateAll(
+					// Change Trade status to cancelled
+					array(
+						'status' => 3,
+						'updated' => 'now()'
+					),
+					array('Trade.id' => $staleTrade['Trade']['id'])
+
+			);
+		}
+		return true;
+	}
+
+	/**
 	 * Remove stale marketplace shifts
 	 *
 	 * This function will remove all marketplace entries for any person who's
