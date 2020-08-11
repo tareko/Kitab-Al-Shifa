@@ -591,7 +591,7 @@ class Trade extends AppModel {
 
 				// If successful, set 'updated' timestamp to now
 
-				$data = array('updated' => 'now()');
+				$data = array('updated' => date('Y-m-d H:i:s', strtotime('now')));
 				if ($this->updateAll($data, array('Trade.id' => $trade['Trade']['id']))) {
 					// Write log indicating trade was cancelled
 					CakeLog::write('TradeRequest', '[Trades][id]: '.$trade['Trade']['id'] . '; Sent repeat oncall blast');
@@ -913,7 +913,7 @@ class Trade extends AppModel {
 					// Change Trade status to cancelled
 					array(
 						'status' => 3,
-						'updated' => 'now()'
+						'updated' => date('Y-m-d H:i:s', strtotime('now'))
 					),
 					array('Trade.id' => $staleTrade['Trade']['id'])
 
