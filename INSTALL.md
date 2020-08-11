@@ -41,7 +41,8 @@ The dev server's ports are:
 
  * Web: http://localhost:9180
  * Mailhog: http://localhost:8125
- * Mysql: http://localhost:9106 
+ * phpMyAdmin: http://localhost:9181
+ * Mysql: http://localhost:9106
 
 # Non-Docker instructions
 8. Add the `kitab.sql` and `joomla.sql` schema if needed
