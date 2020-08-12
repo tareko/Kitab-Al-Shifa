@@ -102,7 +102,7 @@ Cache::config('default', array('engine' => 'File'));
  ));
  Configure::write('CakePdf', array(
  		'engine' => 'CakePdf.WkHtmlToPdf',
-		'binary' => 'www/kitab/bin/wkhtmltopdf-amd64',
+		'binary' => '/var/www/kitab/bin/wkhtmltopdf-amd64',
  		'margin' => array(
  				'bottom' => 15,
  				'left' => 5,
