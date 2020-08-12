@@ -707,7 +707,7 @@ class Trade extends AppModel {
 			if (isset($trade['TradesDetail'][0]['status'])) {
 				$this->Shift->read(null, $trade['Trade']['shift_id']);
 				$this->Shift->set('user_id', $trade['TradesDetail'][0]['user_id']);
-				$this->Shift->set('updated', 'CONVERT_TZ(NOW(),\'SYSTEM\',\'' . Configure::read('timezone') . '\')');
+				$this->Shift->set('updated', date("Y-m-d H:i:s",time()));
 				$this->Shift->set('marketplace', 0);
 
 				// If this was an oncall shift, send out a blast to say it was taken
