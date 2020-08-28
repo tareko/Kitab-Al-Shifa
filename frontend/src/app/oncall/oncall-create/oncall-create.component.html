@@ -65,8 +65,7 @@
       [disabled]="
         !oncallFormGroup.get('date').valid ||
         !oncallFormGroup.get('shiftStartTime').valid ||
-        !oncallFormGroup.get('message').valid ||
-        !userName.valid"
+        !oncallFormGroup.get('message').valid"
       (click)="openSnackBar('Your shift has been submitted', 'close')"
       type="submit">submit</button>
     </form>
