@@ -80,7 +80,7 @@ export class OncallCreateComponent implements OnInit {
     // Get list of physicians one time (won't change much)
     // Set this list in the callback to be our 'options' array
     this.http
-      .get('http://localhost:3000/api/users', {
+      .get('http://kitab-api.emlondon.ca/api/users', {
         observe: 'body',
         // params: {
         //   q: 'a',
