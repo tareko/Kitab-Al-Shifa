@@ -17,7 +17,11 @@ var authRouter = require('./routes/auth');
 var app = express();
 
 // Initialize Mongoose connection
-mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true})
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+    reconnectInterval: 500, // Reconnect every 500ms
+  })
   .then(() => {
     console.log('Connected to database');
   })
