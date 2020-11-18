@@ -18,7 +18,7 @@ npm install
 
 ```
 cd docker
-docker-compose -d up
+docker-compose up -d
 cd ../frontend
 ng serve &
 cd ../backend
