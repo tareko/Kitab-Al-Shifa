@@ -1,12 +1,15 @@
 Finding duplicate shifts:
 ```
 SELECT 
-    `user_id`, COUNT(`user_id`),
-    `date`, COUNT(`date`),
-    `shifts_type_id`, COUNT(`shifts_type_id`)
+    GROUP_CONCAT(`user_id`), COUNT(`user_id`),
+    GROUP_CONCAT(`date`), COUNT(`date`),
+    GROUP_CONCAT(`shifts_type_id`), COUNT(`shifts_type_id`)
 
 FROM
     shifts
+
+# To limit by `date` or `user_id`, uncomment the following line
+# WHERE `date` >= '2021-05-01' AND `date` <= '2021-05-31' AND `user_id` != '507'
     
 GROUP BY 
     `user_id`,
