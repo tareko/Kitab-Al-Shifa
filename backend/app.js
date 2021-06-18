@@ -17,17 +17,28 @@ var authRouter = require('./routes/auth');
 var app = express();
 
 // Initialize Mongoose connection
-mongoose.connect(process.env.MONGO_URI, {
+const connectWithRetry = () => {
+  mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
+    useCreateIndex: true,
+    autoIndex: true,
     reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
     reconnectInterval: 500, // Reconnect every 500ms
+    bufferMaxEntries: 0,
+    connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
+    socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
   })
   .then(() => {
     console.log('Connected to database');
   })
-  .catch(() => {
-    console.log('Connection failed');
+  .catch(error => {
+    console.log('Connection failed: ' + error);
+    setTimeout(connectWithRetry, 5000);
   });
+}
+
+// Start database connection
+connectWithRetry();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
