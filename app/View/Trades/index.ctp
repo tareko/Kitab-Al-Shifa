@@ -138,13 +138,24 @@ foreach($this->validationErrors as $assoc) {
 		</div>
 	</div>
 </div>
-	<div class="block">
+<div id="premium-warning" class="alert alert-danger hidden">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <p>This will send a message to all physicians and cost you $700</p>
+    </div>
+
+<div class="block">
 		<?php echo $this->Form->end();?>
 	</div>
     <button type="submit" class="btn btn-primary">Submit</button>
 
-<?= $this->Js->get("#usergroupSelected input")->event('change', 'addGroupUsers(event)', array ('stop' => false)); ?>
+<!-- If usergroup is selected, then fill in the list and disable the secondary option -->
+<?= $this->Js->get("input[name='data[Trade][usergroup][]']")->event('change', 'addGroupUsers(event)', array ('stop' => false)); ?>
 
+<!-- If Premium oncall is selected, then disable 'confirmation' box and '8 hour' box and select all doctors from first group. -->
+<?= $this->Js->get("label[for=TradeTradeConsideration4]")->event('click', 'onCallShift(event)', array ('stop' => false)); ?>
+<?= $this->Js->get("label[for=TradeTradeConsideration0]")->event('click', 'onCallShiftOff(event)', array ('stop' => false)); ?>
+<?= $this->Js->get("label[for=TradeTradeConsideration1]")->event('click', 'onCallShiftOff(event)', array ('stop' => false)); ?>
+<?= $this->Js->get("label[for=TradeTradeConsideration2]")->event('click', 'onCallShiftOff(event)', array ('stop' => false)); ?>
 
 
 	<script type="text/javascript">
@@ -217,9 +228,15 @@ foreach($this->validationErrors as $assoc) {
 			var add = 0;
 	        if($("#usergroupSelected input:checkbox:checked").length > 0) {
 				$("input#TradeExcludeWorking").attr("disabled", true);
-	        }
+				$("input#TradeConfirmed").attr("disabled", true);
+				$( "input#TradeConfirmed" ).prop( "checked", false );
+			}
 	        else {
-	        	$("input#TradeExcludeWorking").attr("disabled", false);
+	        	if(!$("label[for=TradeTradeConsideration4]").hasClass('active')) {
+					$("input#TradeExcludeWorking").attr("disabled", false);
+					$("input#TradeConfirmed").attr("disabled", false);
+					$("input#TradeConfirmed" ).prop( "checked", true );
+				}
 	        }
 
 	        if($("input#" + event.target.id).is(":checked")) {
@@ -252,5 +269,32 @@ foreach($this->validationErrors as $assoc) {
 				});
 
 		    }
+
+	/*
+	 * This function populates the physicians when a group is selected
+	 *
+	 *
+	 */
+	function onCallShift(event) {
+		if(!$("label[for=TradeTradeConsideration4]").hasClass('active')) {
+			$("input#TradeExcludeWorking").attr("disabled", true);
+			$("input#TradeExcludeWorking").prop( "checked", false );
+			$("input#TradeConfirmed").attr("disabled", true);
+			$("input#TradeConfirmed").prop( "checked", false );
+			$("#premium-warning").removeClass( "hidden" );
+		}
+		else {
+			$("input#TradeExcludeWorking").attr("disabled", false);
+			$("#premium-warning").addClass("hidden");
+		}
+	}
+
+	function onCallShiftOff(event) {
+			$("input#TradeExcludeWorking").attr("disabled", false);
+			$("input#TradeConfirmed").attr("disabled", false);
+			$("input#TradeConfirmed").prop( "checked", true);
+			$("#premium-warning").addClass("hidden");
+	}
+
 		</script>
 	<?= $this->Js->writeBuffer();?>
