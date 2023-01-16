@@ -2,3 +2,9 @@ li.emergency-link {
   background-color: red;
   color: white;
 }
+
+margin: 0 12px;
+
+.pagination > li  {
+  margin: 0;
+}
