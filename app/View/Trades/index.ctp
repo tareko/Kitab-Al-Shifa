@@ -73,7 +73,7 @@ foreach($this->validationErrors as $assoc) {
 	<div class="form-horizontal">
 		<div class="checkbox">
 			<label>
-				<?php echo $this->Form->checkbox('excludeWorking', array('checked' => true));?>
+				<?php echo $this->Form->checkbox('excludeWorking', array('checked' => false));?>
 				Exclude doctors working for 8 hours before or after this shift.
 			</label>
 		</div>
@@ -97,7 +97,7 @@ foreach($this->validationErrors as $assoc) {
 	<div class="form-group">
 		<div class="checkbox">
 			<label>
-				<?php echo $this->Form->checkbox('confirmed', array('checked' => false));?>
+				<?php echo $this->Form->checkbox('confirmed', array('checked' => true));?>
 				Don't send confirmation messages - all parties have already agreed to this trade.
 			</label>
 		</div>
