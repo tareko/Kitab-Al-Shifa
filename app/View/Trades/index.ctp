@@ -106,12 +106,12 @@ foreach($this->validationErrors as $assoc) {
 	<div class="form-group">
 		Trade this shift for: <div class="btn-group" data-toggle="buttons">
 			<?php
-      if ($admin) {
+//      if ($admin) {
 				echo $this->Form->radio('TradeConsideration', array (
 						'0' => 'Cash',
 						'1' => 'Trade',
 						'2' => 'Future consideration',
-            '4' => 'On-call premium shift'),
+            			'4' => 'On-call premium shift'),
 						array (
 								'name' => 'data[Trade][consideration]',
 								'class' => 'btn btn-primary',
@@ -119,7 +119,7 @@ foreach($this->validationErrors as $assoc) {
 								'legend' => false,
 								'hiddenField' => false
 						));
-          }
+/*          }
         else {
           echo $this->Form->radio('TradeConsideration', array (
               '0' => 'Cash',
@@ -133,6 +133,7 @@ foreach($this->validationErrors as $assoc) {
                   'hiddenField' => false
               ));
         }
+		*/
 				?>
 		</div>
 	</div>
